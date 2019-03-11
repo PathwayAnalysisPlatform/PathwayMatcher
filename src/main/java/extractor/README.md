@@ -82,6 +82,33 @@ from the PSI-MOD<sup>[\[5\]](#references)</sup> community standard for represent
 
     This is also an extra command line application not needed for the main functionality, but useful 
 in case a user wants to get the list of available modifications programmatically.
+
+# Running Extractor
+
+Extractor is part of the [PathwayMatcher.jar](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/releases) file. It can be executed with this command:
+~~~~
+java -cp PathwayMatcher.jar extractor.neo4j.Extractor
+~~~~
+
+It has the following command line arguments: 
+
+| Argument | Description | Required
+| --- | --- | -- |
+| `-u,--user,--username <username>` | Username to log in to Neo4j | No |
+| `-p,--pass,--password <password>` | Password corresponding to the username for Neo4j. | No |
+| `-d,--directory <vepFilesPath>`| Path to directory where vep tables are | No |
+| `-o,--output <file>` | Output file path and name | No |
+| `-h, --help` | Print usage and available arguments | No |
+| `-v, --version` | Print version of PathwayMatcher | No |
+
+Note: The paths must end with the separator '/' (linux) or '\' (windows).
+By default the input and output files are in the same location as the _PathwayMatcher.jar_ file. 
+
+It is required to have Neo4j installed and running with the Reactome Graph database loaded. 
+
+* Click [here](https://neo4j.com/docs/operations-manual/current/installation/) for instructions to [download](https://neo4j.com/download-center/#panel2-2) and [install Neo4j](https://neo4j.com/docs/operations-manual/current/installation/).
+* [Reactome graph database](https://reactome.org/download-data).
+
  
  # References
  \[1\] [UniProt Consortium, T. UniProt: the universal protein knowledgebase. Nucleic acids research 46, 2699-2699, doi:10.1093/nar/gky092 %J Nucleic Acids Research (2018).

@@ -163,6 +163,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Picocli: Command line interface -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>3.9.5</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

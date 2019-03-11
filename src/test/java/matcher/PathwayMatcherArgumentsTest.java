@@ -2,11 +2,15 @@ package matcher;
 
 import com.google.common.io.Files;
 import com.sun.org.glassfish.gmbal.Description;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.List;
 
@@ -24,10 +28,28 @@ public class PathwayMatcherArgumentsTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+
+    @Before
+    public void setUpStreams() {
+        System.setOut(new PrintStream(outContent));
+        System.setErr(new PrintStream(errContent));
+    }
+
+    @After
+    public void restoreStreams() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
+    }
+
     @Test
     public void mainWithNoArgumentsTest() {
         exit.expectSystemExitWithStatus(Error.NO_ARGUMENTS.getCode());
         PathwayMatcher.main(new String[0]);
+        assertTrue(outContent.toString().startsWith("usage:"), "Help message was not shown.");
     }
 
     @Test

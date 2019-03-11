@@ -19,22 +19,23 @@ public class ConnectionNeo4j {
      */
     public static void initializeNeo4j(String host, String username, String password) {
 
-        if (username.length() > 0) {
-            ConnectionNeo4j.driver = GraphDatabase.driver(host, AuthTokens.basic(username, password));
-        } else {
-            ConnectionNeo4j.driver = GraphDatabase.driver(host);
-        }
-
         try {
+            if (username.length() > 0) {
+                ConnectionNeo4j.driver = GraphDatabase.driver(host, AuthTokens.basic(username, password));
+            } else {
+                ConnectionNeo4j.driver = GraphDatabase.driver(host);
+            }
+
             Session session = ConnectionNeo4j.driver.session();
             session.close();
             System.out.println("Connection established.");
-        } catch (org.neo4j.driver.v1.exceptions.ClientException e) {
-            System.out.println(" Unable to connect to \"" + host + "\", ensure the database is running and that there is a working network connection to it.");
+        } catch (Exception e) {
+//            System.out.println(" Unable to connect to \"" + host + "\", ensure the database is running and that there is a working network connection to it.");
             System.out.println(e);
+            System.exit(4);
         }
     }
-    
+
     public static List<Record> query(String query) {
         ConnectionNeo4j.session = ConnectionNeo4j.driver.session();
 

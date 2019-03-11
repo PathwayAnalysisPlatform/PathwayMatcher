@@ -1,10 +1,15 @@
 package extractor.neo4j;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Multimap;
 import model.*;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.neo4j.driver.v1.Record;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -16,12 +21,32 @@ import java.util.zip.GZIPOutputStream;
 
 import static model.Error.ERROR_READING_VEP_TABLES;
 import static model.Error.sendError;
+import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
 
 /**
  * This module gathers reference biological data necessary to perform pathway search and analysis,
  * and creates static mapping files that are loaded during execution of PathwayMatcher.
  */
-public class Extractor {
+@Command(version = "PathwayMatcher 1.9.0")
+public class Extractor implements Runnable {
+
+    @Option(names = {"-u", "--user", "--username"}, description = "Username to log in to Neo4j")
+    private static String username = "";
+
+    @Option(names = {"-p", "--pass", "--password"}, description = "Password corresponding to the username for Neo4j.")
+    private static String password = "";
+
+    @Option(names = {"-d", "--directory"}, description = "Path to directory where vep tables are.")
+    private static String vepFilesPath = "";
+
+    @Option(names = {"-o", "--output"}, description = "Path to directory for the output files(static maps).")
+    private static String outputPath = "";
+
+    @Option(names = {"-v", "--version"}, versionHelp = true, description = "Show version information and exit")
+    boolean versionInfoRequested;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "Displays the help message and quits.")
+    private boolean usageHelpRequested = false;
 
     // Specific classes are defined for proteoforms, reactions and pathways to have more than one attribute.
     // Objects like genes, sets, complexes and proteins don't need a separate class, because the
@@ -57,14 +82,21 @@ public class Extractor {
     private static final int swissprotColumnIndex = 5;
     // private static final int nearestGeneColumnIndex = 7;
 
-    private static String vepFilesPath = "../VepMapping/";
-    private static String outputPath = "src/main/resources/";
-
     public static void main(String[] args) {
+        CommandLine.run(new Extractor(), System.err, args);
+    }
 
-        System.out.println("The working directory is: " + System.getProperty("user.dir"));
+    @Override
+    public void run() {
 
-        ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
+        //        System.out.println("The working directory is: " + System.getProperty("user.dir"));
+
+        ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", username, password);
+
+        File directory = new File(outputPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
 
         proteinsToReactions = getProteinsToReactions();
         System.out.println("Finished map proteins to reactions.");
@@ -267,7 +299,7 @@ public class Extractor {
 
         System.out.println("Scanning vepTable for chromosome " + chr);
         try {
-            BufferedReader br = getBufferedReaderForGzipFile(vepFilesPath + chr + ".gz");
+            BufferedReader br = getBufferedReaderForGzipFile(separatorsToSystem(vepFilesPath) + chr + ".gz");
             br.readLine(); // Read header line
 
             for (String line; (line = br.readLine()) != null; ) {
@@ -286,6 +318,11 @@ public class Extractor {
                 }
             }
         } catch (IOException ex) {
+            if (vepFilesPath.length() == 0) {
+                System.out.println("Tried reading vep tables at: " + System.getProperty("user.dir"));
+            } else {
+                System.out.println("Tried reading vep tables at: " + vepFilesPath);
+            }
             sendError(ERROR_READING_VEP_TABLES, chr);
         }
 
@@ -309,7 +346,7 @@ public class Extractor {
 
         System.out.println("Scanning vepTable for chromosome " + chr);
         try {
-            BufferedReader br = getBufferedReaderForGzipFile(vepFilesPath + chr + ".gz");
+            BufferedReader br = getBufferedReaderForGzipFile(separatorsToSystem(vepFilesPath) + chr + ".gz");
             br.readLine(); // Read header line
 
             for (String line; (line = br.readLine()) != null; ) {

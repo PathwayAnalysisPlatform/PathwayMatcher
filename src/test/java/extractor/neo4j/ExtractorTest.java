@@ -3,9 +3,16 @@ package extractor.neo4j;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
+import matcher.PathwayMatcher;
 import model.*;
+import model.Error;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
+import sun.tools.jar.CommandLine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.util.Map;
 
