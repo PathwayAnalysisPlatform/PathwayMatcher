@@ -28,7 +28,7 @@ The necessary mappings for the interaction networks are:
 
 ## Genetic variants
 
-* [VepFolderProcessor](https://github.com/PathwayAnalysisPlatform/Extractor/blob/master/src/main/java/no/uib/pap/extractor/vep/VepFolderProcessor.java): Creates table files with the mapping of genetic variants to gene names and protein UniProt <sup>[\[1\]](#references)</sup> accessions using the Variant Effect Predictor <sup>[\[2\]](#references)</sup>.
+* [VepFolderProcessor](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/vep/VepFolderProcessor.java): Creates table files with the mapping of genetic variants to gene names and protein UniProt <sup>[\[1\]](#references)</sup> accessions using the Variant Effect Predictor <sup>[\[2\]](#references)</sup>.
 
 #### Input:
 No file is needed as input.
@@ -37,13 +37,13 @@ No file is needed as input.
 Tables with the mapping from genetic variants to gene names and SwissProt entries (UniProt). One table for each chromosome: _1.gz, 2.gz,...,22.gz_
 
 ## Reactions and Pathways
-* [Extractor](https://github.com/PathwayAnalysisPlatform/Extractor/blob/master/src/main/java/no/uib/pap/extractor/neo4j/Extractor.java): Creates the mapping files to go from gene names, proteins and proteoforms to reactions and pathways of Reactome <sup>[\[3\]](#references)</sup>.
+* [Extractor](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/neo4j/Extractor.java): Creates the mapping files to go from gene names, proteins and proteoforms to reactions and pathways of Reactome <sup>[\[3\]](#references)</sup>.
 
 #### Set up requirements:
 * Running instance of Neo4j with the Reactome [graph database](https://reactome.org/dev/graph-database) loaded.
 
 #### Input:
-Tables generated with [VepFolderProcessor](https://github.com/PathwayAnalysisPlatform/Extractor/blob/master/src/main/java/no/uib/pap/extractor/vep/VepFolderProcessor.java): _1.gz, 2.gz,...,22.gz_ 
+Tables generated with [VepFolderProcessor](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/vep/VepFolderProcessor.java): _1.gz, 2.gz,...,22.gz_ 
 
 #### Output:
 Serialized files ready to be used by [PathwayMatcher](https://github.com/PathwayAnalysisPlatform/PathwayMatcher):
@@ -70,14 +70,14 @@ Serialized files ready to be used by [PathwayMatcher](https://github.com/Pathway
 
 ## Peptides
 
-* [ExtractorPeptides](https://github.com/PathwayAnalysisPlatform/Extractor/blob/master/src/main/java/no/uib/pap/extractor/peptides/ExtractorPeptides.java) This class gathers the 'Proteotypic Peptide' set from ProteomeTools<sup>[\[4\]](#references)</sup> in a single list file. 
+* [ExtractorPeptides](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/peptides/ExtractorPeptides.java) This class gathers the 'Proteotypic Peptide' set from ProteomeTools<sup>[\[4\]](#references)</sup> in a single list file. 
     
     This is an extra command line application that was used as support during the development 
 process of PathwayMatcher. It is not needed for the main functionality.
 
 ## Protein modifications 
  
-* [ExtractorPsiMod](https://github.com/PathwayAnalysisPlatform/Extractor/blob/master/src/main/java/no/uib/pap/extractor/psimod/MODGet.java): Http client application to gather the available modifications
+* [ExtractorPsiMod](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/psimod/ExtractorPsiMod.java): Http client application to gather the available modifications
 from the PSI-MOD<sup>[\[5\]](#references)</sup> community standard for representation of protein modification data. 
 
     This is also an extra command line application not needed for the main functionality, but useful 
