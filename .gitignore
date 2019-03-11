@@ -1,0 +1,34 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+# Intellij
+.idea/
+*.iml
+*.iws
+*.ipr
+*.eml
+
+# Maven
+log/
+target/
+
+# RStudio
+.Rhistory
+.RData
+.Rproj.user
+
+# Other
+output/
+*.cui
+*.jar
