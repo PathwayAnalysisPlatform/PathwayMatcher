@@ -119,14 +119,16 @@ public class PathwayMatcher {
     }
 
     private static void parseArguments(String args[]) {
-        if (args.length == 0) {
-            System.exit(Error.NO_ARGUMENTS.getCode());
-        }
 
         CommandLineParser parser = new DefaultParser();
         Options options = createUsageOptions();
         CommandLine commandLine;
         HelpFormatter formatter = new HelpFormatter();
+
+        if (args.length == 0) {
+            formatter.printHelp("java -jar PathwayMatcher.jar <options>", options);
+            System.exit(Error.NO_ARGUMENTS.getCode());
+        }
 
         try {
             commandLine = parser.parse(options, args);
