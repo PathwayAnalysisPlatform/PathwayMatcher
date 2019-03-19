@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,16 +22,16 @@ public enum ProteoformFormat {
         }
 
         @Override
-        public String getString(Proteoform proteoform) {
+        public String getString(model.Proteoform proteoform) {
             StringBuilder str = new StringBuilder();
             str.append(proteoform.getUniProtAccWithIsoform() + ";");
 
             int cont = 0;
-            for (Map.Entry<String, Long> ptm : proteoform.getPtms()) {
+            for (Pair<String, Long> ptm : proteoform.getPtms()) {
                 if (cont > 0) {
                     str.append(",");
                 }
-                str.append(ptm.getKey() + ":" + Proteoform.interpretCoordinateFromLongToString(ptm.getValue()));
+                str.append(ptm.getKey() + ":" + model.Proteoform.interpretCoordinateFromLongToString(ptm.getValue()));
                 cont++;
             }
 

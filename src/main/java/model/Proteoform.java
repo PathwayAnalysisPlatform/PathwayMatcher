@@ -16,7 +16,7 @@ public class Proteoform implements Comparable<Proteoform>, Serializable {
     private Long endCoordinate; // The end coordinate of the protein subsequence
     private List<Pair<String, Long>> ptms; // The list of post-translational modifications: PSI-MOD type ->
     // Sites set
-    private Set<Snp> sourceSnpSet; // The genetic variants that lead to this proteoform
+    private Set<model.Snp> sourceSnpSet; // The genetic variants that lead to this proteoform
     // * This structure can not take "null" as a value, then when the coordinates
     // are null they are represented as -1.
     private static final long serialVersionUID = 1L;
