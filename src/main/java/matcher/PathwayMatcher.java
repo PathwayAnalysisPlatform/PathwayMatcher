@@ -24,8 +24,11 @@ import static matcher.tools.FileHandler.createFile;
 import static matcher.tools.FileHandler.readFile;
 
 @Command(name = "PathwayMatcher",
-        header = "",
-        footer = "",
+        header = "@|green %n PathwayMatcher 1.9.0 %n |@",
+        description = "Searches the input in the Pathways of Reactome and performs pathway analysis. Optionally creates the interaction networks.",
+        footer = {"@|cyan If you like the project star it on github and follow me on twitter!|@",
+                "@|cyan This project is created and maintained by Remko Popma (@remkopopma)|@",
+                ""},
         version = "PathwayMatcher 1.9.0")
 public class PathwayMatcher implements Runnable {
 
@@ -33,20 +36,24 @@ public class PathwayMatcher implements Runnable {
 
     // Search and analysis parameters
     @Option(names = {"-t", "--inputType"}, required = true, description = "Input file type. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
-    public InputType inputType;
+    private InputType inputType;
+
+    public InputType getInputType() {
+        return inputType;
+    }
 
     @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
-    private static Boolean showTopLevelPathways = false;
+    private Boolean showTopLevelPathways = false;
 
     @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
-    private static MatchType matchType = MatchType.SUBSET;
+    private MatchType matchType = MatchType.SUBSET;
 
     @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
     private static Long range = 0L;
     private static int populationSize = -1;
 
     // File parameters
-    @Option(names = {"-i", "-input"}, required = true, description = "Input file with path")
+    @Option(names = {"-i", "--input"}, required = true, description = "Input file with path")
     private static String input_path = "intput.txt";
 
     @Option(names = {"-o", "-output"}, description = "Path to directory to set the output files: search.csv, analysis.csv and networks files.")
@@ -76,10 +83,15 @@ public class PathwayMatcher implements Runnable {
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "Displays the help message and quits.")
     private boolean usageHelpRequested = false;
 
-    public static void main(String args[]) {
-        new CommandLine(new PathwayMatcher()).setCaseInsensitiveEnumValuesAllowed(true)
+    public void callCommandLine(String args[]){
+        new CommandLine(this).setCaseInsensitiveEnumValuesAllowed(true)
                 .parseWithHandlers(new CommandLine.RunLast().useOut(System.out),
                         CommandLine.defaultExceptionHandler().useErr(System.err), args);
+    }
+
+    public static void main(String args[]) {
+        PathwayMatcher pathwayMatcher = new PathwayMatcher();
+        pathwayMatcher.callCommandLine(args);
     }
 
     @Override
@@ -105,7 +117,7 @@ public class PathwayMatcher implements Runnable {
             output_search.close();
 
             output_analysis = createFile(output_path, "analysis.tsv");
-            if(populationSize == -1){
+            if (populationSize == -1) {
                 setPopulationSize(mapping.getProteinsToReactions().keySet().size(), mapping.getProteoformsToReactions().keySet().size());
             }
             analysisResult = Analysis.analysis(searchResult, populationSize);

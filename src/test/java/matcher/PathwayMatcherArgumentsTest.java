@@ -3,12 +3,13 @@ package matcher;
 import com.google.common.io.Files;
 import model.Error;
 import model.InputType;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
-import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-import picocli.CommandLine;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -18,8 +19,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import static matcher.tools.ListDiff.anyMatches;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PathwayMatcherArgumentsTest {
 
@@ -33,16 +33,25 @@ public class PathwayMatcherArgumentsTest {
     private final PrintStream originalOut = System.out;
     private final PrintStream originalErr = System.err;
 
-    @Before
-    public void setUpStreams() {
+    @BeforeEach
+    public void setUpStreams(TestInfo testInfo) {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
     }
 
-    @After
-    public void restoreStreams() {
+    @AfterEach
+    public void restoreStreams(TestInfo testInfo) {
         System.setOut(originalOut);
         System.setErr(originalErr);
+
+        // Delete the output directory if exists:
+        try {
+            File directory = new File(testInfo.getTestMethod().get().getName() + "/");
+            FileUtils.deleteDirectory(directory);
+            assertFalse(directory.exists());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -122,27 +131,28 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeUniprotSmallcaps_Works_Test() {
-        String[] args = {"-t", "uniprot", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt"};
+    public void Matcher_receivesInputTypeUniprotSmallcaps_setsInputTypeToUniprot_Test(TestInfo testInfo) {
+        String[] args = {"-t", "uniprot", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        PathwayMatcher pathwayMatcher = new PathwayMatcher();
+        pathwayMatcher.callCommandLine(args);
 
-        PathwayMatcher matcher = new PathwayMatcher();
-        try {
-            PathwayMatcher.main(args);
-            System.out.println(outContent);
-            System.out.println(errContent);
-            assertEquals(InputType.UNIPROT, matcher.inputType, "Failed to read the correct input type.");
-        } catch (CommandLine.ParameterException ex) {
-            assertEquals("Invalid value for option '-e': expected one of [BIG, SMALL, TINY] (case-sensitive) but was 'big'", ex.getMessage());
-        }
+        assertEquals(pathwayMatcher.getInputType(), InputType.UNIPROT, "Failed to read the correct input type.");
     }
 
     @Test
-    public void missingRequiredOption_i_Test() {
-        // Fails because the input file can not be read, not because of configuration
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
-        String[] args = {
-                "-t", "uniprot", "-o", "output/"};
+    public void Matcher_receivesInputTypeUniprotUppercaps_setsInputTypeUniprot_Test(TestInfo testInfo) {
+        String[] args = {"-t", "UNIPROT", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        PathwayMatcher pathwayMatcher = new PathwayMatcher();
+        pathwayMatcher.callCommandLine(args);
+
+        assertEquals(pathwayMatcher.getInputType(), InputType.UNIPROT, "Failed to read the correct input type.");
+    }
+
+    @Test
+    public void Matcher_missingRequiredOption_i_requiresOption_Test(TestInfo testInfo) {
+        String[] args = { "-t", "uniprot", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request the input type.");
     }
 
     @Test
