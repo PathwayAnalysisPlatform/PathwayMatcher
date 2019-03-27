@@ -116,36 +116,28 @@ public class Mapping {
     public void load(InputType inputType, boolean showTopLevelPathways) {
         switch (inputType) {
             case GENE:
-            case GENES:
                 loadMapsForGenes();
                 break;
             case ENSEMBL:
-            case ENSEMBLS:
                 loadMapsEnsembl();
                 break;
             case UNIPROT:
-            case UNIPROTS:
                 loadMapsForUniprot();
                 break;
             case PEPTIDE:
-            case PEPTIDES:
                 loadMapsForUniprot();
                 break;
             case RSID:
-            case RSIDS:
                 loadMapsForRsids();
                 break;
             case CHRBP:
-            case CHRBPS:
             case VCF:
                 loadMapsChrBp();
                 break;
-            case PROTEOFORMS:
             case PROTEOFORM:
                 loadMapsForProteoforms();
                 break;
             case MODIFIEDPEPTIDE:
-            case MODIFIEDPEPTIDES:
                 loadMapsForModifiedPeptides();
                 break;
             default:

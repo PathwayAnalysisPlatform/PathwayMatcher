@@ -43,36 +43,28 @@ public class Search {
         input = Lists.transform(input, Search::removeUTF8BOM);
         switch (inputType) {
             case GENE:
-            case GENES:
                 return Search.searchWithGene(input, mapping, showTopLevelPathways);
             case ENSEMBL:
-            case ENSEMBLS:
                 return Search.searchWithEnsembl(input, mapping, showTopLevelPathways);
             case UNIPROT:
-            case UNIPROTS:
                 return Search.searchWithUniProt(input, mapping, showTopLevelPathways);
             case PROTEOFORM:
-            case PROTEOFORMS:
                 return Search.searchWithProteoform(input, mapping, showTopLevelPathways, matchType, margin);
             case RSID:
-            case RSIDS:
                 return Search.searchWithRsId(input, mapping, showTopLevelPathways);
             case CHRBP:
-            case CHRBPS:
             case VCF:
                 return Search.searchWithChrBp(input, mapping, showTopLevelPathways);
             case PEPTIDE:
-            case PEPTIDES:
                 return Search.searchWithPeptide(input, mapping, showTopLevelPathways, fastaFile);
             case MODIFIEDPEPTIDE:
-            case MODIFIEDPEPTIDES:
                 return Search.searchWithModifiedPeptide(input, mapping, showTopLevelPathways, matchType, margin, fastaFile);
             default:
                 System.out.println("Input inputType not supported.");
                 System.exit(1);
                 break;
         }
-        return new SearchResult(InputType.UNKNOWN, false);
+        return null;
     }
 
     // Fills the hitProteins set to call the next method

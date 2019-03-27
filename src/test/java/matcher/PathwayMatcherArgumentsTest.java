@@ -1,11 +1,14 @@
 package matcher;
 
 import com.google.common.io.Files;
-import com.sun.org.glassfish.gmbal.Description;
+import model.Error;
+import model.InputType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ExpectedSystemExit;
+import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,9 +20,6 @@ import java.util.List;
 import static matcher.tools.ListDiff.anyMatches;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-
-import model.Error;
 
 public class PathwayMatcherArgumentsTest {
 
@@ -46,24 +46,94 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void mainWithNoArgumentsTest() {
-        exit.expectSystemExitWithStatus(Error.NO_ARGUMENTS.getCode());
+    public void Matcher_NoArguments_requiresInput_test() {
         PathwayMatcher.main(new String[0]);
-        assertTrue(outContent.toString().startsWith("usage:"), "Help message was not shown.");
+        assertTrue(errContent.toString().startsWith("Missing required options [--inputType=<inputType>, -input=<input_path>]"), "Should ask for the input file when no arguments are provided.");
     }
 
     @Test
-    public void missingRequiredOption_t_Test() {
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
+    public void Matcher_shortHelpArgument_printsHelpMessage_Test() {
+        String[] args = {
+                "-h"
+        };
+        PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("\r\nUsage: PathwayMatcher ["), "Help message was not shown.");
+    }
+
+    @Test
+    public void Matcher_longHelpArgument_printsHelpMessage_Test() {
+        String[] args = {
+                "--help"
+        };
+        PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("\r\nUsage: PathwayMatcher ["), "Help message was not shown.");
+    }
+
+    @Test
+    public void Matcher_helpArgumentWithOtherArguments_printsHelpMessage_Test() {
+        String[] args = {
+                "--help",
+                "-t", "uniprot",
+                "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
+                "-o", "/???",
+                "-T",
+                "--graph"};
+        PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("\r\nUsage: PathwayMatcher ["), "Help message was not shown.");
+    }
+
+    @Test
+    public void Matcher_argumentsFirstWithHelpSecond_printsHelpMessage_Test() {
+        String[] args = {
+                "-t", "uniprot",
+                "--help",
+                "-i", "file.txt",
+                "-T",
+                "--graph"};
+        PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("\r\nUsage: PathwayMatcher ["), "Help message was not shown.");
+    }
+
+    @Test
+    public void Matcher_shortHelpArgumentWithOtherArguments_printsHelpMessage_Test() {
+        String[] args = {
+                "-h",
+                "-t", "uniprot",
+                "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
+                "-o", "/???",
+                "-T",
+                "--graph"};
+        PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("\r\nUsage: PathwayMatcher ["), "Help message was not shown.");
+    }
+
+    @Test
+    public void Matcher_missingRequiredArgumentInputType_requestsInputType_Test() {
         String[] args = {"-i", "input.txt"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--inputType=<inputType>'"), "Must request the input type.");
     }
 
     @Test
-    public void missingArgumentForOption_t_Test() {
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
-        String[] args = {"-t", "-i", "input.txt"};
+    public void Matcher_missingArgumentForInputTypeWithAnotherArgumentNext_sendsUnkownTypeMessage_Test() {
+        String[] args = {"-t", "-i", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Invalid value for option '--inputType': expected one of [GENE, ENSEMBL, UNIPROT, PROTEOFORM, PEPTIDE, MODIFIEDPEPTIDE, VCF, RSID, CHRBP] (case-insensitive) but was '-i'"), "Needs to get confused with the arguments and request the input type");
+    }
+
+    @Test
+    public void Matcher_receivesInputTypeUniprotSmallcaps_Works_Test() {
+        String[] args = {"-t", "uniprot", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt"};
+
+        PathwayMatcher matcher = new PathwayMatcher();
+        try {
+            PathwayMatcher.main(args);
+            System.out.println(outContent);
+            System.out.println(errContent);
+            assertEquals(InputType.UNIPROT, matcher.inputType, "Failed to read the correct input type.");
+        } catch (CommandLine.ParameterException ex) {
+            assertEquals("Invalid value for option '-e': expected one of [BIG, SMALL, TINY] (case-sensitive) but was 'big'", ex.getMessage());
+        }
     }
 
     @Test
@@ -173,77 +243,27 @@ public class PathwayMatcherArgumentsTest {
         PathwayMatcher.main(args);
     }
 
-    @Test
-    public void printHelpTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "-h"
-        };
-        PathwayMatcher.main(args);
-    }
-
-    @Test
-    public void printHelpLongTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "--help",
-                "-t", "uniprot",
-                "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "/???",
-                "-tlp",
-                "--graph"};
-        PathwayMatcher.main(args);
-    }
-
-    @Test
-    @Description("Should ignore the help request.")
-    public void printHelpNotFirstArgumentTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "-t", "uniprot",
-                "--help",
-                "-tlp",
-                "--graph"};
-        PathwayMatcher.main(args);
-    }
-
-    @Test
-    public void printHelpWithOtherArgumentsTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "-h",
-                "-t", "uniprot",
-                "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "/???",
-                "-tlp",
-                "--graph"};
-        PathwayMatcher.main(args);
-    }
 
     @Test
     public void printVersionShortTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "-v"
-        };
+        String[] args = {"-v"};
         PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
     }
 
     @Test
     public void printVersionLongTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "--version"
-        };
+        String[] args = {"--version"};
         PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
     }
 
     @Test
-    public void printVersionLongFailTest() {
-        exit.expectSystemExitWithStatus(0);
-        String[] args = {
-                "-version"
-        };
+    public void printVersionLongOneDashTest() {
+        String[] args = {"-version"};
         PathwayMatcher.main(args);
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
     }
+    // TODO: Test show default values of parameters
+
 }

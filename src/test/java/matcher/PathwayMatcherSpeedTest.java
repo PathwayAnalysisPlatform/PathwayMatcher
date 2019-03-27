@@ -138,7 +138,7 @@ public class PathwayMatcherSpeedTest {
 //        runPathwayMatcher(InputType.UNIPROT, Files.readLines(new File(ALL_PROTEINS), Charset.defaultCharset()), PROTEIN_SIZES);
 //        runPathwayMatcher(InputType.PROTEOFORMS, Files.readLines(new File(ALL_PROTEOFORMS), Charset.defaultCharset()), PROTEOFORM_SIZES);
 //        runPathwayMatcher(InputType.PEPTIDES, Files.readLines(new File(ALL_PEPTIDES), Charset.defaultCharset()), PEPTIDE_SIZES);
-        runPathwayMatcher(InputType.RSIDS, Files.readLines(new File(ALL_SNPS), Charset.defaultCharset()), SNPS_SIZES);
+        runPathwayMatcher(InputType.RSID, Files.readLines(new File(ALL_SNPS), Charset.defaultCharset()), SNPS_SIZES);
 
         timesFile.close();
     }
@@ -164,14 +164,14 @@ public class PathwayMatcherSpeedTest {
                 for (int R = 0; R < REPETITIONS + WARMUP_OFFSET; R++) {
 
                     switch (inputType) {        //Set up arguments to run PathwayMatcher
-                        case RSIDS:
+                        case RSID:
                             args = new String[]{"-t", inputType.toString(), "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};
                             break;
-                        case PEPTIDES:
+                        case PEPTIDE:
                             args = new String[]{"-t", inputType.toString(), "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};
                             break;
                         case UNIPROT:
-                        case PROTEOFORMS:
+                        case PROTEOFORM:
                             args[1] = inputType.toString();
                             args[3] = INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt";
                             break;

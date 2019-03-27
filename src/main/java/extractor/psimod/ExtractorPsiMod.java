@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- *  Support class to run {@link no.uib.pap.extractor.psimod.OnthologyHttpClient} with command line arguments.
+ *  Support class to run {@link extractor.psimod.OnthologyHttpClient} with command line arguments.
  *
  *  This class is not used needed for PathwayMatcher functionality, but serves as a support tool to consult the
  *  available standard modification types.
