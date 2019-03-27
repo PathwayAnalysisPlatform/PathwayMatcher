@@ -6,23 +6,14 @@ package model;
 public enum InputType {
 
     GENE,
-    GENES,
     ENSEMBL,
-    ENSEMBLS,
     UNIPROT,
-    UNIPROTS,
     PROTEOFORM,
-    PROTEOFORMS,
     PEPTIDE,
-    PEPTIDES,
     MODIFIEDPEPTIDE,
-    MODIFIEDPEPTIDES,
     VCF,
     RSID,
-    RSIDS,
-    CHRBP,
-    CHRBPS,
-    UNKNOWN;
+    CHRBP;
 
     public Iterable<InputType> getValues() {
         return this.getValues();
@@ -36,4 +27,7 @@ public enum InputType {
         }
         return false;
     }
+
+    @Override
+    public String toString() { return name().toLowerCase(); }
 }

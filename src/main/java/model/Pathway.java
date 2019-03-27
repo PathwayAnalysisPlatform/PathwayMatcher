@@ -197,7 +197,7 @@ public class Pathway implements Comparable<Pathway>, Serializable {
 			}
 
 			switch (inputType) {
-			case PROTEOFORMS:
+			case PROTEOFORM:
 				str.append("\"" + ProteoformFormat.SIMPLE.getString(proteoform) + "\"");
 			default:
 				str.append(proteoform.getUniProtAccWithIsoform());

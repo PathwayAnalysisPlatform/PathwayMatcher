@@ -130,26 +130,20 @@ public class SearchResult {
     SearchResult(InputType inputType, boolean showTopLevelPathways) {
 
         switch (inputType) {
-            case PROTEOFORMS:
             case PROTEOFORM:
             case MODIFIEDPEPTIDE:
-            case MODIFIEDPEPTIDES:
                 this.headers.add("PROTEOFORM");
                 break;
             case GENE:
-            case GENES:
                 this.headers.add("GENE");
                 break;
             case ENSEMBL:
-            case ENSEMBLS:
                 this.headers.add("ENSEMBL");
                 break;
             case RSID:
-            case RSIDS:
                 this.headers.add("RSID");
                 break;
             case CHRBP:
-            case CHRBPS:
             case VCF:
                 this.headers.add("CHROMOSOME");
                 this.headers.add("BASE_PAIR");
