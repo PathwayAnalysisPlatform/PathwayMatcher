@@ -253,7 +253,7 @@ public class PathwayMatcherArgumentsTest {
         pathwayMatcher.callCommandLine(args);
         assertTrue(errContent.toString().startsWith("Missing required option '--fasta=<fasta_path>'"), "Must request fasta file.");
     }
-    
+
     @Test
     public void Matcher_missingRequiredOption_i_requiresOption_Test(TestInfo testInfo) {
         String[] args = { "-t", "uniprot", "-o", testInfo.getTestMethod().get().getName() + "/"};
@@ -262,25 +262,25 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void inputArgumentBroken_Test() {
-        // Fails because the input file can not be read, not because of configuration
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
+    public void inputTypeArgumentBroken_requiresInputType_Test() {
         String[] args = {
                 "-", "t", "uniprot",
                 "-i", "blabla.csv",
                 "-o", "output/"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--inputType=<inputType>'"), "Must request the input type.");
     }
 
     @Test
-    public void inputFileNotFound_Test() {
+    public void whenInputFileDoesNotExist_messageInputFileNotFound_Test() {
         // Fails because the input file can not be read, not because of configuration
-        exit.expectSystemExitWithStatus(Error.COULD_NOT_READ_INPUT_FILE.getCode());
+//        exit.expectSystemExitWithStatus(Error.COULD_NOT_READ_INPUT_FILE.getCode());
         String[] args = {
                 "-t", "uniprot",
                 "-i", "blabla.csv",
                 "-o", "output/"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--inputType=<inputType>'"), "Must request the input type.");
     }
 
     @Test

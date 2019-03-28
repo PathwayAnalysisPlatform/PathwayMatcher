@@ -2,11 +2,13 @@ package matcher.tools;
 
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -131,5 +133,31 @@ class FileHandlerTest {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+
+    @Test
+    void readFile_givenNonExistentFile_returnNull_Test(){
+        assertEquals(null, FileHandler.readFile("Nonexistentfile.txt"), "Should not return any value.");
+    }
+
+    @Test
+    void readFile_givenNonExistentFile_showErrorMessage_Test(){
+        System.setOut(new PrintStream(outContent));
+        FileHandler.readFile("Nonexistentfile.txt");
+        assertTrue(outContent.toString().startsWith("The input file: Nonexistentfile.txt was not found."), "Error message not shown.");
+        System.setOut(originalOut);
+    }
+
+    @Test
+    void readFile_givenExistingFile_returnLinesList_Test(){
+        List<String> lines = FileHandler.readFile("src/test/resources/Genes/CysticFibrosis.txt");
+        assertEquals(11, lines.size(), "The number of lines read is not correct.");
+        assertEquals("CFTR", lines.get(0), "Line 1 is not correct.");
+        assertEquals("CXCL8", lines.get(10), "Last line of the file is not correct.");
     }
 }
