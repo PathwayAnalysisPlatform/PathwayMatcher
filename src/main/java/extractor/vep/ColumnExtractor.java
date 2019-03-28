@@ -28,7 +28,7 @@ import java.util.logging.Logger;
  */
 public class ColumnExtractor {
 
-    // Run this file: java -cp PathwayMatcher-1.0/PathwayMatcher-1.0.jar no.uib.pap.pathwaymatcher.tools.ColumnExtractor ../../ERC/zBMI3-autosome.result
+    // Run this file: java -cp Main-1.0/Main-1.0.jar no.uib.pap.pathwaymatcher.tools.ColumnExtractor ../../ERC/zBMI3-autosome.result
     // Parameters to run rsidList in Netbeans: -i ../ERC/zBMI3-autosome.result
     public static void main(String args[]) {
 

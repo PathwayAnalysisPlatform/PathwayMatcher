@@ -28,7 +28,7 @@ class PathwayMatcherPeptidesTest {
                 "-tlp",
                 "-f", fastaFile
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(116, output.size());
@@ -49,7 +49,7 @@ class PathwayMatcherPeptidesTest {
                 "-g",
                 "-f", fastaFile
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(125, output.size());
@@ -75,7 +75,7 @@ class PathwayMatcherPeptidesTest {
                 "-g",
                 "-f", fastaFile
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertTrue(anyContains("P01308", output));
@@ -94,7 +94,7 @@ class PathwayMatcherPeptidesTest {
                 "-g",
                 "-f", fastaFile
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(539, output.size());

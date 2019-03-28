@@ -1,7 +1,7 @@
 package model;
 
 /**
- * Specifies the possible input types for PathwayMatcher as an enum
+ * Specifies the possible input types for Main as an enum
  */
 public enum InputType {
 

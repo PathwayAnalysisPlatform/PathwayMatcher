@@ -19,7 +19,7 @@ class PathwayMatcherGenesTest {
 	@Test
 	void genesDiabetesInYouthTest() throws IOException {
 		args[3] = "src/test/resources/Genes/DiabetesInYouth.txt";
-		PathwayMatcher.main(args);
+		Main.main(args);
 
 		List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
 		assertEquals(34, search.size());
@@ -32,7 +32,7 @@ class PathwayMatcherGenesTest {
 	public void genesCysticFibrosisTest() throws IOException {
 		System.out.println(System.getProperty("user.dir"));
 		args[3] = "src/test/resources/Genes/CysticFibrosis.txt";
-		PathwayMatcher.main(args);
+		Main.main(args);
 
 		// Check the search file
 		List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());

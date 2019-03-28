@@ -23,7 +23,7 @@ class PathwayMatcherGeneticVariantsTest {
         String[] args = {"-t", "rsids",
                 "-o", "output/",
                 "-i", "src/test/resources/GeneticVariants/RsId/GIANT.csv"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         //List<String> search = Files.readLines(new File("output/search.tsv"), Charset.defaultCharset());
@@ -39,7 +39,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/CysticFibrosis.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/search.tsv"), Charset.defaultCharset());
@@ -55,7 +55,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/CysticFibrosis.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/search.tsv"), Charset.defaultCharset());
@@ -71,7 +71,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt",
                 "-o", "output/cysticFibrosisWithVCFTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/cysticFibrosisWithVCFTest/search.tsv"), Charset.defaultCharset());
@@ -87,7 +87,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/Diabetes.txt",
                 "-o", "output/diabetesTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/diabetesTest/search.tsv"), Charset.defaultCharset());
@@ -103,7 +103,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/Diabetes.txt",
                 "-o", "output/diabetesWithChrAndBpTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/diabetesWithChrAndBpTest/search.tsv"), Charset.defaultCharset());
@@ -120,7 +120,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/DiabetesInYouth.txt",
                 "-o", "output/diabetesInYouthTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/diabetesInYouthTest/search.tsv"), Charset.defaultCharset());
@@ -139,7 +139,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/DiabetesInYouth.txt",
                 "-o", "output/diabetesInYouthWithChrAndBpTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
 
         // Check the output file
@@ -157,7 +157,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/HuntingtonsDisease.txt",
                 "-o", "output/huntingtonsDiseaseTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/huntingtonsDiseaseTest/search.tsv"), Charset.defaultCharset());
@@ -173,7 +173,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/HuntingtonsDisease.txt",
                 "-o", "output/huntingtonsDiseaseWithChrAndBpTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/huntingtonsDiseaseWithChrAndBpTest/search.tsv"), Charset.defaultCharset());
@@ -189,7 +189,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/Hypoglycemia.txt",
                 "-o", "output/HypoglycemiaTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
 
         // Check the output file
@@ -208,7 +208,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/Hypoglycemia.txt",
                 "-o", "output/HypoglycemiaWithChrAndBpTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/HypoglycemiaWithChrAndBpTest/search.tsv"), Charset.defaultCharset());
@@ -226,7 +226,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/RsId/UlcerativeColitis.txt",
                 "-o", "output/UlcerativeColitisTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/UlcerativeColitisTest/search.tsv"), Charset.defaultCharset());
@@ -242,7 +242,7 @@ class PathwayMatcherGeneticVariantsTest {
                 "-i", "src/test/resources/GeneticVariants/Chr_Bp/UlcerativeColitis.txt",
                 "-o", "output/UlcerativeColitisWithChrAndBpTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> search = Files.readLines(new File("output/UlcerativeColitisWithChrAndBpTest/search.tsv"), Charset.defaultCharset());

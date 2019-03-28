@@ -14,7 +14,7 @@ import java.time.Duration;
 import java.util.*;
 
 /**
- * Class used to run PathwayMatcher repeatedly and get measurements of execution time.
+ * Class used to run Main repeatedly and get measurements of execution time.
  * <p>
  * The configuration values to run the tests are declared on the variables by default.
  * In case there is an argument file when running, then it will read the values from the file.
@@ -144,9 +144,9 @@ public class PathwayMatcherSpeedTest {
     }
 
     /**
-     * Run PathwayMatcher using random sample sets created in the moment
+     * Run Main using random sample sets created in the moment
      *
-     * @param inputType Type of input to send to PathwayMatcher such as: uniprotList, rsidList, peptideList...
+     * @param inputType Type of input to send to Main such as: uniprotList, rsidList, peptideList...
      * @throws IOException
      */
     private static void runPathwayMatcher(InputType inputType, List<String> allElements, List<Integer> SIZES) throws IOException {
@@ -163,7 +163,7 @@ public class PathwayMatcherSpeedTest {
             for (Integer size : SIZES) {
                 for (int R = 0; R < REPETITIONS + WARMUP_OFFSET; R++) {
 
-                    switch (inputType) {        //Set up arguments to run PathwayMatcher
+                    switch (inputType) {        //Set up arguments to run Main
                         case RSID:
                             args = new String[]{"-t", inputType.toString(), "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};
                             break;
@@ -181,7 +181,7 @@ public class PathwayMatcherSpeedTest {
                     System.out.println("Running: " + args[3]);
 
                     stopwatch.start();
-                    PathwayMatcher.main(args);
+                    Main.main(args);
                     stopwatch.stop();
 
                     Duration duration = stopwatch.elapsed();

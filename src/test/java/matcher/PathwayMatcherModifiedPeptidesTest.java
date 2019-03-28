@@ -27,7 +27,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-i", "src/test/resources/ModifiedPeptides/Insulin.txt",
                 "-o", "output/",
                 "-f", fastaFile};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -49,7 +49,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/",
                 "-f", fastaFile,
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -68,7 +68,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-m", "superset",
                 "-f", fastaFile,
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File("output/modifiedPeptides/insulinSupersetMatchingTest/search.tsv"), Charset.defaultCharset());
@@ -89,7 +89,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/",
                 "-f", fastaFile,
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(112, search.size());
@@ -106,7 +106,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/",
                 "-f", fastaFile,
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
 
@@ -131,7 +131,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/modifiedPeptides/set2SubsetTest/",
                 "-f", fastaFile,
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File("output/modifiedPeptides/set2SubsetTest/search.tsv"), Charset.defaultCharset());
         assertEquals(1, search.size());
@@ -149,7 +149,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-f", fastaFile,
                 "-m", "superset",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File("output/modifiedPeptides/set2SupersetTest/search.tsv"), Charset.defaultCharset());
         assertEquals(66, search.size());
@@ -167,7 +167,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-f", fastaFile,
                 "-tlp",
                 "-m", "superset"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -190,7 +190,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-f", fastaFile,
                 "-tlp",
                 "-m", "strict"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -205,7 +205,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         assertEquals(12, analysis.size());
     }
 
-    /*Tests that PathwayMatcher finds all possible combinations of PTMS when you put multiple peptides with 1+ ptms each. */
+    /*Tests that Main finds all possible combinations of PTMS when you put multiple peptides with 1+ ptms each. */
 
     @Test
     public void combinationsTest1() throws IOException {
@@ -217,7 +217,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/",
                 "-tlp",
                 "-f", fastaFile};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check that there is a line with O00141;00046:422
         // And another line with O00141;00046:422,00047:256
@@ -263,7 +263,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 "-o", "output/",
                 "-tlp",
                 "-f", fastaFile};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check that there is a line with O00141;00046:422
         // And another line with O00141;00046:422,00047:256
