@@ -33,8 +33,8 @@ public class FileHandler {
             }
             br = new BufferedWriter(new FileWriter(path + file));
         } catch (IOException e) {
-            System.out.println(model.Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getMessage());
-            System.exit(Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getCode());
+            System.err.println(model.Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getMessage());
+            return null;
         }
         return br;
     }

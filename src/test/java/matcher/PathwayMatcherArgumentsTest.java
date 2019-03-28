@@ -1,14 +1,14 @@
 package matcher;
 
 import com.google.common.io.Files;
-import model.Error;
+import com.sun.org.glassfish.gmbal.Description;
 import model.InputType;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
 import java.io.ByteArrayOutputStream;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PathwayMatcherArgumentsTest {
 
-    private static String searchFile = "output/search.tsv";
+    private static String searchFile = "search.tsv";
 
     private final String HEADER = "\r\n PathwayMatcher 1.9.0\r\n";
     private final String EXPECTED_HELP_MESSAGE_START = HEADER + "\r\nUsage: PathwayMatcher [";
@@ -151,7 +151,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeGeneLowerCase_setsInputTypeGENE_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeGeneLowerCase_setsInputTypeGENE_Test(TestInfo testInfo) {
         String[] args = {"-t", "gene", "-i", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -159,7 +159,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeGeneUpperCase_setsInputTypeGENE_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeGeneUpperCase_setsInputTypeGENE_Test(TestInfo testInfo) {
         String[] args = {"-t", "GENE", "-i", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -167,7 +167,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeChrBpLowerCase_setsInputTypeCHRBP_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeChrBpLowerCase_setsInputTypeCHRBP_Test(TestInfo testInfo) {
         String[] args = {"-t", "chrbp", "-i", "src/test/resources/GeneticVariants/Chr_Bp/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -175,7 +175,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeChrBpUpperCase_setsInputTypeCHRBP_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeChrBpUpperCase_setsInputTypeCHRBP_Test(TestInfo testInfo) {
         String[] args = {"-t", "CHRBP", "-i", "src/test/resources/GeneticVariants/Chr_Bp/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -183,7 +183,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeVcfLowerCase_setsInputTypeVCF_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeVcfLowerCase_setsInputTypeVCF_Test(TestInfo testInfo) {
         String[] args = {"-t", "vcf", "-i", "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -191,7 +191,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeVcfUpperCase_setsInputTypeVCF_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeVcfUpperCase_setsInputTypeVCF_Test(TestInfo testInfo) {
         String[] args = {"-t", "VCF", "-i", "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -199,7 +199,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeRsidUpperCase_setsInputTypeRsid_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeRsidUpperCase_setsInputTypeRsid_Test(TestInfo testInfo) {
         String[] args = {"-t", "RSID", "-i", "src/test/resources/GeneticVariants/RsId/SingleSnp.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -207,7 +207,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeProteoformUpperCase_setsInputTypeProteoform_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeProteoformUpperCase_setsInputTypeProteoform_Test(TestInfo testInfo) {
         String[] args = {"-t", "proteoform", "-i", "src/test/resources/Proteoforms/Simple/SingleProteoform.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -215,7 +215,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeEnsemblUpperCase_setsInputTypeEnsembl_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeEnsemblUpperCase_setsInputTypeEnsembl_Test(TestInfo testInfo) {
         String[] args = {"-t", "ensembl", "-i", "src/test/resources/Proteins/Ensembl/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -223,7 +223,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypePeptideUpperCase_setsInputTypePeptide_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypePeptideUpperCase_setsInputTypePeptide_Test(TestInfo testInfo) {
         String[] args = {"-t", "proteoform", "-i", "src/test/resources/Proteoforms/Simple/SingleProteoform.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -231,7 +231,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_receivesInputTypeModifiedPeptideLowerCase_setsInputTypeModifiedPeptide_Test(TestInfo testInfo){
+    public void Matcher_receivesInputTypeModifiedPeptideLowerCase_setsInputTypeModifiedPeptide_Test(TestInfo testInfo) {
         String[] args = {"-t", "modifiedpeptide", "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -239,7 +239,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_withInputTypePeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo){
+    public void Matcher_withInputTypePeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo) {
         String[] args = {"-t", "peptide", "-i", "src/test/resources/Peptides/singlePeptide2.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -247,7 +247,7 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void Matcher_withInputTypeModifiedPeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo){
+    public void Matcher_withInputTypeModifiedPeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo) {
         String[] args = {"-t", "modifiedpeptide", "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher pathwayMatcher = new PathwayMatcher();
         pathwayMatcher.callCommandLine(args);
@@ -256,13 +256,13 @@ public class PathwayMatcherArgumentsTest {
 
     @Test
     public void Matcher_missingRequiredOption_i_requiresOption_Test(TestInfo testInfo) {
-        String[] args = { "-t", "uniprot", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        String[] args = {"-t", "uniprot", "-o", testInfo.getTestMethod().get().getName() + "/"};
         PathwayMatcher.main(args);
         assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request the input type.");
     }
 
     @Test
-    public void inputTypeArgumentBroken_requiresInputType_Test() {
+    public void Matcher_inputTypeArgumentBroken_requiresInputType_Test() {
         String[] args = {
                 "-", "t", "uniprot",
                 "-i", "blabla.csv",
@@ -272,48 +272,53 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void whenInputFileDoesNotExist_messageInputFileNotFound_Test() {
-        // Fails because the input file can not be read, not because of configuration
-//        exit.expectSystemExitWithStatus(Error.COULD_NOT_READ_INPUT_FILE.getCode());
+    public void Matcher_givenInvalidInputType_Fails_Test() {
         String[] args = {
-                "-t", "uniprot",
-                "-i", "blabla.csv",
-                "-o", "output/"};
+                "-t", "blabla",
+                "-i", "src/test/resources/Proteoforms/multipleLinesWithIsoforms.txt"};
         PathwayMatcher.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required option '--inputType=<inputType>'"), "Must request the input type.");
+        assertTrue(errContent.toString().startsWith("Invalid value for option '--inputType': expected one of"), "Must request a valid input type.");
     }
 
     @Test
-    public void missingArgumentForOption_i_Test() {
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
+    public void Matcher_whenInputFileDoesNotExist_messageInputFileNotFound_Test() {
+        String args = "-t uniprot -i blabla.csv -o output/";
+        PathwayMatcher.main(args.split(" "));
+        assertTrue(outContent.toString().startsWith("The input file: blabla.csv was not found."), "Error reading input file message not shown.");
+    }
+
+    @Test
+    public void Matcher_missingArgumentForOptionInputType_requestsArgumentValue_Test() {
         String[] args = {"-t", "rsidList", "-i"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Invalid value for option '--inputType':"), "Must request the input type positional parameter.");
     }
 
     @Test
-    public void missingArgumentForOption_o_Test() {
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
-        String[] args = {"-t", "rsidList", "-o", "-i", "src/test/resources/Proteins/UniProt/uniprot-all.list"};
+    @Description("Should fail by taking as '-i' as positional argument of '-o', then failing to find the '-i' argument.")
+    public void Matcher_missingArgumentForOptionOutput_requestsArgumentInputTypeByMistake_Test() {
+        String[] args = {"-t", "rsid", "-o", "-i", "src/test/resources/Proteins/UniProt/uniprot-all.list"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request the input type.");
     }
 
     @Test
-    public void missingArgumentForOption_r_Test() {
-        exit.expectSystemExitWithStatus(Error.MISSING_ARGUMENT.getCode());
-        String[] args = {"-t", "rsidList", "-r"};
+    public void Matcher_missingArgumentForOptionRange_requests_Test() {
+        String[] args = {"-t", "rsid", "-r"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required parameter for option '--range' (<range>)"), "Must request the positional argument for the range parameter.");
     }
 
     @Test
-    public void matchingTypeTest() throws IOException {
+    public void Matcher_givenLowerCapsMatchingType_Works_Test(TestInfo testInfo) throws IOException {
         String[] args = {
                 "-t", "proteoform",
                 "-i", "src/test/resources/Proteoforms/Valid/multipleLinesWithIsoforms.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-m", "superset"};
         PathwayMatcher.main(args);
 
-        List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> output = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
 
         assertTrue(anyMatches("P08235-1;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
         assertTrue(anyMatches("P08235-2;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
@@ -325,26 +330,25 @@ public class PathwayMatcherArgumentsTest {
     }
 
     @Test
-    public void matchingTypeUpperCaseTest() throws IOException {
+    public void Matcher_givenUpperCaseMatchingType_Works_Test(TestInfo testInfo) throws IOException {
         String[] args = {
                 "-t", "PROTEOFORM",
                 "-i", "src/test/resources/Proteoforms/Valid/multipleLinesWithIsoforms.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-m", "SUPERSET"};
         PathwayMatcher.main(args);
-
-        List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> output = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(121, output.size());
     }
 
     @Test
-    public void invalidMatchingTypeTest() {
-        exit.expectSystemExitWithStatus(Error.INVALID_MATCHING_TYPE.getCode());
+    public void Matcher_givenInvalidMatchingType_Fails_Test() {
         String[] args = {
                 "-t", "proteoform",
                 "-i", "src/test/resources/Proteoforms/multipleLinesWithIsoforms.txt",
                 "-m", "blabla"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("Invalid value for option '--matchType': expected one of"), "Must request a valid matching type.");
     }
 
     @Test
@@ -354,31 +358,31 @@ public class PathwayMatcherArgumentsTest {
                 "-t", "uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
                 "-o", "/???",
-                "-tlp",
+                "-T",
                 "--graph"};
         PathwayMatcher.main(args);
+        assertTrue(errContent.toString().startsWith("There was an error creating/writing to the output files."), "Must show error of output files.");
     }
 
-
     @Test
-    public void printVersionShortTest() {
+    public void Matcher_givenShortVersionArgument_printsVersion_Test() {
         String[] args = {"-v"};
         PathwayMatcher.main(args);
         assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
     }
 
     @Test
-    public void printVersionLongTest() {
+    public void Matcher_givenLongVersionArgument_printsVersion_Test() {
         String[] args = {"--version"};
         PathwayMatcher.main(args);
         assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
     }
 
     @Test
-    public void printVersionLongOneDashTest() {
+    public void Matcher_givenInvalidOneDashVersionArgument_Fails_Test() {
         String[] args = {"-version"};
         PathwayMatcher.main(args);
-        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
+        assertTrue(errContent.toString().startsWith("Unknown option: -ersion"), "Should show error message failing to recognize the option.");
     }
     // TODO: Test show default values of parameters
 
