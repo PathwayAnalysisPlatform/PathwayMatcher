@@ -58,7 +58,7 @@ public class VepFileConverter {
 
     /**
      * Converts the VEP export file into a format supported by the
-     * PathwayMatcher.
+     * Main.
      *
      * @param vepFile the VEP file to process
      * @param outputFile the file where to write the output

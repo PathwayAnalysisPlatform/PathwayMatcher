@@ -13,7 +13,7 @@ public class FormatConverter {
     static String outputPath = "";
 
     /**
-     * Converts one file of proteins with post-translational modifications to the SIMPLE proteoform format for PathwayMatcher.
+     * Converts one file of proteins with post-translational modifications to the SIMPLE proteoform format for Main.
      *
      * Example input file:
      * Accession	Site in Protein

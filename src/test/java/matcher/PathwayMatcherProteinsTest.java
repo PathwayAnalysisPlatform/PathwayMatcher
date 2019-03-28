@@ -27,7 +27,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/UniProt/CysticFibrosis.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the search file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -44,7 +44,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/Ensembl/CysticFibrosis.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the search file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -60,7 +60,7 @@ class PathwayMatcherProteinsTest {
                 "-t", "uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
                 "-o", "output/"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -74,7 +74,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -88,7 +88,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/Valid/singleProteinWithIsoform.txt",
                 "-o", "output/"
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -103,7 +103,7 @@ class PathwayMatcherProteinsTest {
                 "-o", "output/",
                 "-tlp"
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -118,7 +118,7 @@ class PathwayMatcherProteinsTest {
                 "-o", "output/",
                 "-tlp"
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -132,7 +132,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/Valid/correctList.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -147,7 +147,7 @@ class PathwayMatcherProteinsTest {
                 "-o", "output/",
                 "-m", "somethingweird",
                 "-r", "3"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the output file
         List<String> output = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -161,7 +161,7 @@ class PathwayMatcherProteinsTest {
                 "-i", "src/test/resources/Proteins/Ensembl/DiabetesInYouth.txt",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(174, search.size());
@@ -178,7 +178,7 @@ class PathwayMatcherProteinsTest {
                 "-o", "output/",
                 "-tlp"
         };
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(125, search.size());

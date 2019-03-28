@@ -23,7 +23,7 @@ public class PathwayMatcherProteoformsTest {
         String[] args = {"-t", "proteoforms",
                 "-i", "src/test/resources/Proteoforms/Simple/Insulin.txt",
                 "-o", "output/proteoforms/insulinTest/"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File("output/proteoforms/insulinTest/search.tsv"), Charset.defaultCharset());
@@ -42,7 +42,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/Simple/Insulin.txt",
                 "-o", "output/proteoforms/insulinTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File("output/proteoforms/insulinTest/search.tsv"), Charset.defaultCharset());
@@ -62,7 +62,7 @@ public class PathwayMatcherProteoformsTest {
                 "-o", "output/proteoforms/insulinTest/",
                 "-m", "superset",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File("output/proteoforms/insulinTest/search.tsv"), Charset.defaultCharset());
@@ -81,7 +81,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/Simple/InsulinWithMOD.txt",
                 "-o", "output/proteoforms/insulinWithMODTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File("output/proteoforms/insulinWithMODTest/search.tsv"), Charset.defaultCharset());
         assertEquals(112, search.size());
@@ -96,7 +96,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/Reactome/all_proteoforms.csv",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(378799, search.size());
@@ -111,7 +111,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/SIMPLE/Set1.csv",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(177, search.size());
@@ -126,7 +126,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/SIMPLE/Set2.csv",
                 "-o", "output/Proteoforms/set2SubsetTest/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File("output/Proteoforms/set2SubsetTest/search.tsv"), Charset.defaultCharset());
         assertEquals(1, search.size());
@@ -142,7 +142,7 @@ public class PathwayMatcherProteoformsTest {
                 "-o", "output/Proteoforms/set2SupersetTest/",
                 "-m", "SUPERSET",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File("output/Proteoforms/set2SupersetTest/search.tsv"), Charset.defaultCharset());
         assertEquals(66, search.size());
@@ -157,7 +157,7 @@ public class PathwayMatcherProteoformsTest {
                 "-i", "src/test/resources/Proteoforms/SIMPLE/Set3.csv",
                 "-o", "output/",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
         assertEquals(732, search.size());
@@ -173,7 +173,7 @@ public class PathwayMatcherProteoformsTest {
                 "-o", "output/",
                 "-tlp",
                 "-m", "superset"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -194,7 +194,7 @@ public class PathwayMatcherProteoformsTest {
                 "-o", "output/",
                 "-tlp",
                 "-m", "strict"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         //Check the output file
         List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
@@ -217,7 +217,7 @@ public class PathwayMatcherProteoformsTest {
                 "-o", "output/proteoforms/CysticFibrosisTest/",
                 "-g",
                 "-tlp"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         // Check the search file
         List<String> search = Files.readLines(new File("output/proteoforms/CysticFibrosisTest/search.tsv"), Charset.defaultCharset());

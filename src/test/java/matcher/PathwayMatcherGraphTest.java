@@ -43,7 +43,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/genesGraphDiabetesInYouthTest/",
                 "-tlp",
                 "--graph", "-gp", "-gu"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         String searchFile = "output/genesGraphDiabetesInYouthTest/search.tsv";
         String analysisFile = "output/genesGraphDiabetesInYouthTest/analysis.tsv";
@@ -63,7 +63,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/verticesTest/",
                 "-tlp",
                 "--graph", "-gp", "-gg"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> lines = Files.readLines(new File("output/verticesTest/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, lines.size());
@@ -87,7 +87,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/verticesTest2/",
                 "-tlp",
                 "--graph"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> lines = Files.readLines(new File("output/verticesTest2/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, lines.size());
@@ -101,7 +101,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/createGraphSet2Test/",
                 "-tlp",
                 "-g"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> vertices = Files.readLines(new File("output/createGraphSet2Test/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(3, vertices.size());
@@ -128,7 +128,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/createGraphInsulinTest/",
                 "-tlp",
                 "-g"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> vertices = Files.readLines(new File("output/createGraphInsulinTest/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, vertices.size());
@@ -152,7 +152,7 @@ class PathwayMatcherGraphTest {
                 "-o", "output/createGraphInsulinTest/",
                 "-tlp",
                 "-g"};
-        PathwayMatcher.main(args);
+        Main.main(args);
 
         List<String> vertices = Files.readLines(new File("output/createGraphInsulinTest/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, vertices.size());
@@ -178,7 +178,7 @@ class PathwayMatcherGraphTest {
                 "-tlp",
                 "-gu", "-gp", "-gg"
         };
-       PathwayMatcher.main(args);
+       Main.main(args);
 
        List<String> proteins = Files.readLines(new File("output/" + proteinVerticesFile), Charset.defaultCharset());
        assertEquals(10738, proteins.size());

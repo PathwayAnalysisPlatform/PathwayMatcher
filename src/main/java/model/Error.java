@@ -3,12 +3,12 @@ package model;
 import java.util.logging.Level;
 
 /**
- * Situations that prevent the execution of PathwayMatcher.
+ * Situations that prevent the execution of Main.
  */
 public enum Error {
 
     // Free:  10, 12, 14, 19, 21
-    NO_ARGUMENTS(1, "PathwayMatcher was run without arguments and there is no configuration file in the same directory."),
+    NO_ARGUMENTS(1, "Main was run without arguments and there is no configuration file in the same directory."),
     NO_INPUT(2, "No input was specified with a command line argument nor in the configuration file."),
     COULD_NOT_WRITE_TO_OUTPUT_FILES(3, "There was an error creating/writing to the output files."),
     COULD_NOT_CONNECT_TO_NEO4j(4, " Unable to connect to Neo4j, ensure the database is running and that there is a working network connection to it."),

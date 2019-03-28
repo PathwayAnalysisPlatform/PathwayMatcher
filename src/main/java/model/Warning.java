@@ -3,7 +3,7 @@ package model;
 import java.util.logging.Level;
 
 /**
- * Situations that are potentially not desired, but do not halt the execution of PathwayMatcher.
+ * Situations that are potentially not desired, but do not halt the execution of Main.
  */
 public enum Warning {
 
