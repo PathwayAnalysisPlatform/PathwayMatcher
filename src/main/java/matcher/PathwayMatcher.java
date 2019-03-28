@@ -25,9 +25,8 @@ import static matcher.tools.FileHandler.readFile;
 
 @Command(name = "PathwayMatcher",
         header = "@|green %n PathwayMatcher 1.9.0 %n |@",
-        description = "Searches the input in the Pathways of Reactome and performs pathway analysis. Optionally creates the interaction networks.",
-        footer = {"@|cyan If you like the project star it on github and follow me on twitter!|@",
-                "@|cyan This project is created and maintained by Remko Popma (@remkopopma)|@",
+        description = "Searches the input in the Pathways of Reactome and performs pathway analysis. Optionally, creates the interaction networks.",
+        footer = {"@|cyan If you like the project star it on github. |@",
                 ""},
         version = "PathwayMatcher 1.9.0")
 public class PathwayMatcher implements Runnable {
@@ -77,13 +76,13 @@ public class PathwayMatcher implements Runnable {
     @Option(names = {"-gu", "--graphUniprot"}, description = "Create protein connection graph")
     private static boolean doProteoformGraph = false;
 
-    @Option(names = {"-v", "-version", "--version"}, versionHelp = true, description = "Show version information and exit")
+    @Option(names = {"-v", "--version"}, versionHelp = true, description = "Show version information and exit")
     boolean versionInfoRequested;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "Displays the help message and quits.")
     private boolean usageHelpRequested = false;
 
-    public void callCommandLine(String args[]){
+    public void callCommandLine(String args[]) {
         new CommandLine(this).setCaseInsensitiveEnumValuesAllowed(true)
                 .parseWithHandlers(new CommandLine.RunLast().useOut(System.out),
                         CommandLine.defaultExceptionHandler().useErr(System.err), args);
@@ -110,29 +109,33 @@ public class PathwayMatcher implements Runnable {
         try {
             List<String> input = readFile(input_path);
 
-            output_search = createFile(output_path, "search.tsv");
-            Mapping mapping = new Mapping(inputType, showTopLevelPathways); // Load static structures needed for all the cases
+            if (input != null) {
+                output_search = createFile(output_path, "search.tsv");
+                output_analysis = createFile(output_path, "analysis.tsv");
 
-            searchResult = Search.search(input, inputType, showTopLevelPathways, mapping,
-                    matchType, range, fasta_path);
-            searchResult.writeToFile(output_search, separator);
-            output_search.close();
+                if(output_search != null && output_analysis != null){
+                    Mapping mapping = new Mapping(inputType, showTopLevelPathways); // Load static structures needed for all the cases
 
-            output_analysis = createFile(output_path, "analysis.tsv");
-            if (populationSize == -1) {
-                setPopulationSize(mapping.getProteinsToReactions().keySet().size(), mapping.getProteoformsToReactions().keySet().size());
+                    searchResult = Search.search(input, inputType, showTopLevelPathways, mapping,
+                            matchType, range, fasta_path);
+                    searchResult.writeToFile(output_search, separator);
+                    output_search.close();
+
+                    if (populationSize == -1) {
+                        setPopulationSize(mapping.getProteinsToReactions().keySet().size(), mapping.getProteoformsToReactions().keySet().size());
+                    }
+                    analysisResult = Analysis.analysis(searchResult, populationSize);
+                    analysisResult.writeToFile(output_analysis, inputType, separator);
+                    output_analysis.close();
+
+                    NetworkGenerator.writeGraphs(doGeneGraph, doUniprotGraph, doProteoformGraph,
+                            inputType, searchResult, mapping, output_path);
+
+                    stopwatch.stop();
+                    Duration duration = stopwatch.elapsed();
+                    System.out.println("PathwayMatcher finished (" + duration.toMillis() / 1000 + "s)");
+                }
             }
-            analysisResult = Analysis.analysis(searchResult, populationSize);
-            analysisResult.writeToFile(output_analysis, inputType, separator);
-            output_analysis.close();
-
-            NetworkGenerator.writeGraphs(doGeneGraph, doUniprotGraph, doProteoformGraph,
-                    inputType, searchResult, mapping, output_path);
-
-            stopwatch.stop();
-            Duration duration = stopwatch.elapsed();
-            System.out.println("PathwayMatcher finished (" + duration.toMillis() / 1000 + "s)");
-
         } catch (IOException e) {
             if (e.getMessage().contains("network") || e.getMessage().contains("directory")) {
                 System.out.println(e.getMessage());

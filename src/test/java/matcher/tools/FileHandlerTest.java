@@ -104,6 +104,10 @@ class FileHandlerTest {
             // Postcondition: Delete the file
             file.delete();
             assertFalse(file.exists(), "Traces left by this test: the test file was not deleted.");
+
+            File directory = new File("this/");
+            FileUtils.deleteDirectory(directory);
+            assertFalse(directory.exists());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -149,7 +153,7 @@ class FileHandlerTest {
     void readFile_givenNonExistentFile_showErrorMessage_Test(){
         System.setOut(new PrintStream(outContent));
         FileHandler.readFile("Nonexistentfile.txt");
-        assertTrue(outContent.toString().startsWith("The input file: Nonexistentfile.txt was not found."), "Error message not shown.");
+        assertTrue(outContent.toString().startsWith("The input file: Nonexistentfile.txt was not found."), "Error reading input file message not shown.");
         System.setOut(originalOut);
     }
 
