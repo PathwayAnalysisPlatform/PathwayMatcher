@@ -96,7 +96,7 @@ public class PathwayMatcher implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("The working directory is: " + System.getProperty("user.dir"));
+//        System.out.println("The working directory is: " + System.getProperty("user.dir"));
 
         BufferedWriter output_search;
         BufferedWriter output_analysis;
@@ -104,6 +104,8 @@ public class PathwayMatcher implements Runnable {
         AnalysisResult analysisResult;
 
         Stopwatch stopwatch = Stopwatch.createStarted();
+
+        validateFasta(fasta_path);
 
         try {
             List<String> input = readFile(input_path);
@@ -181,12 +183,12 @@ public class PathwayMatcher implements Runnable {
         }
     }
 
-    private void setFasta(String value) throws ParseException {
+    private void validateFasta(String value) throws CommandLine.ParameterException {
         switch (inputType) {
             case PEPTIDE:
             case MODIFIEDPEPTIDE:
-                if (value == null) {
-                    throw new ParseException("Missing required option: f");
+                if (value == "" || value == null) {
+                    throw new CommandLine.ParameterException(new CommandLine(this), "Missing required option '--fasta=<fasta_path>' when the input type is PEPTIDE or MODIFIEDPEPTIDE");
                 } else {
                     File f = new File(value);
                     if (!f.exists() || f.isDirectory()) {
