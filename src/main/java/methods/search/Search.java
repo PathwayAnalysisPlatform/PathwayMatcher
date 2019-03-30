@@ -38,7 +38,7 @@ public class Search {
         return line;
     }
 
-    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping, MatchType matchType, Long margin, String fastaFile) {
+    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping, MatchType matchType, Long range, String fastaFile) {
         input.replaceAll(String::trim);
         input = Lists.transform(input, Search::removeUTF8BOM);
         switch (inputType) {
@@ -49,7 +49,7 @@ public class Search {
             case UNIPROT:
                 return Search.searchWithUniProt(input, mapping, showTopLevelPathways);
             case PROTEOFORM:
-                return Search.searchWithProteoform(input, mapping, showTopLevelPathways, matchType, margin);
+                return Search.searchWithProteoform(input, mapping, showTopLevelPathways, matchType, range);
             case RSID:
                 return Search.searchWithRsId(input, mapping, showTopLevelPathways);
             case CHRBP:
@@ -58,7 +58,7 @@ public class Search {
             case PEPTIDE:
                 return Search.searchWithPeptide(input, mapping, showTopLevelPathways, fastaFile);
             case MODIFIEDPEPTIDE:
-                return Search.searchWithModifiedPeptide(input, mapping, showTopLevelPathways, matchType, margin, fastaFile);
+                return Search.searchWithModifiedPeptide(input, mapping, showTopLevelPathways, matchType, range, fastaFile);
             default:
                 System.out.println("Input inputType not supported.");
                 System.exit(1);
@@ -481,7 +481,7 @@ public class Search {
                                                     Mapping mapping,
                                                     Boolean topLevelPathways,
                                                     MatchType matchType,
-                                                    Long margin) {
+                                                    Long range) {
 
         SearchResult result = new SearchResult(InputType.PROTEOFORM, topLevelPathways);
         ProteoformMatching matcher = ProteoformMatching.getInstance(matchType);
@@ -510,7 +510,7 @@ public class Search {
             result.getInputProteins().add(inputProteoform.getUniProtAcc());
 
             for (Proteoform refProteoform : mapping.getProteinsToProteoforms().get(inputProteoform.getUniProtAcc())) {
-                if (matcher.matches(inputProteoform, refProteoform, margin)) {
+                if (matcher.matches(inputProteoform, refProteoform, range)) {
                     result.getMatchedProteoforms().add(inputProteoform);
                     result.getMatchedProteins().add(inputProteoform.getUniProtAcc());
                     if (mapping.getProteoformsToReactions().get(refProteoform).size() > 0) {
