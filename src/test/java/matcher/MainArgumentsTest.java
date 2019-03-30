@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import picocli.CommandLine;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -17,8 +18,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Map;
 
 import static matcher.tools.ListDiff.anyMatches;
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MainArgumentsTest {
@@ -26,7 +29,7 @@ public class MainArgumentsTest {
     private static String searchFile = "search.tsv";
 
     private final String HEADER = "\r\n PathwayMatcher 1.9.0\r\n";
-    private final String EXPECTED_HELP_MESSAGE_START = HEADER + "\r\nUsage: PathwayMatcher [";
+    private final String EXPECTED_HELP_MESSAGE_START = HEADER + "\r\nUsage: java -jar PathwayMatcher.jar [-v] [COMMAND]";
 
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
@@ -38,8 +41,8 @@ public class MainArgumentsTest {
 
     @BeforeEach
     public void setUpStreams(TestInfo testInfo) {
-        System.setOut(new PrintStream(outContent));
-        System.setErr(new PrintStream(errContent));
+//        System.setOut(new PrintStream(outContent));
+//        System.setErr(new PrintStream(errContent));
     }
 
     @AfterEach
@@ -58,9 +61,54 @@ public class MainArgumentsTest {
     }
 
     @Test
-    public void Matcher_NoArguments_requiresInput_test() {
-        Main.main(new String[0]);
-        assertTrue(errContent.toString().startsWith("Missing required options [--inputType=<inputType>, --input=<input_path>]"), "Should ask for the input file when no arguments are provided.");
+    public void Matcher_exampleParseArgumentsWithoutExecuting(){
+        String[] args = {};
+        Main myMain = new Main();
+        myMain.commandLine = new CommandLine(new Main.PathwayMatcher());
+        myMain.commandLine.parse(args);
+
+
+    }
+
+    @Test
+    public void Matcher_subcommandsRegistered_Test(TestInfo testInfo) {
+        String[] args = {"match-uniprot", "--input", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main myMain = new Main();
+//        myMain.main(args);
+        myMain.commandLine = new CommandLine(new Main.PathwayMatcher());
+        myMain.commandLine.parse(args);
+        Main.PathwayMatcher command = myMain.commandLine.getCommand();
+        System.out.println(((Main.MatchUniprot)myMain.commandLine.getSubcommands().get("match-uniprot").getCommand()).getInput_path());
+        Main.MatchUniprot matchUniprotSubcommand = myMain.commandLine.getSubcommands().get("match-uniprot").getCommand();
+        System.out.println("Input path for match-uniprot: " + matchUniprotSubcommand.getInput_path());
+        Main.MatchProteoforms matchProteoformsSubcommand = myMain.commandLine.getSubcommands().get("match-proteoforms").getCommand();
+        System.out.println("Input path for match-proteoforms: " + matchProteoformsSubcommand.getInput_path());
+
+        System.out.println("Show top level pathways: " + ((Main.MatchUniprot)myMain.commandLine.getSubcommands().get("match-uniprot").getCommand()).isShowTopLevelPathways());
+
+        System.out.println(command.getClass());
+
+//        CommandLine commandLine = new CommandLine(new Main.PathwayMatcher());
+//        Map<String, CommandLine> commandMap = commandLine.getSubcommands();
+//        assertEquals(10, commandMap.size());
+//        System.out.println(" -- "+ commandMap.get("match-uniprot").getParseResult());
+//        System.out.println(commandMap.get("match-uniprot").getUnmatchedArguments());
+    }
+
+    @Test
+    public void Matcher_matchUniprotSubcommandRegistered_Test() {
+        CommandLine commandLine = new CommandLine(new Main.PathwayMatcher());
+
+        Map<String, CommandLine> commandMap = commandLine.getSubcommands();
+        assertTrue(commandMap.get("match-uniprot").getCommand() instanceof Main.MatchUniprot, "match-uniprot");
+    }
+
+    @Test
+    public void Matcher_NoArguments_showsUsageText_test() {
+        Main myMain = new Main();
+        myMain.commandLine = new CommandLine(new Main.PathwayMatcher());
+        myMain.commandLine.parse(new String[0]);
+        assertTrue(errContent.toString().startsWith(EXPECTED_HELP_MESSAGE_START), "Should show the general usage text");
     }
 
     @Test
@@ -138,10 +186,11 @@ public class MainArgumentsTest {
 //        String[] args = {"-t", "uniprot", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
 //        Main main = new Main();
 //        main.callCommandLine(args);
+//        Main.MatchUniprot.
 //
 //        assertEquals(main.getInputType(), InputType.UNIPROT, "Failed to read the correct input type.");
 //    }
-
+//
 //    @Test
 //    public void Matcher_receivesInputTypeUniprotUppercaps_setsInputTypeUniprot_Test(TestInfo testInfo) {
 //        String[] args = {"-t", "UNIPROT", "-i", "src/test/resources/Proteins/UniProt/AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};

@@ -210,7 +210,7 @@ public class Mapping {
         return chrBpToProteins;
     }
 
-    private void loadMapsForProteoforms() {
+    public void loadMapsForProteoforms() {
         loadMapsBasic();
         if (proteinsToProteoforms.size() == 0) {
             proteinsToProteoforms = (ImmutableSetMultimap<String, Proteoform>) getSerializedObject("proteinsToProteoforms.gz");
