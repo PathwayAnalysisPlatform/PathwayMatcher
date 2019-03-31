@@ -28,6 +28,7 @@ import static matcher.tools.FileHandler.readFile;
 public class Main {
 
     public static CommandLine commandLine;
+    public static InputType inputType;
 
     // Parent command for matching
     @Command(name = "java -jar PathwayMatcher.jar",
@@ -42,7 +43,7 @@ public class Main {
                     MatchEnsembl.class,
                     MatchVCF.class,
                     MatchChrBp.class,
-                    MatchRsId.class,
+                    MatchRsIds.class,
                     MatchPeptides.class,
                     MatchModifiedPeptides.class,
                     CommandLine.HelpCommand.class
@@ -53,13 +54,15 @@ public class Main {
         @Option(names = {"-v", "--version"}, versionHelp = true, description = "Show version information and exit")
         boolean versionInfoRequested;
 
+        @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+        boolean usageHelpRequested;
+
         @Override
         public void run() {
         }
     }
 
     static abstract class MatchSubcommand implements Runnable {
-
 
         @Option(names = {"-i", "--input"}, required = true, description = "Input file with path")
         String input_path;
@@ -92,9 +95,13 @@ public class Main {
         @Option(names = {"-gu", "--graphUniprot"}, description = "Create protein connection graph")
         boolean doProteoformGraph = false;
 
+        boolean wasExecuted = false;
+        public boolean isWasExecuted() {
+            return wasExecuted;
+        }
+
         int populationSize = -1;
         List<String> input;
-        InputType inputType;
         final String separator = "\t";    // Column separator
         Mapping mapping;
         BufferedWriter output_search;
@@ -163,6 +170,7 @@ public class Main {
     static class MatchGenes extends MatchSubcommand {
         @Override
         public void run() {
+            wasExecuted = true;
             inputType = InputType.GENE;
             match();
         }
@@ -187,6 +195,7 @@ public class Main {
     static class MatchUniprot extends MatchSubcommand {
         @Override
         public void run() {
+            wasExecuted = true;
             inputType = InputType.UNIPROT;
             match();
         }
@@ -211,6 +220,7 @@ public class Main {
     static class MatchEnsembl extends MatchSubcommand {
         @Override
         public void run() {
+            wasExecuted = true;
             inputType = InputType.ENSEMBL;
             match();
         }
@@ -235,6 +245,7 @@ public class Main {
     static class MatchVCF extends MatchSubcommand {
         @Override
         public void run() {
+            wasExecuted = true;
             inputType = InputType.VCF;
             match();
         }
@@ -255,11 +266,13 @@ public class Main {
         }
     }
 
-    @Command(name = "match-chrbps", description = "Match a list of genetic variants as chromosome and base pairs")
+    @Command(name = "match-chrbp", description = "Match a list of genetic variants as chromosome and base pairs")
     static class MatchChrBp extends MatchSubcommand {
         @Override
         public void run() {
-            System.out.println("In match-variants-chrbps");
+            wasExecuted = true;
+            inputType = InputType.CHRBP;
+            match();
         }
 
         @Override
@@ -279,10 +292,12 @@ public class Main {
     }
 
     @Command(name = "match-rsids", description = "Match a list of genetic variants as RsIds")
-    static class MatchRsId extends MatchSubcommand {
+    static class MatchRsIds extends MatchSubcommand {
         @Override
         public void run() {
-            System.out.println("In MatchRsId");
+            wasExecuted = true;
+            inputType = InputType.RSID;
+            match();
         }
 
         @Override
@@ -313,6 +328,7 @@ public class Main {
     static class MatchProteoforms extends MatchSubcommandWithModifications {
         @Override
         public void run() {
+            wasExecuted = true;
             inputType = InputType.PROTEOFORM;
             match();
         }
