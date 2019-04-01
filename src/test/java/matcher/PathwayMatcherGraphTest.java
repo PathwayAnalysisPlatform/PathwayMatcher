@@ -1,8 +1,11 @@
 package matcher;
 
 import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,84 +38,94 @@ class PathwayMatcherGraphTest {
         }
     }
 
+    @AfterEach
+    void deleteOutput(TestInfo testInfo) {
+        // Delete the output directory if exists:
+        try {
+            File directory = new File(testInfo.getTestMethod().get().getName() + "/");
+            FileUtils.deleteDirectory(directory);
+            assertFalse(directory.exists());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
-    void genesGraphDiabetesInYouthTest() throws IOException {
+    void genesGraphDiabetesInYouthTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "genes",
+                "match-genes",
                 "-i", "src/test/resources/Genes/DiabetesInYouth.txt",
-                "-o", "output/genesGraphDiabetesInYouthTest/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "--graph", "-gp", "-gu"};
         Main.main(args);
 
-        String searchFile = "output/genesGraphDiabetesInYouthTest/search.tsv";
-        String analysisFile = "output/genesGraphDiabetesInYouthTest/analysis.tsv";
-
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
         assertEquals(34, search.size());
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(10, analysis.size());
     }
 
     @Test
-    public void verticesTest() throws IOException {
+    public void verticesTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "uniprot",
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "output/verticesTest/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "--graph", "-gp", "-gg"};
         Main.main(args);
 
-        List<String> lines = Files.readLines(new File("output/verticesTest/" + proteinVerticesFile), Charset.defaultCharset());
+        List<String> lines = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, lines.size());
         assertTrue(lines.contains("P01308\tInsulin"));
 
-        List<String> genes = Files.readLines(new File("output/verticesTest/" + geneVerticesFile), Charset.defaultCharset());
+        List<String> genes = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + geneVerticesFile), Charset.defaultCharset());
         assertEquals(2, genes.size());
         assertTrue(genes.contains("INS\tInsulin"));
 
-        List<String> proteoforms = Files.readLines(new File("output/verticesTest/" + proteoformVerticesFile), Charset.defaultCharset());
+        List<String> proteoforms = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteoformVerticesFile), Charset.defaultCharset());
         assertEquals(6, proteoforms.size());
         assertTrue(proteoforms.contains("P01308;00087:53,00798:31,00798:43\tInsulin"));
         assertTrue(proteoforms.contains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109\tInsulin"));
     }
 
     @Test
-    public void verticesTest2() throws IOException {
+    public void verticesTest2(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "uniprot",
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "output/verticesTest2/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "--graph"};
         Main.main(args);
 
-        List<String> lines = Files.readLines(new File("output/verticesTest2/" + proteinVerticesFile), Charset.defaultCharset());
+        List<String> lines = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, lines.size());
         assertTrue(lines.contains("P01308\tInsulin"));
     }
 
     @Test
-    void createGraphSet2Test() throws IOException {
-        String[] args = {"-t", "uniprot",
+    void createGraphSet2Test(TestInfo testInfo) throws IOException {
+        String[] args = {
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/UniProt/Set1.txt",
-                "-o", "output/createGraphSet2Test/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-g"};
         Main.main(args);
 
-        List<String> vertices = Files.readLines(new File("output/createGraphSet2Test/" + proteinVerticesFile), Charset.defaultCharset());
+        List<String> vertices = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(3, vertices.size());
         assertTrue(vertices.contains("P68871\tHemoglobin subunit beta"));
         assertTrue(vertices.contains("P69905\tHemoglobin subunit alpha"));
 
-        List<String> internalEdges = Files.readLines(new File("output/createGraphSet2Test/" + proteinInternalEdgesFile), Charset.defaultCharset());
+        List<String> internalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinInternalEdgesFile), Charset.defaultCharset());
         assertTrue(internalEdges.contains("P68871\tP69905\tReaction\tR-HSA-2168885\toutput\tinput"));
         assertTrue(internalEdges.contains("P68871\tP69905\tComplex\tR-HSA-1237320\tcomponent\tcomponent"));
 
-        List<String> externalEdges = Files.readLines(new File("output/createGraphSet2Test/" + proteinExternalEdgesFile), Charset.defaultCharset());
+        List<String> externalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinExternalEdgesFile), Charset.defaultCharset());
         assertTrue(externalEdges.contains("P00738\tP68871\tReaction\tR-HSA-6798745\tinput\tinput"));
         assertFalse(externalEdges.contains("P68871\tP00738\tReaction\tR-HSA-6798745\tinput\tinput"));
         assertTrue(externalEdges.contains("P69905\tQ86VB7\tComplex\tR-HSA-2168879\tcomponent\tcomponent"));
@@ -122,22 +135,23 @@ class PathwayMatcherGraphTest {
     }
 
     @Test
-    void createGraphInsulinTest() throws IOException {
-        String[] args = {"-t", "uniprot",
+    void createGraphInsulinTest(TestInfo testInfo) throws IOException {
+        String[] args = {
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "output/createGraphInsulinTest/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-g"};
         Main.main(args);
 
-        List<String> vertices = Files.readLines(new File("output/createGraphInsulinTest/" + proteinVerticesFile), Charset.defaultCharset());
+        List<String> vertices = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, vertices.size());
         assertTrue(vertices.contains("P01308\tInsulin"));
 
-        List<String> internalEdges = Files.readLines(new File("output/createGraphInsulinTest/" + proteinInternalEdgesFile), Charset.defaultCharset());
+        List<String> internalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinInternalEdgesFile), Charset.defaultCharset());
         assertEquals(1, internalEdges.size());
 
-        List<String> externalEdges = Files.readLines(new File("output/createGraphInsulinTest/" + proteinExternalEdgesFile), Charset.defaultCharset());
+        List<String> externalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinExternalEdgesFile), Charset.defaultCharset());
         assertTrue(externalEdges.contains("P01308\tP29120\tReaction\tR-HSA-9023196\tinput\tcatalyst"));
 
         assertTrue(externalEdges.contains("P01308\tQ01484\tComplex\tR-HSA-6808913\tcomponent\tcomponent"));
@@ -146,22 +160,23 @@ class PathwayMatcherGraphTest {
     }
 
     @Test
-    void reactionNeighboursTest() throws IOException {
-        String[] args = {"-t", "uniprot",
+    void reactionNeighboursTest(TestInfo testInfo) throws IOException {
+        String[] args = {
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "output/createGraphInsulinTest/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-g"};
         Main.main(args);
 
-        List<String> vertices = Files.readLines(new File("output/createGraphInsulinTest/" + proteinVerticesFile), Charset.defaultCharset());
+        List<String> vertices = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
         assertEquals(2, vertices.size());
         assertTrue(vertices.contains("P01308\tInsulin"));
 
-        List<String> internalEdges = Files.readLines(new File("output/createGraphInsulinTest/" + proteinInternalEdgesFile), Charset.defaultCharset());
+        List<String> internalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinInternalEdgesFile), Charset.defaultCharset());
         assertEquals(1, internalEdges.size());
 
-        List<String> externalEdges = Files.readLines(new File("output/createGraphInsulinTest/" + proteinExternalEdgesFile), Charset.defaultCharset());
+        List<String> externalEdges = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinExternalEdgesFile), Charset.defaultCharset());
         assertTrue(externalEdges.contains("P01308\tP29120\tReaction\tR-HSA-9023196\tinput\tcatalyst"));
 
         assertTrue(externalEdges.contains("P01308\tQ01484\tComplex\tR-HSA-6808913\tcomponent\tcomponent"));
@@ -169,25 +184,25 @@ class PathwayMatcherGraphTest {
         assertTrue(externalEdges.contains("P01308\tP35606\tComplex\tR-HSA-6808913\tcomponent\tcomponent"));
     }
 
-   @Test
-    void allProteinsTest() throws IOException {
+    @Test
+    void allProteinsTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "uniprot",
+                "match-uniprot",
                 "-i", "src/test/resources/Proteins/UniProt/uniprot-all.list",
-                "-o", "output/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-gu", "-gp", "-gg"
         };
-       Main.main(args);
+        Main.main(args);
 
-       List<String> proteins = Files.readLines(new File("output/" + proteinVerticesFile), Charset.defaultCharset());
-       assertEquals(10738, proteins.size());
+        List<String> proteins = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
+        assertEquals(10738, proteins.size());
 
-       List<String> genes = Files.readLines(new File("output/" + geneVerticesFile), Charset.defaultCharset());
-       assertEquals(24622, genes.size());
+        List<String> genes = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + geneVerticesFile), Charset.defaultCharset());
+        assertEquals(24622, genes.size());
 
-       List<String> proteoforms = Files.readLines(new File("output/" + proteoformVerticesFile), Charset.defaultCharset());
-       assertEquals(13870, proteoforms.size());
-   }
+        List<String> proteoforms = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteoformVerticesFile), Charset.defaultCharset());
+        assertEquals(13870, proteoforms.size());
+    }
 
 }

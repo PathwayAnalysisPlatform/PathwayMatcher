@@ -17,7 +17,7 @@ import java.io.PrintStream;
 import static model.Mapping.getSerializedObject;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MatchUniprotCommandCommandTest {
+class MatchUniprotCommandTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;

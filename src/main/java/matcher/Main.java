@@ -71,7 +71,7 @@ public class Main {
             return input_path;
         }
 
-        @Option(names = {"-o", "--output"}, description = "Path to directory to set the output files: search.csv, analysis.csv and networks files.")
+        @Option(names = {"-o", "--output"}, description = "Path to directory for the output files: search.tsv (list of reactions and pathways containing the input), analysis.tsv (over-representation analysis) and networks files.")
         String output_path = "";
 
         String getOutput_path() {
