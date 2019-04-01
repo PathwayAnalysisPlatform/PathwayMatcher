@@ -149,40 +149,6 @@ public class MainArgumentsTest {
         assertTrue(errContent.toString().startsWith("Unknown options: -o, /???"), "Help message was not shown.");
     }
 
-    // Gene
-    @Test
-    void Matcher_givenSubcommandMatchGenes_setsInputTypeToGene_Test(TestInfo testInfo) {
-        String[] args = {"match-genes", "--input", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertEquals(InputType.GENE, Main.inputType, "Failed to set the correct input type according to the subcommand.");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchGenes_executesIt_Test(TestInfo testInfo) {
-        String[] args = {"match-genes", "--input", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchGenes matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
-        assertTrue(matchGenesCommand.isWasExecuted(), "Failed to execute match-genes command");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchGenesWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
-        String[] args = {"match-genes"};
-        Main.main(args);
-        Main.MatchGenes matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
-        assertFalse(matchGenesCommand.isWasExecuted(), "Execute match-genes command by without arguments");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchGenesUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
-        String[] args = {"MATCH-GENES", "--input", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchGenes matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
-        assertFalse(matchGenesCommand.isWasExecuted(), "Executed the match-genes command by mistake");
-        assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-GENES, --input, src/test/resources/Genes/Diabetes.txt, -o, Matcher_givenSubcommandMatchGenesUppercaps_doesNotRecognizeTheCommand_Test/\r\n" +
-                "Did you mean: match-genes"));
-    }
-
     // ChrBp
     static final String fileChrBp = "src/test/resources/GeneticVariants/Chr_Bp/Diabetes.txt";
 
@@ -217,42 +183,6 @@ public class MainArgumentsTest {
         assertFalse(matchChrBpCommand.isWasExecuted(), "Executed the match-ChrBp command by mistake");
         assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-ChrBp, --input, " + fileChrBp + ", -o, " + testInfo.getTestMethod().get().getName() + "/\r\n" +
                 "Did you mean: match-chrbp"));
-    }
-
-    // VCF
-    static final String fileVcf = "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt";
-
-    @Test
-    void Matcher_givenSubcommandMatchVcf_setsInputTypeToVcf_Test(TestInfo testInfo) {
-        String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertEquals(InputType.VCF, Main.inputType, "Failed to set the correct input type according to the subcommand.");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchVcf_executesIt_Test(TestInfo testInfo) {
-        String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchVCF matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
-        assertTrue(matchVcfCommand.isWasExecuted(), "Failed to execute match-vcf command");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchVcfWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
-        String[] args = {"match-vcf"};
-        Main.main(args);
-        Main.MatchVCF matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
-        assertFalse(matchVcfCommand.isWasExecuted(), "Executed match-vcf command by without arguments");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchVcfUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
-        String[] args = {"MATCH-VCF", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchVCF matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
-        assertFalse(matchVcfCommand.isWasExecuted(), "Executed the match-vcf command by mistake");
-        assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-VCF, --input, " + fileVcf + ", -o, " + testInfo.getTestMethod().get().getName() + "/\r\n" +
-                "Did you mean: match-vcf"));
     }
 
     // Rsids
