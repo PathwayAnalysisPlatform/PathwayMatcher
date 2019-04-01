@@ -44,7 +44,7 @@ public class FileHandler {
         try {
             return Files.readLines(file, Charset.forName("ISO-8859-1"));
         } catch (IOException e) {
-            System.out.println("The input file: " + path + " was not found.");
+            System.err.println("The input file: " + path + " was not found.");
         }
         return null;
     }

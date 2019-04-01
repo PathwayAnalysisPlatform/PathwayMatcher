@@ -1,7 +1,5 @@
 package matcher;
 
-import com.google.common.io.Files;
-import com.sun.org.glassfish.gmbal.Description;
 import model.InputType;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -16,11 +14,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 
-import static matcher.tools.ListDiff.anyMatches;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MainArgumentsTest {
@@ -60,16 +55,24 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_exampleVerifyCommandArgumentValuesTest(TestInfo testInfo){
-        String[] args = {"match-uniprot", "--input", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher()); // This two lines are to parse and not execute
-        Main.commandLine.parse(args);
+    void Matcher_givenShortVersionArgument_printsVersion_Test() {
+        String[] args = {"-v"};
+        Main.main(args);
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
+    }
 
-//        myMain.main(args); // To parse the arguments and execute
-        Main.PathwayMatcher command = Main.commandLine.getCommand();
-        System.out.println(((Main.MatchUniprot)Main.commandLine.getSubcommands().get("match-uniprot").getCommand()).getInput_path());
-        Main.MatchUniprot matchUniprotSubcommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        System.out.println("Input path for match-uniprot: " + matchUniprotSubcommand.getInput_path());
+    @Test
+    void Matcher_givenLongVersionArgument_printsVersion_Test() {
+        String[] args = {"--version"};
+        Main.main(args);
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
+    }
+
+    @Test
+    void Matcher_givenInvalidOneDashVersionArgument_Fails_Test() {
+        String[] args = {"-version"};
+        Main.main(args);
+        assertTrue(errContent.toString().startsWith("Unknown option: -ersion"), "Should show error message failing to recognize the option.");
     }
 
     @Test
@@ -83,7 +86,7 @@ public class MainArgumentsTest {
     void Matcher_matchUniprotSubcommandRegistered_Test() {
         CommandLine commandLine = new CommandLine(new Main.PathwayMatcher());
         Map<String, CommandLine> commandMap = commandLine.getSubcommands();
-        assertTrue(commandMap.get("match-uniprot").getCommand() instanceof Main.MatchUniprot, "match-uniprot");
+        assertTrue(commandMap.get("match-uniprot").getCommand() instanceof Main.MatchUniprotCommand, "match-uniprot");
     }
 
     @Test
@@ -146,45 +149,6 @@ public class MainArgumentsTest {
         assertTrue(errContent.toString().startsWith("Unknown options: -o, /???"), "Help message was not shown.");
     }
 
-
-    // Uniprot
-    @Test
-    void Matcher_givenSubcommandMatchUniprot_setsInputTypeToUniprot_Test(TestInfo testInfo) {
-        String[] args = {"match-uniprot", "--input", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertEquals(InputType.UNIPROT, Main.inputType, "Failed to set the correct input type according to the subcommand.");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchUniprot_executesIt_Test(TestInfo testInfo){
-        String[] args = {"match-uniprot", "--input", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchUniprot matchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertTrue(matchUniprotCommand.isWasExecuted(), "Failed to execute match-uniprot command");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchUniprotWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
-        String[] args = {"match-uniprot"};
-        Main.main(args);
-        Main.MatchUniprot matchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertFalse(matchUniprotCommand.isWasExecuted(), "Execute match-uniprot command by without arguments");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchUniprotUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
-        String[] args = {"MATCH-UNIPROT", "--input", "src\\test\\resources\\Proteins\\UniProt\\AKT1.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchUniprot matchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertFalse(matchUniprotCommand.isWasExecuted(), "Executed the match-uniprot command by mistake");
-
-        Main.MatchProteoforms matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
-        assertFalse(matchProteoformsCommand.isWasExecuted(), "Executed the match-proteoforms command by mistake.");
-
-        assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-UNIPROT, --input, src\\test\\resources\\Proteins\\UniProt\\AKT1.txt, -o, Matcher_givenSubcommandMatchUniprotUppercaps_doesNotRecognizeTheCommand_Test/\r\n" +
-                "Did you mean: match-uniprot or match-proteoforms or match-vcf?"));
-    }
-
     // Gene
     @Test
     void Matcher_givenSubcommandMatchGenes_setsInputTypeToGene_Test(TestInfo testInfo) {
@@ -194,7 +158,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchGenes_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchGenes_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-genes", "--input", "src/test/resources/Genes/Diabetes.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchGenes matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
@@ -202,7 +166,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchGenesWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchGenesWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-genes"};
         Main.main(args);
         Main.MatchGenes matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
@@ -221,6 +185,7 @@ public class MainArgumentsTest {
 
     // ChrBp
     static final String fileChrBp = "src/test/resources/GeneticVariants/Chr_Bp/Diabetes.txt";
+
     @Test
     void Matcher_givenSubcommandMatchChrBp_setsInputTypeToChrBp_Test(TestInfo testInfo) {
         String[] args = {"match-chrbp", "--input", fileChrBp, "-o", testInfo.getTestMethod().get().getName() + "/"};
@@ -229,7 +194,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchChrBp_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchChrBp_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-chrbp", "--input", fileChrBp, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchChrBp matchChrBpCommand = Main.commandLine.getSubcommands().get("match-chrbp").getCommand();
@@ -237,7 +202,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchChrBpWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchChrBpWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-chrbp"};
         Main.main(args);
         Main.MatchChrBp matchChrBpCommand = Main.commandLine.getSubcommands().get("match-chrbp").getCommand();
@@ -256,6 +221,7 @@ public class MainArgumentsTest {
 
     // VCF
     static final String fileVcf = "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt";
+
     @Test
     void Matcher_givenSubcommandMatchVcf_setsInputTypeToVcf_Test(TestInfo testInfo) {
         String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
@@ -264,7 +230,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchVcf_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchVcf_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchVCF matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
@@ -272,7 +238,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchVcfWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchVcfWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-vcf"};
         Main.main(args);
         Main.MatchVCF matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
@@ -291,6 +257,7 @@ public class MainArgumentsTest {
 
     // Rsids
     static final String fileRsids = "src/test/resources/GeneticVariants/RsId/SingleSnp.txt";
+
     @Test
     void Matcher_givenSubcommandMatchRsids_setsInputTypeToRsid_Test(TestInfo testInfo) {
         String[] args = {"match-rsids", "--input", fileRsids, "-o", testInfo.getTestMethod().get().getName() + "/"};
@@ -299,7 +266,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchRsids_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchRsids_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-rsids", "--input", fileRsids, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchRsIds matchRsidsCommand = Main.commandLine.getSubcommands().get("match-rsids").getCommand();
@@ -307,7 +274,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchRsidsWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchRsidsWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-rsids"};
         Main.main(args);
         Main.MatchRsIds matchRsidsCommand = Main.commandLine.getSubcommands().get("match-rsids").getCommand();
@@ -326,6 +293,7 @@ public class MainArgumentsTest {
 
     // Proteoforms
     static final String fileProteoforms = "src/test/resources/Proteoforms/Simple/SingleProteoform.txt";
+
     @Test
     void Matcher_givenSubcommandMatchProteoforms_setsInputTypeToProteoform_Test(TestInfo testInfo) {
         String[] args = {"match-proteoforms", "--input", fileProteoforms, "-o", testInfo.getTestMethod().get().getName() + "/", "-m", "STRICT"};
@@ -334,7 +302,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchProteoforms_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchProteoforms_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-proteoforms", "--input", fileProteoforms, "-o", testInfo.getTestMethod().get().getName() + "/", "-m", "STRICT"};
         Main.main(args);
         Main.MatchProteoforms matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
@@ -342,7 +310,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchProteoformsWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchProteoformsWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-proteoforms"};
         Main.main(args);
         Main.MatchProteoforms matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
@@ -361,6 +329,7 @@ public class MainArgumentsTest {
 
     // Ensembl
     static final String fileEnsembl = "src/test/resources/Proteins/Ensembl/Diabetes.txt";
+
     @Test
     void Matcher_givenSubcommandMatchEnsembl_setsInputTypeToEnsembl_Test(TestInfo testInfo) {
         String[] args = {"match-ensembl", "--input", fileEnsembl, "-o", testInfo.getTestMethod().get().getName() + "/"};
@@ -369,7 +338,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchEnsembl_executesIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchEnsembl_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-ensembl", "--input", fileEnsembl, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchEnsembl matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
@@ -377,7 +346,7 @@ public class MainArgumentsTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchEnsemblWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo){
+    void Matcher_givenSubcommandMatchEnsemblWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-ensembl"};
         Main.main(args);
         Main.MatchEnsembl matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
@@ -394,164 +363,62 @@ public class MainArgumentsTest {
                 "Did you mean: match-ensembl"));
     }
 
+    // Peptides
+    static final String filePeptides = "src/test/resources/Peptides/singlePeptide.txt";
+    static final String fileFasta = "src/test/resources/Peptides/single_Protein_Fasta.fasta";
+
     @Test
-    void Matcher_receivesInputTypePeptideUpperCase_setsInputTypePeptide_Test(TestInfo testInfo) {
-        String[] args = {"-t", "proteoform", "-i", "src/test/resources/Proteoforms/Simple/SingleProteoform.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+    void Matcher_givenSubcommandMatchPeptides_setsInputTypeToPeptide_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides", "--input", filePeptides, "-o", testInfo.getTestMethod().get().getName() + "/", "--fasta", fileFasta};
         Main.main(args);
-        assertEquals(Main.inputType, InputType.PROTEOFORM, "Failed to read the correct input type PROTEOFORM");
+        assertEquals(InputType.PEPTIDE, Main.inputType, "Failed to set the correct input type according to the subcommand.");
     }
 
     @Test
-    void Matcher_receivesInputTypeModifiedPeptideLowerCase_setsInputTypeModifiedPeptide_Test(TestInfo testInfo) {
-        String[] args = {"-t", "modifiedpeptide", "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+    void Matcher_givenSubcommandMatchPeptides_executesIt_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides", "--input", filePeptides, "-o", testInfo.getTestMethod().get().getName() + "/", "-f", fileFasta};
         Main.main(args);
-        assertEquals(Main.inputType, InputType.MODIFIEDPEPTIDE, "Failed to read the correct input type MODIFIEDPEPTIDE");
+        Main.MatchPeptides matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
+        assertTrue(matchPeptidesCommand.isWasExecuted(), "Failed to execute match-peptides command");
     }
 
     @Test
-    void Matcher_withInputTypePeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo) {
-        String[] args = {"-t", "peptide", "-i", "src/test/resources/Peptides/singlePeptide2.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
+    void Matcher_givenSubcommandMatchPeptidesWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides"};
+        Main.main(args);
+        Main.MatchPeptides matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
+        assertFalse(matchPeptidesCommand.isWasExecuted(), "Executed match-peptides command by without arguments");
+    }
+
+    @Test
+    void Matcher_givenSubcommandMatchPeptidesUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
+        String[] args = {"MATCH-PEPTIDES", "--input", filePeptides, "-o", testInfo.getTestMethod().get().getName() + "/", "-f", fileFasta};
+        Main.main(args);
+        Main.MatchPeptides matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
+        assertFalse(matchPeptidesCommand.isWasExecuted(), "Executed the match-peptides command by mistake");
+        assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-PEPTIDES, --input, " + filePeptides + ", -o, " + testInfo.getTestMethod().get().getName()));
+    }
+
+    @Test
+    void Matcher_givenSubcommandMatchPeptidesAndShortInputArgument_readsInputPath_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides", "-i", filePeptides, "-o", testInfo.getTestMethod().get().getName() + "/", "--fasta", fileFasta};
+        Main.commandLine = new CommandLine(new Main.PathwayMatcher()); // This two lines are to parse and not execute
+        Main.commandLine.parse(args);
+        Main.MatchPeptides matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
+        assertEquals(filePeptides, matchPeptidesCommand.getInput_path(), "Did not set the input path correctly.");
+    }
+
+    @Test
+    void Matcher_givenSubcommandMatchPeptidesAndMissingInput_requireInput_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides", "-o", testInfo.getTestMethod().get().getName() + "/", "--fasta", fileFasta};
+        Main.main(args);
+        assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request input file.");
+    }
+
+    @Test
+    void Matcher_givenSubcommandMatchPeptidesAndMissingFasta_requireFasta_Test(TestInfo testInfo) {
+        String[] args = {"match-peptides", "-i", filePeptides, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         assertTrue(errContent.toString().startsWith("Missing required option '--fasta=<fasta_path>'"), "Must request fasta file.");
     }
-
-    @Test
-    void Matcher_withInputTypeModifiedPeptideAndMissingRequiredArgumentFasta_requireFasta_Test(TestInfo testInfo) {
-        String[] args = {"-t", "modifiedpeptide", "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required option '--fasta=<fasta_path>'"), "Must request fasta file.");
-    }
-
-    @Test
-    void Matcher_missingRequiredOption_i_requiresOption_Test(TestInfo testInfo) {
-        String[] args = {"-t", "uniprot", "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request the input type.");
-    }
-
-    @Test
-    void Matcher_inputTypeArgumentBroken_requiresInputType_Test() {
-        String[] args = {
-                "-", "t", "uniprot",
-                "-i", "blabla.csv",
-                "-o", "output/"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required option '--inputType=<inputType>'"), "Must request the input type.");
-    }
-
-    @Test
-    void Matcher_givenInvalidInputType_Fails_Test() {
-        String[] args = {
-                "-t", "blabla",
-                "-i", "src/test/resources/Proteoforms/multipleLinesWithIsoforms.txt"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Invalid value for option '--inputType': expected one of"), "Must request a valid input type.");
-    }
-
-    @Test
-    void Matcher_whenInputFileDoesNotExist_messageInputFileNotFound_Test() {
-        String args = "-t uniprot -i blabla.csv -o output/";
-        Main.main(args.split(" "));
-        assertTrue(outContent.toString().startsWith("The input file: blabla.csv was not found."), "Error reading input file message not shown.");
-    }
-
-    @Test
-    void Matcher_missingArgumentForOptionInputType_requestsArgumentValue_Test() {
-        String[] args = {"-t", "rsidList", "-i"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Invalid value for option '--inputType':"), "Must request the input type positional parameter.");
-    }
-
-    @Test
-    @Description("Should fail by taking as '-i' as positional argument of '-o', then failing to find the '-i' argument.")
-    void Matcher_missingArgumentForOptionOutput_requestsArgumentInputTypeByMistake_Test() {
-        String[] args = {"-t", "rsid", "-o", "-i", "src/test/resources/Proteins/UniProt/uniprot-all.list"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required option '--input=<input_path>'"), "Must request the input type.");
-    }
-
-    @Test
-    void Matcher_missingArgumentForOptionRange_requests_Test() {
-        String[] args = {"-t", "rsid", "-r"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Missing required parameter for option '--range' (<range>)"), "Must request the positional argument for the range parameter.");
-    }
-
-    @Test
-    void Matcher_givenLowerCapsMatchingType_Works_Test(TestInfo testInfo) throws IOException {
-        String[] args = {
-                "-t", "proteoform",
-                "-i", "src/test/resources/Proteoforms/Valid/multipleLinesWithIsoforms.txt",
-                "-o", testInfo.getTestMethod().get().getName() + "/",
-                "-m", "superset"};
-        Main.main(args);
-
-        List<String> output = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-
-        assertTrue(anyMatches("P08235-1;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
-        assertTrue(anyMatches("P08235-2;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
-        assertTrue(anyMatches("P08235-3;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
-        assertTrue(anyMatches("P08235-4;\tP08235\tR-HSA-376419\t.+\tR-HSA-212436", output));
-
-        assertTrue(anyMatches("P02545-2;00046:395\tP02545\tR-HSA-5244669\t.+\tR-HSA-1640170", output));
-        assertEquals(121, output.size());
-    }
-
-    @Test
-    void Matcher_givenUpperCaseMatchingType_Works_Test(TestInfo testInfo) throws IOException {
-        String[] args = {
-                "match-proteoforms",
-                "-i", "src/test/resources/Proteoforms/Valid/multipleLinesWithIsoforms.txt",
-                "-o", testInfo.getTestMethod().get().getName() + "/",
-                "-m", "SUPERSET"};
-        Main.main(args);
-        List<String> output = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(121, output.size());
-    }
-
-    @Test
-    void Matcher_givenInvalidMatchingType_Fails_Test() {
-        String[] args = {
-                "-t", "proteoform",
-                "-i", "src/test/resources/Proteoforms/multipleLinesWithIsoforms.txt",
-                "-m", "blabla"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Invalid value for option '--matchType': expected one of"), "Must request a valid matching type.");
-    }
-
-    @Test
-    void couldNotWriteToOutputTest() {
-        exit.expectSystemExitWithStatus(3);
-        String[] args = {
-                "-t", "uniprot",
-                "-i", "src/test/resources/Proteins/Valid/singleProtein.txt",
-                "-o", "/???",
-                "-T",
-                "--graph"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("There was an error creating/writing to the output files."), "Must show error of output files.");
-    }
-
-    @Test
-    void Matcher_givenShortVersionArgument_printsVersion_Test() {
-        String[] args = {"-v"};
-        Main.main(args);
-        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
-    }
-
-    @Test
-    void Matcher_givenLongVersionArgument_printsVersion_Test() {
-        String[] args = {"--version"};
-        Main.main(args);
-        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
-    }
-
-    @Test
-    void Matcher_givenInvalidOneDashVersionArgument_Fails_Test() {
-        String[] args = {"-version"};
-        Main.main(args);
-        assertTrue(errContent.toString().startsWith("Unknown option: -ersion"), "Should show error message failing to recognize the option.");
-    }
-    // TODO: Test show default values of parameters
-
 }
