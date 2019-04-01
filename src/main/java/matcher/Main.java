@@ -38,10 +38,10 @@ public class Main {
             version = "PathwayMatcher 1.9.0",
             subcommands = {
                     MatchProteoforms.class,
-                    MatchGenes.class,
+                    MatchGenesCommand.class,
                     MatchUniprotCommand.class,
                     MatchEnsemblCommand.class,
-                    MatchVCF.class,
+                    MatchVCFCommand.class,
                     MatchChrBp.class,
                     MatchRsIds.class,
                     MatchPeptides.class,
@@ -66,32 +66,32 @@ public class Main {
 
         @Option(names = {"-i", "--input"}, required = true, description = "Input file with path")
         String input_path;
-        public String getInput_path() {
+        String getInput_path() {
             return input_path;
         }
 
         @Option(names = {"-o", "--output"}, description = "Path to directory to set the output files: search.csv, analysis.csv and networks files.")
         String output_path = "";
 
-        public String getOutput_path() {
+        String getOutput_path() {
             return output_path;
         }
 
         @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
         boolean showTopLevelPathways = false;
-        public boolean isShowTopLevelPathways() {
+        boolean isShowTopLevelPathways() {
             return showTopLevelPathways;
         }
 
         @Option(names = {"-g", "--graph"}, description = "Create default connection graph according to input type.")
         boolean doDefaultGraph = false;
-        public boolean isDoDefaultGraph() {
+        boolean isDoDefaultGraph() {
             return doDefaultGraph;
         }
 
         @Option(names = {"-gg", "--graphGene"}, description = "Create gene connection graph")
         boolean doGeneGraph = false;
-        public boolean isDoGeneGraph() {
+        boolean isDoGeneGraph() {
             return doGeneGraph;
         }
 
@@ -183,7 +183,7 @@ public class Main {
     }
 
     @Command(name = "match-genes", description = "Match a list of gene names")
-    static class MatchGenes extends MatchSubcommand {
+    static class MatchGenesCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;
@@ -258,7 +258,7 @@ public class Main {
     }
 
     @Command(name = "match-vcf", description = "Match a list of genetic variants in VCF format")
-    static class MatchVCF extends MatchSubcommand {
+    static class MatchVCFCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;

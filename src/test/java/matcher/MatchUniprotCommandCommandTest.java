@@ -188,21 +188,19 @@ class MatchUniprotCommandCommandTest {
     }
 
     @Test
-    void DoDefaultGraphShortArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-uniprot", "-i", fileUniprot, "-g"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphShortArgument_setsDoUniprotGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-uniprot", "-i", fileUniprot, "-g", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchUniprotCommand MatchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertTrue(MatchUniprotCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(MatchUniprotCommand.isDoUniprotGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test
-    void DoDefaultGraphLongArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-uniprot", "-i", fileUniprot, "--graph"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphLongArgument_setsDoUniprotGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-uniprot", "-i", fileUniprot, "--graph", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchUniprotCommand MatchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertTrue(MatchUniprotCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(MatchUniprotCommand.isDoUniprotGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test

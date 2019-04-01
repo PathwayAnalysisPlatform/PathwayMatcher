@@ -186,21 +186,19 @@ class MatchEnsemblCommandTest {
     }
 
     @Test
-    void DoDefaultGraphShortArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-ensembl", "-i", fileEnsembl, "-g"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphShortArgument_setsDoUniprotGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-ensembl", "-i", fileEnsembl, "-g", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchEnsemblCommand MatchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertTrue(MatchEnsemblCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(MatchEnsemblCommand.isDoUniprotGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test
-    void DoDefaultGraphLongArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-ensembl", "-i", fileEnsembl, "--graph"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphLongArgument_setsDoUniprotGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-ensembl", "-i", fileEnsembl, "--graph", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchEnsemblCommand MatchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertTrue(MatchEnsemblCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(MatchEnsemblCommand.isDoUniprotGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test

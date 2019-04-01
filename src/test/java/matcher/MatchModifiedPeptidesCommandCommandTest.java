@@ -187,21 +187,19 @@ class MatchModifiedPeptidesCommandCommandTest {
     }
 
     @Test
-    void DoDefaultGraphShortArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-modified-peptides", "-i", fileModifiedPeptides, "-f", fileFasta, "-g"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphShortArgument_setsDoProteoformGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-modified-peptides", "-i", fileModifiedPeptides, "-f", fileFasta, "-g", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchModifiedPeptidesCommand matchModifiedPeptidesCommand = Main.commandLine.getSubcommands().get("match-modified-peptides").getCommand();
-        assertTrue(matchModifiedPeptidesCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(matchModifiedPeptidesCommand.isDoProteoformGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test
-    void DoDefaultGraphLongArgument_setsDoDefaultGraph_Test() {
-        String[] args = {"match-modified-peptides", "-i", fileModifiedPeptides, "-f", fileFasta, "--graph"};
-        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        Main.commandLine.parse(args);
+    void DoDefaultGraphLongArgument_setsDoProteoformGraph_Test(TestInfo testInfo) {
+        String[] args = {"match-modified-peptides", "-i", fileModifiedPeptides, "-f", fileFasta, "--graph", "-o", testInfo.getTestMethod().get().getName() + "/"};
+        Main.main(args);
         Main.MatchModifiedPeptidesCommand matchModifiedPeptidesCommand = Main.commandLine.getSubcommands().get("match-modified-peptides").getCommand();
-        assertTrue(matchModifiedPeptidesCommand.isDoDefaultGraph(), "It didn't set the flag to do the default graph.");
+        assertTrue(matchModifiedPeptidesCommand.isDoProteoformGraph(), "It didn't set the flag to do the default graph.");
     }
 
     @Test
