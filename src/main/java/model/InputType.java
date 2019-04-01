@@ -29,5 +29,5 @@ public enum InputType {
     }
 
     @Override
-    public String toString() { return name().toLowerCase(); }
+    public String toString() { return name(); }
 }

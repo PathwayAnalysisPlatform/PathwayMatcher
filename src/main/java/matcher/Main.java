@@ -35,17 +35,17 @@ public class Main {
             header = "@|green %n PathwayMatcher 1.9.0 %n |@",
             description = "Matches the input to reactions and pathways",
             footer = {"@|cyan %n If you like the project, star it on github. |@", ""},
-            version = "Main 1.9.0",
+            version = "PathwayMatcher 1.9.0",
             subcommands = {
                     MatchProteoforms.class,
                     MatchGenes.class,
-                    MatchUniprot.class,
+                    MatchUniprotCommand.class,
                     MatchEnsembl.class,
                     MatchVCF.class,
                     MatchChrBp.class,
                     MatchRsIds.class,
                     MatchPeptides.class,
-                    MatchModifiedPeptides.class,
+                    MatchModifiedPeptidesCommand.class,
                     CommandLine.HelpCommand.class
             }
     )
@@ -66,13 +66,16 @@ public class Main {
 
         @Option(names = {"-i", "--input"}, required = true, description = "Input file with path")
         String input_path;
-
         public String getInput_path() {
             return input_path;
         }
 
-        @Option(names = {"-o", "-output"}, description = "Path to directory to set the output files: search.csv, analysis.csv and networks files.")
+        @Option(names = {"-o", "--output"}, description = "Path to directory to set the output files: search.csv, analysis.csv and networks files.")
         String output_path = "";
+
+        public String getOutput_path() {
+            return output_path;
+        }
 
         @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
         boolean showTopLevelPathways = false;
@@ -88,19 +91,32 @@ public class Main {
 
         @Option(names = {"-gg", "--graphGene"}, description = "Create gene connection graph")
         boolean doGeneGraph = false;
+        public boolean isDoGeneGraph() {
+            return doGeneGraph;
+        }
 
         @Option(names = {"-gp", "--graphProteoform"}, description = "Create proteoform connection graph")
-        boolean doUniprotGraph = false;
+        boolean doProteoformGraph = false;
+        boolean isDoProteoformGraph() {
+            return doProteoformGraph;
+        }
 
         @Option(names = {"-gu", "--graphUniprot"}, description = "Create protein connection graph")
-        boolean doProteoformGraph = false;
+        boolean doUniprotGraph = false;
+        boolean isDoUniprotGraph() {
+            return doUniprotGraph;
+        }
 
         boolean wasExecuted = false;
-        public boolean isWasExecuted() {
+        boolean isWasExecuted() {
             return wasExecuted;
         }
 
         int populationSize = -1;
+        int getPopulationSize() {
+            return populationSize;
+        }
+
         List<String> input;
         final String separator = "\t";    // Column separator
         Mapping mapping;
@@ -192,7 +208,7 @@ public class Main {
     }
 
     @Command(name = "match-uniprot", description = "Match a list of UniProt protein accessions")
-    static class MatchUniprot extends MatchSubcommand {
+    static class MatchUniprotCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;
@@ -317,7 +333,7 @@ public class Main {
     }
 
     static abstract class MatchSubcommandWithModifications extends MatchSubcommand {
-        @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}", required = true)
+        @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
         MatchType matchType = MatchType.SUBSET;
 
         @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
@@ -352,6 +368,9 @@ public class Main {
     static abstract class MatchSubcommandPeptides extends MatchSubcommand {
         @Option(names = {"-f", "--fasta"}, description = "Path and name of the fasta file containing the Proteins where to find the peptides.", required = true)
         String fasta_path = "";
+        public String getFasta_path() {
+            return fasta_path;
+        }
 
         protected boolean isValidFasta(String value) throws CommandLine.ParameterException {
 
@@ -360,7 +379,7 @@ public class Main {
             } else {
                 File f = new File(value);
                 if (!f.exists() || f.isDirectory()) {
-                    System.out.println(Error.COULD_NOT_READ_FASTA_FILE.getMessage());
+                    System.err.println(Error.COULD_NOT_READ_FASTA_FILE.getMessage());
                     return false;
                 }
             }
@@ -371,12 +390,10 @@ public class Main {
     @Command(name = "match-peptides", description = "Match a list of peptides")
     static class MatchPeptides extends MatchSubcommandPeptides {
 
-        @Option(names = {"-f", "--fasta"}, description = "Path and name of the fasta file containing the Proteins where to find the peptides.", required = true)
-        String fasta_path = "";
-
         @Override
         public void run() {
             inputType = InputType.PEPTIDE;
+            wasExecuted = true;
             if (isValidFasta(fasta_path)) {
                 match();
             }
@@ -398,18 +415,25 @@ public class Main {
         }
     }
 
-    @Command(name = "match-peptides-modified", description = "Match a list of peptides with post translational modifications")
-    static class MatchModifiedPeptides extends MatchSubcommandPeptides {
+    @Command(name = "match-modified-peptides", description = "Match a list of peptides with post translational modifications")
+    static class MatchModifiedPeptidesCommand extends MatchSubcommandPeptides {
 
-        @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}", required = true)
+        @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
         MatchType matchType = MatchType.SUBSET;
+        public MatchType getMatchType() {
+            return matchType;
+        }
 
         @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
         Long range = 0L;
+        public Long getRange() {
+            return range;
+        }
 
         @Override
         public void run() {
             inputType = InputType.MODIFIEDPEPTIDE;
+            wasExecuted = true;
             if (isValidFasta(fasta_path)) {
                 match();
             }
