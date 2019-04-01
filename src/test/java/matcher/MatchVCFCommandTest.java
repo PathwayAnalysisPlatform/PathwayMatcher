@@ -47,14 +47,14 @@ class MatchVCFCommandTest {
     static final String fileVcf = "src/test/resources/GeneticVariants/VCF/CysticFibrosis.txt";
 
     @Test
-    void Matcher_givenSubcommandMatchVcf_setsInputTypeToVcf_Test(TestInfo testInfo) {
+    void givenSubcommandMatchVcf_setsInputTypeToVcf_Test(TestInfo testInfo) {
         String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         assertEquals(InputType.VCF, Main.inputType, "Failed to set the correct input type according to the subcommand.");
     }
 
     @Test
-    void Matcher_givenSubcommandMatchVcf_executesIt_Test(TestInfo testInfo) {
+    void givenSubcommandMatchVcf_executesIt_Test(TestInfo testInfo) {
         String[] args = {"match-vcf", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchVCFCommand matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
@@ -62,7 +62,7 @@ class MatchVCFCommandTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchVcfWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
+    void givenSubcommandMatchVcfWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
         String[] args = {"match-vcf"};
         Main.main(args);
         Main.MatchVCFCommand matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
@@ -70,7 +70,7 @@ class MatchVCFCommandTest {
     }
 
     @Test
-    void Matcher_givenSubcommandMatchVcfUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
+    void givenSubcommandMatchVcfUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
         String[] args = {"MATCH-VCF", "--input", fileVcf, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchVCFCommand matchVcfCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
