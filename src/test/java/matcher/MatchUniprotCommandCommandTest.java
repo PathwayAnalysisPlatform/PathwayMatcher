@@ -2,8 +2,6 @@ package matcher;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import model.InputType;
-import model.MatchType;
-import model.Proteoform;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,7 +76,7 @@ class MatchUniprotCommandCommandTest {
         Main.MatchUniprotCommand matchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
         assertFalse(matchUniprotCommand.isWasExecuted(), "Executed the match-uniprot command by mistake");
 
-        Main.MatchProteoforms matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
+        Main.MatchProteoformsCommand matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
         assertFalse(matchProteoformsCommand.isWasExecuted(), "Executed the match-proteoforms command by mistake.");
 
         assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-UNIPROT, --input, " + fileUniprot + ", -o, " + testInfo.getTestMethod().get().getName() + "/\r\n" +
