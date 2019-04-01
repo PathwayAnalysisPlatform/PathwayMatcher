@@ -76,7 +76,7 @@ class MatchEnsemblCommandTest {
         Main.MatchEnsemblCommand matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
         assertFalse(matchEnsemblCommand.isWasExecuted(), "Executed the match-ensembl command by mistake");
 
-        Main.MatchProteoforms matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
+        Main.MatchProteoformsCommand matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
         assertFalse(matchProteoformsCommand.isWasExecuted(), "Executed the match-proteoforms command by mistake.");
 
         assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-ENSEMBL, --input, " + fileEnsembl + ", -o, " + testInfo.getTestMethod().get().getName() + "/\r\n" +

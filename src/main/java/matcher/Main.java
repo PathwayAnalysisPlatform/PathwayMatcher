@@ -37,14 +37,14 @@ public class Main {
             footer = {"@|cyan %n If you like the project, star it on github. |@", ""},
             version = "PathwayMatcher 1.9.0",
             subcommands = {
-                    MatchProteoforms.class,
+                    MatchProteoformsCommand.class,
                     MatchGenesCommand.class,
                     MatchUniprotCommand.class,
                     MatchEnsemblCommand.class,
                     MatchVCFCommand.class,
                     MatchChrBpCommand.class,
                     MatchRsIdsCommand.class,
-                    MatchPeptides.class,
+                    MatchPeptidesCommand.class,
                     MatchModifiedPeptidesCommand.class,
                     CommandLine.HelpCommand.class
             }
@@ -85,9 +85,6 @@ public class Main {
 
         @Option(names = {"-g", "--graph"}, description = "Create default connection graph according to input type.")
         boolean doDefaultGraph = false;
-        boolean isDoDefaultGraph() {
-            return doDefaultGraph;
-        }
 
         @Option(names = {"-gg", "--graphGene"}, description = "Create gene connection graph")
         boolean doGeneGraph = false;
@@ -335,13 +332,19 @@ public class Main {
     static abstract class MatchSubcommandWithModifications extends MatchSubcommand {
         @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
         MatchType matchType = MatchType.SUBSET;
+        public MatchType getMatchType() {
+            return matchType;
+        }
 
         @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
         Long range = 0L;
+        public Long getRange() {
+            return range;
+        }
     }
 
     @Command(name = "match-proteoforms", description = "Match a list of proteoforms to reactions and pathways")
-    static class MatchProteoforms extends MatchSubcommandWithModifications {
+    static class MatchProteoformsCommand extends MatchSubcommandWithModifications {
         @Override
         public void run() {
             wasExecuted = true;
@@ -388,7 +391,7 @@ public class Main {
     }
 
     @Command(name = "match-peptides", description = "Match a list of peptides")
-    static class MatchPeptides extends MatchSubcommandPeptides {
+    static class MatchPeptidesCommand extends MatchSubcommandPeptides {
 
         @Override
         public void run() {
