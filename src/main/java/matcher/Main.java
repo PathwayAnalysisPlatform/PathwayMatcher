@@ -42,8 +42,8 @@ public class Main {
                     MatchUniprotCommand.class,
                     MatchEnsemblCommand.class,
                     MatchVCFCommand.class,
-                    MatchChrBp.class,
-                    MatchRsIds.class,
+                    MatchChrBpCommand.class,
+                    MatchRsIdsCommand.class,
                     MatchPeptides.class,
                     MatchModifiedPeptidesCommand.class,
                     CommandLine.HelpCommand.class
@@ -283,7 +283,7 @@ public class Main {
     }
 
     @Command(name = "match-chrbp", description = "Match a list of genetic variants as chromosome and base pairs")
-    static class MatchChrBp extends MatchSubcommand {
+    static class MatchChrBpCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;
@@ -308,7 +308,7 @@ public class Main {
     }
 
     @Command(name = "match-rsids", description = "Match a list of genetic variants as RsIds")
-    static class MatchRsIds extends MatchSubcommand {
+    static class MatchRsIdsCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;
