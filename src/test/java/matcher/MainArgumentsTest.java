@@ -327,43 +327,7 @@ public class MainArgumentsTest {
                 "Did you mean: match-proteoforms"));
     }
 
-    // Ensembl
-    static final String fileEnsembl = "src/test/resources/Proteins/Ensembl/Diabetes.txt";
-
-    @Test
-    void Matcher_givenSubcommandMatchEnsembl_setsInputTypeToEnsembl_Test(TestInfo testInfo) {
-        String[] args = {"match-ensembl", "--input", fileEnsembl, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        assertEquals(InputType.ENSEMBL, Main.inputType, "Failed to set the correct input type according to the subcommand.");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchEnsembl_executesIt_Test(TestInfo testInfo) {
-        String[] args = {"match-ensembl", "--input", fileEnsembl, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchEnsembl matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertTrue(matchEnsemblCommand.isWasExecuted(), "Failed to execute match-ensembl command");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchEnsemblWithoutArguments_doesNotExecuteIt_Test(TestInfo testInfo) {
-        String[] args = {"match-ensembl"};
-        Main.main(args);
-        Main.MatchEnsembl matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertFalse(matchEnsemblCommand.isWasExecuted(), "Executed match-ensembl command by without arguments");
-    }
-
-    @Test
-    void Matcher_givenSubcommandMatchEnsemblUppercaps_doesNotRecognizeTheCommand_Test(TestInfo testInfo) {
-        String[] args = {"MATCH-ENSEMBL", "--input", fileEnsembl, "-o", testInfo.getTestMethod().get().getName() + "/"};
-        Main.main(args);
-        Main.MatchEnsembl matchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertFalse(matchEnsemblCommand.isWasExecuted(), "Executed the match-ensembl command by mistake");
-        assertTrue(errContent.toString().startsWith("Unmatched arguments: MATCH-ENSEMBL, --input, " + fileEnsembl + ", -o, " + testInfo.getTestMethod().get().getName() + "/\r\n" +
-                "Did you mean: match-ensembl"));
-    }
-
-    // Peptides
+       // Peptides
     static final String filePeptides = "src/test/resources/Peptides/singlePeptide.txt";
     static final String fileFasta = "src/test/resources/Peptides/single_Protein_Fasta.fasta";
 

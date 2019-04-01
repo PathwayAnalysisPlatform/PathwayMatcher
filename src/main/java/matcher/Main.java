@@ -40,7 +40,7 @@ public class Main {
                     MatchProteoforms.class,
                     MatchGenes.class,
                     MatchUniprotCommand.class,
-                    MatchEnsembl.class,
+                    MatchEnsemblCommand.class,
                     MatchVCF.class,
                     MatchChrBp.class,
                     MatchRsIds.class,
@@ -233,7 +233,7 @@ public class Main {
     }
 
     @Command(name = "match-ensembl", description = "Match a list of Ensembl protein identifiers")
-    static class MatchEnsembl extends MatchSubcommand {
+    static class MatchEnsemblCommand extends MatchSubcommand {
         @Override
         public void run() {
             wasExecuted = true;
