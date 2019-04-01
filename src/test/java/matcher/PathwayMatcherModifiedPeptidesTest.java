@@ -1,8 +1,11 @@
 package matcher;
 
 import com.google.common.io.Files;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,20 +20,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PathwayMatcherModifiedPeptidesTest {
 
-    static String searchFile = "output/search.tsv";
-    static String analysisFile = "output/analysis.tsv";
+    static final String searchFile = "search.tsv";
+    static final String analysisFile = "analysis.tsv";
     static String fastaFile = "src/main/resources/uniprot-all.fasta";
 
+    @AfterEach
+    void deleteOutput(TestInfo testInfo) {
+        // Delete the output directory if exists:
+        try {
+            File directory = new File(testInfo.getTestMethod().get().getName() + "/");
+            FileUtils.deleteDirectory(directory);
+            Assertions.assertFalse(directory.exists());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Test
-    public void insulinTest() throws IOException {
-        String[] args = {"-t", "modifiedpeptide",
+    public void insulinTest(TestInfo testInfo) throws IOException {
+        String[] args = {"match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Insulin.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile};
         Main.main(args);
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertTrue(anyContains("R-HSA-9006934", search));
         assertTrue(anyMatches("P01308", search));
         assertTrue(anyMatches("P01308;00798:95,00798:96,00798:100,00798:109\tP01308", search));
@@ -38,77 +53,77 @@ public class PathwayMatcherModifiedPeptidesTest {
 
         assertEquals(102, search.size());
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
     }
 
     @Test
-    public void insulinTlpTest() throws IOException {
-        String[] args = {"-t", "modifiedpeptide",
+    public void insulinTlpTest(TestInfo testInfo) throws IOException {
+        String[] args = {"match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Insulin.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertTrue(anyContains("R-HSA-9006934", search));
         assertEquals(112, search.size());
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
     }
 
     @Test
-    public void insulinSupersetMatchingTest() throws IOException {
-        String[] args = {"-t", "modifiedpeptide",
+    public void insulinSupersetMatchingTest(TestInfo testInfo) throws IOException {
+        String[] args = {"match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Insulin.txt",
-                "-o", "output/modifiedPeptides/insulinSupersetMatchingTest/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-m", "superset",
                 "-f", fastaFile,
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
         //Check the output file
-        List<String> search = Files.readLines(new File("output/modifiedPeptides/insulinSupersetMatchingTest/search.tsv"), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(118, search.size());
         assertTrue(anyContains("P01308", search));
         assertTrue(anyContains("P01308;00798:95,00798:96,00798:100,00798:109", search));
         assertFalse(anyContains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109", search));
 
-        List<String> analysis = Files.readLines(new File("output/modifiedPeptides/insulinSupersetMatchingTest/analysis.tsv"), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(15, analysis.size());
     }
 
     @Test
-    public void insulinWithMODTest() throws IOException {
+    public void insulinWithMODTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/InsulinWithMOD.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(112, search.size());
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
     }
 
     @Test
-    public void set1Test() throws IOException {
+    public void set1Test(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Set1.csv",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
 
         Assertions.assertFalse(anyContains("R-HSA-977225", search));
 
@@ -119,81 +134,81 @@ public class PathwayMatcherModifiedPeptidesTest {
         assertTrue(anyMatches("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109\tP01308\tR-HSA-6809003\t.+\tR-HSA-199991", search));
         assertEquals(177, search.size());
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(22, analysis.size());
     }
 
     @Test
-    public void set2SubsetTest() throws IOException {
+    public void set2SubsetTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Set2.csv",
-                "-o", "output/modifiedPeptides/set2SubsetTest/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
-        List<String> search = Files.readLines(new File("output/modifiedPeptides/set2SubsetTest/search.tsv"), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(1, search.size());
 
-        List<String> analysis = Files.readLines(new File("output/modifiedPeptides/set2SubsetTest/analysis.tsv"), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(1, analysis.size());
     }
 
     @Test
-    public void set2SupersetTest() throws IOException {
+    public void set2SupersetTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/Set2.csv",
-                "-o", "output/modifiedPeptides/set2SupersetTest/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
                 "-m", "superset",
-                "-tlp"};
+                "-T"};
         Main.main(args);
 
-        List<String> search = Files.readLines(new File("output/modifiedPeptides/set2SupersetTest/search.tsv"), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(66, search.size());
 
-        List<String> analysis = Files.readLines(new File("output/modifiedPeptides/set2SupersetTest/analysis.tsv"), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(15, analysis.size());
     }
 
     @Test
-    public void singleProteoformSearchSupersetTest() throws IOException {
+    public void singleProteoformSearchSupersetTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp",
+                "-T",
                 "-m", "superset"};
         Main.main(args);
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(115, search.size());
         search.remove(0);
         for (String line : search) {
             assertTrue(line.startsWith("O43561-2;\tO43561") || line.startsWith("O43561-2;00048:127,00048:132,00048:171,00048:191,00048:226\tO43561"));
         }
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(12, analysis.size());
     }
 
     @Test
-    public void singleProteoformSearchStrictTest() throws IOException {
+    public void singleProteoformSearchStrictTest(TestInfo testInfo) throws IOException {
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/SingleModifiedPeptide.txt",
-                "-o", "output/",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
                 "-f", fastaFile,
-                "-tlp",
+                "-T",
                 "-m", "strict"};
         Main.main(args);
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(108, search.size());
         search.remove(0);
         for (String line : search) {
@@ -201,21 +216,21 @@ public class PathwayMatcherModifiedPeptidesTest {
             assertTrue(line.startsWith("O43561-2;00048:127,00048:132,00048:171,00048:191,00048:226\tO43561"));
         }
 
-        List<String> analysis = Files.readLines(new File(analysisFile), Charset.defaultCharset());
+        List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(12, analysis.size());
     }
 
     /*Tests that Main finds all possible combinations of PTMS when you put multiple peptides with 1+ ptms each. */
 
     @Test
-    public void combinationsTest1() throws IOException {
+    public void combinationsTest1(TestInfo testInfo) throws IOException {
 
         // It has the default matching type (SUBSET) to allow all combinations
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/O00141.txt",
-                "-o", "output/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-f", fastaFile};
         Main.main(args);
 
@@ -223,7 +238,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         // And another line with O00141;00046:422,00047:256
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertEquals(29, search.size());
 
         boolean hasProteoform0 = false; //O00141
@@ -235,7 +250,7 @@ public class PathwayMatcherModifiedPeptidesTest {
                 break;
             }
 
-            if(line.startsWith("O00141;\tO00141\t")){
+            if (line.startsWith("O00141;\tO00141\t")) {
                 hasProteoform0 = true;
             }
 
@@ -254,14 +269,14 @@ public class PathwayMatcherModifiedPeptidesTest {
 
     /*O00203*/
     @Test
-    public void combinationsTest2() throws IOException {
+    public void combinationsTest2(TestInfo testInfo) throws IOException {
 
         // It has the default matching type (SUBSET) to allow all combinations
         String[] args = {
-                "-t", "modifiedpeptide",
+                "match-modified-peptides",
                 "-i", "src/test/resources/ModifiedPeptides/P04049.txt",
-                "-o", "output/",
-                "-tlp",
+                "-o", testInfo.getTestMethod().get().getName() + "/",
+                "-T",
                 "-f", fastaFile};
         Main.main(args);
 
@@ -269,7 +284,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         // And another line with O00141;00046:422,00047:256
 
         //Check the output file
-        List<String> search = Files.readLines(new File(searchFile), Charset.defaultCharset());
+        List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
 
         boolean hasProteoform0 = false; //P04049
         boolean hasProteoform1 = false; //P04049;00046:338
@@ -281,7 +296,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         boolean hasProteoform7 = false; //P04049;00046:338,00048:340,00048:341
 
         for (String line : search) {
-            if(line.startsWith("P04049\tP04049\t")){    // Proteoform 0
+            if (line.startsWith("P04049\tP04049\t")) {    // Proteoform 0
                 hasProteoform0 = true;
             }
 
@@ -320,7 +335,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         assertTrue(hasProteoform4);
         assertTrue(hasProteoform5);
         assertTrue(hasProteoform6);
-        
+
         assertFalse(hasProteoform7);
     }
 
