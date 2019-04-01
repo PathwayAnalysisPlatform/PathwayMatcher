@@ -292,6 +292,13 @@ class MatchProteoformsCommandTest {
     }
 
     @Test
+    void GivenHelpArgument_showsMatchTypeDefaultValue_Test(){
+        String[] args = {"match-proteoforms"};
+        Main.main(args);
+        assertTrue(errContent.toString().contains("Default: SUBSET"));
+    }
+
+    @Test
     void NoMatchTypeArgument_keepsDefaultValue_Test(TestInfo testInfo) {
         String[] args = {"match-proteoforms", "-i", fileProteoforms, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
@@ -483,6 +490,13 @@ class MatchProteoformsCommandTest {
         } catch (Exception ex) {
             assertTrue(ex.getMessage().startsWith("Invalid value for option '--matchType'"), "Should send an invalid match type message");
         }
+    }
+
+    @Test
+    void GivenHelpArgument_showsRangeDefaultValue_Test(){
+        String[] args = {"match-proteoforms"};
+        Main.main(args);
+        assertTrue(errContent.toString().contains("Default: 0"));
     }
 
     // Default range value

@@ -33,7 +33,7 @@ public class Main {
     // Parent command for matching
     @Command(name = "java -jar PathwayMatcher.jar",
             header = "@|green %n PathwayMatcher 1.9.0 %n |@",
-            description = "Matches the input to reactions and pathways",
+            description = "Matches the input to reactions and pathways. Creates search.csv with the reactions and pathways relevant to the matched entities, and analysis.csv with the over representation analysis.",
             footer = {"@|cyan %n If you like the project, star it on github. |@", ""},
             version = "PathwayMatcher 1.9.0",
             subcommands = {
@@ -66,6 +66,7 @@ public class Main {
 
         @Option(names = {"-i", "--input"}, required = true, description = "Input file with path")
         String input_path;
+
         String getInput_path() {
             return input_path;
         }
@@ -79,6 +80,7 @@ public class Main {
 
         @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
         boolean showTopLevelPathways = false;
+
         boolean isShowTopLevelPathways() {
             return showTopLevelPathways;
         }
@@ -88,28 +90,33 @@ public class Main {
 
         @Option(names = {"-gg", "--graphGene"}, description = "Create gene connection graph")
         boolean doGeneGraph = false;
+
         boolean isDoGeneGraph() {
             return doGeneGraph;
         }
 
         @Option(names = {"-gp", "--graphProteoform"}, description = "Create proteoform connection graph")
         boolean doProteoformGraph = false;
+
         boolean isDoProteoformGraph() {
             return doProteoformGraph;
         }
 
         @Option(names = {"-gu", "--graphUniprot"}, description = "Create protein connection graph")
         boolean doUniprotGraph = false;
+
         boolean isDoUniprotGraph() {
             return doUniprotGraph;
         }
 
         boolean wasExecuted = false;
+
         boolean isWasExecuted() {
             return wasExecuted;
         }
 
         int populationSize = -1;
+
         int getPopulationSize() {
             return populationSize;
         }
@@ -332,12 +339,14 @@ public class Main {
     static abstract class MatchSubcommandWithModifications extends MatchSubcommand {
         @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
         MatchType matchType = MatchType.SUBSET;
+
         public MatchType getMatchType() {
             return matchType;
         }
 
-        @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
+        @Option(names = {"-r", "--range"}, description = "Integer range of error for PTM sites. %nDefault: ${DEFAULT-VALUE}", defaultValue = "0")
         Long range = 0L;
+
         public Long getRange() {
             return range;
         }
@@ -371,6 +380,7 @@ public class Main {
     static abstract class MatchSubcommandPeptides extends MatchSubcommand {
         @Option(names = {"-f", "--fasta"}, description = "Path and name of the fasta file containing the Proteins where to find the peptides.", required = true)
         String fasta_path = "";
+
         public String getFasta_path() {
             return fasta_path;
         }
@@ -421,14 +431,17 @@ public class Main {
     @Command(name = "match-modified-peptides", description = "Match a list of peptides with post translational modifications")
     static class MatchModifiedPeptidesCommand extends MatchSubcommandPeptides {
 
-        @Option(names = {"-m", "--matchType"}, description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
+        @Option(names = {"-m", "--matchType"},
+                description = "Proteoform match criteria. %nValid values: ${COMPLETION-CANDIDATES}. %nDefault: ${DEFAULT-VALUE}")
         MatchType matchType = MatchType.SUBSET;
+
         public MatchType getMatchType() {
             return matchType;
         }
 
-        @Option(names = {"-r", "--range"}, description = "Ptm sites range of error")
+        @Option(names = {"-r", "--range"}, description = "Integer range of error for PTM sites. %nDefault: ${DEFAULT-VALUE}")
         Long range = 0L;
+
         public Long getRange() {
             return range;
         }

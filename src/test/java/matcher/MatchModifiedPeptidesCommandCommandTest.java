@@ -295,6 +295,13 @@ class MatchModifiedPeptidesCommandCommandTest {
     }
 
     @Test
+    void GivenHelpArgument_showsMatchTypeDefaultValue_Test(){
+        String[] args = {"match-modified-peptides"};
+        Main.main(args);
+        assertTrue(errContent.toString().contains("Default: SUBSET"));
+    }
+
+    @Test
     void NoMatchTypeArgument_keepsDefaultValue_Test(TestInfo testInfo) {
         String[] args = {"match-modified-peptides", "-i", fileModifiedPeptides, "-f", fileFasta, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
@@ -560,6 +567,13 @@ class MatchModifiedPeptidesCommandCommandTest {
         } catch (Exception ex) {
             assertTrue(ex.getMessage().startsWith("Invalid value for option '--range'"), "Should send an invalid range type message");
         }
+    }
+
+    @Test
+    void GivenHelpArgument_showsRangeDefaultValue_Test(){
+        String[] args = {"match-modified-peptides"};
+        Main.main(args);
+        assertTrue(errContent.toString().contains("Default: 0"));
     }
 
     @Test
