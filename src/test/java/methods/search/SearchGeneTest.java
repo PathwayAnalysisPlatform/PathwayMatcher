@@ -6,6 +6,7 @@ import model.ProteoformFormat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,8 @@ class SearchGeneTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
-        mapping = new Mapping(InputType.GENE, true);
+    static void loadStaticMapping() throws FileNotFoundException {
+        mapping = new Mapping(InputType.GENE, true, "");
     }
 
     @Test
@@ -30,7 +31,7 @@ class SearchGeneTest {
         input.add("HNF4A");
         input.add("blabla");
 
-        SearchResult result = Search.search(input, InputType.GENE, true, mapping);
+        SearchResult result = Search.searchWithGene(input, mapping, true);
 
         assertEquals(2, result.getHitProteins().size());
         assertTrue(result.getHitProteins().contains("P35557"));
@@ -55,9 +56,9 @@ class SearchGeneTest {
         input.add("STX1A");
         input.add("CXCL8");
 
-        SearchResult result = Search.search(input, InputType.GENE, true, mapping);
+        SearchResult result = Search.searchWithGene(input, mapping, true);
 
-        assertEquals(11, result.getHitProteins().size());
+        assertEquals(10, result.getHitProteins().size());
         assertTrue(result.getHitProteins().contains("P37088"));
         assertTrue(result.getHitProteins().contains("P01137"));
         assertEquals(104, result.getHitPathways().size());

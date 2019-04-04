@@ -10,9 +10,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,8 +26,8 @@ class SearchModifiedPeptideTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
-        mapping = new Mapping(InputType.MODIFIEDPEPTIDE, true);
+    static void loadStaticMapping() throws FileNotFoundException {
+        mapping = new Mapping(InputType.MODIFIEDPEPTIDE, true, "");
     }
 
     @Test
@@ -53,15 +55,8 @@ class SearchModifiedPeptideTest {
     @Test
     @Disabled
     void singleModifiedPeptideSearchStrictTest() throws IOException, ParseException {
-        SearchResult result = Search.search(
-                Files.readLines(new File(resourcesPath + "ModifiedPeptides/SingleModifiedPeptide.txt"), Charset.defaultCharset()),
-                InputType.MODIFIEDPEPTIDE,
-                true,
-                mapping,
-                MatchType.STRICT,
-                0L,
-                fastaFile
-        );
+        List<String> input = Files.readLines(new File(resourcesPath + "ModifiedPeptides/SingleModifiedPeptide.txt"), Charset.defaultCharset());
+        SearchResult result = Search.searchWithModifiedPeptide(input, mapping, true, MatchType.STRICT, 0L, fastaFile);
 
         assertEquals(1, result.getHitProteins().size());
         assertEquals(11, result.getHitPathways().size());

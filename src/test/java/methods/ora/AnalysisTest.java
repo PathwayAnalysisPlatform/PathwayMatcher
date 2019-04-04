@@ -7,6 +7,7 @@ import model.Mapping;
 import model.ProteoformFormat;
 import org.junit.jupiter.api.BeforeAll;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +20,9 @@ class AnalysisTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
+    static void loadStaticMapping() throws FileNotFoundException {
         System.out.println("The working directory is: " + System.getProperty("user.dir"));
-        mapping = new Mapping(InputType.UNIPROT, true);
+        mapping = new Mapping(InputType.UNIPROT, true, "");
     }
 
     @org.junit.jupiter.api.Test

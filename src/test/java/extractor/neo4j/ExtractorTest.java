@@ -6,13 +6,20 @@ import com.google.common.collect.Multimap;
 import model.*;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 
+import static extractor.neo4j.Extractor.getBufferedReaderForGzipFile;
 import static extractor.neo4j.Extractor.getSNPAndSwissProtFromVep;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExtractorTest {
+
+    static final String mapping_path = "../MappingFiles/Extractor/";
 
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
@@ -29,6 +36,9 @@ class ExtractorTest {
 
         assertEquals(1, imapEnsembleToProteins.get("ENSG00000143226").size());
         assertTrue(imapEnsembleToProteins.get("ENSG00000143226").contains("P12318"));
+
+        File fileEnsembleToProteins = new File("ensemblToProteins.gz");
+        fileEnsembleToProteins.delete();
     }
 
     @Test
@@ -116,14 +126,14 @@ class ExtractorTest {
         ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
 
         String reaction = "R-HSA-6802927";
-        assertEquals(30, iReactions.get(reaction).getProteinParticipantsWithRole().keySet().size());
+        assertEquals(35, iReactions.get(reaction).getProteinParticipantsWithRole().keySet().size());
         assertTrue(iReactions.get(reaction).getProteinParticipantsWithRole().containsEntry("O00203", Role.INPUT));
         assertTrue(iReactions.get(reaction).getProteinParticipantsWithRole().containsEntry("O15164", Role.OUTPUT));
         assertTrue(iReactions.get(reaction).getProteinParticipantsWithRole().containsEntry("O60674", Role.CATALYSTACTIVITY));
         assertFalse(iReactions.get(reaction).getProteinParticipantsWithRole().containsEntry("Q96PU8", Role.CATALYSTACTIVITY));
 
-        assertEquals(54, iReactions.get(reaction).getProteoformParticipants().keySet().size());
-        assertEquals(55, iReactions.get(reaction).getProteoformParticipants().size());
+        assertEquals(59, iReactions.get(reaction).getProteoformParticipants().keySet().size());
+        assertEquals(60, iReactions.get(reaction).getProteoformParticipants().size());
         assertTrue(iReactions.get(reaction).getProteoformParticipants().containsEntry(ProteoformFormat.SIMPLE.getProteoform("O00203;00046:445,00046:602,00046:729,00047:599"), Role.OUTPUT));
         assertFalse(iReactions.get(reaction).getProteoformParticipants().containsEntry(ProteoformFormat.SIMPLE.getProteoform("O00203;00046:445,00046:602,00046:729,00047:599"), Role.CATALYSTACTIVITY));
         assertTrue(iReactions.get(reaction).getProteoformParticipants().containsEntry(ProteoformFormat.SIMPLE.getProteoform("O00203;00046:445,00046:729"), Role.INPUT));
@@ -420,9 +430,9 @@ class ExtractorTest {
 //                break;
 //        }
 //        assertTrue(imapRsidsToProteins.containsKey("rs12979860"));
-        assertTrue(imapRsidsToProteins.containsKey("rs12980275"));
-        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
-        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
+//        assertTrue(imapRsidsToProteins.containsKey("rs12980275"));
+//        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
+//        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
 
         ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(19);
 
@@ -446,6 +456,52 @@ class ExtractorTest {
         assertTrue(imapChrBpToProteins.containsKey(200101920L));
         assertTrue(imapChrBpToProteins.get(200101920L).contains("O00482"));
     }
+
+    @Test
+    void getBufferedReaderForGzipFile_withPathToExistentFile_ReadsFirstLine_Test() {
+        try{
+            File file = new File(mapping_path + "1.gz");
+            if(!file.exists()){
+                fail("The file " + mapping_path + "1.gz" + " does not exist.");
+            }
+            BufferedReader br = getBufferedReaderForGzipFile(mapping_path, "1.gz");
+            String header = br.readLine(); // Read header line
+            assertTrue(header.length() > 0, "The header is empty, then the function could not read the file.");
+        } catch (FileNotFoundException e) {
+            fail("Should find the compressed file.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            fail("Should be able to read the compressed file.");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void getBufferedReaderForGzipFile_withPathToExistentFileWithoutSlash_ReadsFirstLine_Test(){
+        try{
+            File file = new File(mapping_path + "1.gz");
+            if(!file.exists()){
+                fail("The file " + mapping_path + "1.gz" + " does not exist.");
+            }
+            BufferedReader br = getBufferedReaderForGzipFile(mapping_path.substring(0, mapping_path.length()-1), "1.gz");
+            String header = br.readLine(); // Read header line
+            assertTrue(header.length() > 0, "The header is empty, then the function could not read the file.");
+        } catch (FileNotFoundException e) {
+            fail("Should find the compressed file.");
+            e.printStackTrace();
+        } catch (IOException e) {
+            fail("Should be able to read the compressed file.");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void getBufferedReaderForGzipFile_withUnexistentFile_sendFileNotFoundException_Test() {
+        assertThrows(FileNotFoundException.class, () -> {
+            getBufferedReaderForGzipFile("non/existent/path/", "nonExistentFile.gz");
+        });
+    }
+
 
     @Test
     void imapGeneticVariantsToProteinsTest22() {

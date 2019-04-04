@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -22,8 +23,8 @@ class SearchProteoformTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
-        mapping = new Mapping(InputType.PROTEOFORM, true);
+    static void loadStaticMapping() throws FileNotFoundException {
+        mapping = new Mapping(InputType.PROTEOFORM, true, "");
     }
 
     @Test

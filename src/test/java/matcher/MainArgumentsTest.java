@@ -158,7 +158,7 @@ public class MainArgumentsTest {
 
     static final String fileGenes = "src/test/resources/Genes/Diabetes.txt";
 
-    // The next two tests apply for any Command descendant of the class MatchSubcommand
+    // The next tests apply for any Command descendant of the class MatchSubcommand
     @Test
     void withOutputPrefixOnlyFile_createsFiles_Test(TestInfo testInfo) {
         String testName = testInfo.getTestMethod().get().getName();
@@ -186,5 +186,16 @@ public class MainArgumentsTest {
         String [] args = {"match-genes", "-i", fileGenes, "-o", testName + "/"};
         Main.main(args);
         assertTrue(new File(testName + "/search.tsv").exists(), "Did not create the search file.");
+    }
+
+    @Test
+    void withMappingArgumentToEmptyDirectory_showMissingFilesMessage_Test(TestInfo testInfo){
+        String testName = testInfo.getTestMethod().get().getName();
+        File directory = new File(testName + "/");
+        directory.mkdirs();
+        String []args = {"match-genes", "-i", fileGenes, "--mapping", testName + "/"};
+        Main.main(args);
+        assertTrue(errContent.toString().startsWith("Could not find the file: genesToProteins.gz at the location: " + testName +"/" ));
+
     }
 }
