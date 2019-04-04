@@ -37,7 +37,7 @@ public class Extractor implements Runnable {
     private static String password = "";
 
     @Option(names = {"-d", "--directory"}, description = "Path to directory where vep tables are.")
-    private static String vepFilesPath = "";
+    private static String vepFilesPath = "../MappingFiles/Extractor/";
 
     @Option(names = {"-o", "--output"}, description = "Path to directory for the output files(static maps).")
     private static String outputPath = "";
@@ -297,9 +297,11 @@ public class Extractor implements Runnable {
 
         // Traverse all the vepTables
 
+        System.out.println(System.getProperty("user.dir"));
         System.out.println("Scanning vepTable for chromosome " + chr);
         try {
-            BufferedReader br = getBufferedReaderForGzipFile(separatorsToSystem(vepFilesPath) + chr + ".gz");
+            System.out.println(separatorsToSystem(vepFilesPath));
+            BufferedReader br = getBufferedReaderForGzipFile(vepFilesPath, chr + ".gz");
             br.readLine(); // Read header line
 
             for (String line; (line = br.readLine()) != null; ) {
@@ -323,6 +325,7 @@ public class Extractor implements Runnable {
             } else {
                 System.out.println("Tried reading vep tables at: " + vepFilesPath);
             }
+            System.out.println(ex.getMessage());
             sendError(ERROR_READING_VEP_TABLES, chr);
         }
 
@@ -346,7 +349,7 @@ public class Extractor implements Runnable {
 
         System.out.println("Scanning vepTable for chromosome " + chr);
         try {
-            BufferedReader br = getBufferedReaderForGzipFile(separatorsToSystem(vepFilesPath) + chr + ".gz");
+            BufferedReader br = getBufferedReaderForGzipFile(separatorsToSystem(vepFilesPath), chr + ".gz");
             br.readLine(); // Read header line
 
             for (String line; (line = br.readLine()) != null; ) {
@@ -702,9 +705,12 @@ public class Extractor implements Runnable {
         return builder.build();
     }
 
-    static BufferedReader getBufferedReaderForGzipFile(String fileName) throws FileNotFoundException, IOException {
-
-        InputStream fileStream = new FileInputStream(fileName);
+    static BufferedReader getBufferedReaderForGzipFile(String path, String fileName) throws FileNotFoundException, IOException {
+        if(!path.endsWith("/")){
+            path += "/";
+        }
+        File file = new File(path + fileName);
+        InputStream fileStream = new FileInputStream(file);
         InputStream gzipStream = new GZIPInputStream(fileStream);
         Reader decoder = new InputStreamReader(gzipStream, Charset.defaultCharset());
         return new BufferedReader(decoder);

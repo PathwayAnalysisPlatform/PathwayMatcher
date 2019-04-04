@@ -5,6 +5,7 @@ import methods.matching.ProteoformMatching;
 import model.*;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ import static model.Warning.*;
  */
 public class Search {
 
-    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping) {
-        return Search.search(input, inputType, showTopLevelPathways, mapping, MatchType.SUPERSET, 0L, "");
-    }
+//    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping) {
+//        return Search.search(input, inputType, showTopLevelPathways, mapping, MatchType.SUPERSET, 0L, "");
+//    }
 
     private static String removeUTF8BOM(String line) {
         if (line.startsWith("\uFEFF")) {
@@ -38,34 +39,34 @@ public class Search {
         return line;
     }
 
-    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping, MatchType matchType, Long range, String fastaFile) {
-        input.replaceAll(String::trim);
-        input = Lists.transform(input, Search::removeUTF8BOM);
-        switch (inputType) {
-            case GENE:
-                return Search.searchWithGene(input, mapping, showTopLevelPathways);
-            case ENSEMBL:
-                return Search.searchWithEnsembl(input, mapping, showTopLevelPathways);
-            case UNIPROT:
-                return Search.searchWithUniProt(input, mapping, showTopLevelPathways);
-            case PROTEOFORM:
-                return Search.searchWithProteoform(input, mapping, showTopLevelPathways, matchType, range);
-            case RSID:
-                return Search.searchWithRsId(input, mapping, showTopLevelPathways);
-            case CHRBP:
-            case VCF:
-                return Search.searchWithChrBp(input, mapping, showTopLevelPathways);
-            case PEPTIDE:
-                return Search.searchWithPeptide(input, mapping, showTopLevelPathways, fastaFile);
-            case MODIFIEDPEPTIDE:
-                return Search.searchWithModifiedPeptide(input, mapping, showTopLevelPathways, matchType, range, fastaFile);
-            default:
-                System.out.println("Input inputType not supported.");
-                System.exit(1);
-                break;
-        }
-        return null;
-    }
+//    public static SearchResult search(List<String> input, InputType inputType, boolean showTopLevelPathways, Mapping mapping, MatchType matchType, Long range, String fastaFile, String mapping_path) {
+//        input.replaceAll(String::trim);
+//        input = Lists.transform(input, Search::removeUTF8BOM);
+//        switch (inputType) {
+//            case GENE:
+//                return Search.searchWithGene(input, mapping, showTopLevelPathways);
+//            case ENSEMBL:
+//                return Search.searchWithEnsembl(input, mapping, showTopLevelPathways);
+//            case UNIPROT:
+//                return Search.searchWithUniProt(input, mapping, showTopLevelPathways);
+//            case PROTEOFORM:
+//                return Search.searchWithProteoform(input, mapping, showTopLevelPathways, matchType, range);
+//            case RSID:
+//                return Search.searchWithRsId(input, mapping, mapping_path, showTopLevelPathways);
+//            case CHRBP:
+//            case VCF:
+//                return Search.searchWithChrBp(input, mapping, mapping_path, showTopLevelPathways);
+//            case PEPTIDE:
+//                return Search.searchWithPeptide(input, mapping, showTopLevelPathways, fastaFile);
+//            case MODIFIEDPEPTIDE:
+//                return Search.searchWithModifiedPeptide(input, mapping, showTopLevelPathways, matchType, range, fastaFile);
+//            default:
+//                System.out.println("Input inputType not supported.");
+//                System.exit(1);
+//                break;
+//        }
+//        return null;
+//    }
 
     // Fills the hitProteins set to call the next method
     public static SearchResult searchWithUniProt(List<String> input, Mapping mapping, Boolean topLevelPathways) {
@@ -295,7 +296,7 @@ public class Search {
      * @param topLevelPathways Flag if top level pathways should be used
      * @return Mapping from rsids to pathways, message errors
      */
-    public static SearchResult searchWithRsId(List<String> input, Mapping mapping, Boolean topLevelPathways) {
+    public static SearchResult searchWithRsId(List<String> input, Mapping mapping, Boolean topLevelPathways, String mapping_path) throws FileNotFoundException {
 
         SearchResult result = new SearchResult(InputType.RSID, topLevelPathways);
 
@@ -315,7 +316,7 @@ public class Search {
 
         for (int chr = 1; chr <= 22; chr++) {
             for (String rsid : result.getInputRsid()) {
-                for (String protein : mapping.getRsidsToProteins(chr).get(rsid)) {
+                for (String protein : mapping.getRsidsToProteins(chr, mapping_path).get(rsid)) {
                     result.getMatchedRsid().add(rsid);
                     result.getInputProteins().add(protein);
                     result.getMatchedProteins().add(protein);
@@ -380,7 +381,7 @@ public class Search {
      * @param topLevelPathways Flag if top level pathways should be used
      * @return Mapping from rsids to pathways, message errors
      */
-    public static SearchResult searchWithChrBp(List<String> input, Mapping mapping, Boolean topLevelPathways) {
+    public static SearchResult searchWithChrBp(List<String> input, Mapping mapping, Boolean topLevelPathways, String mapping_path) throws FileNotFoundException {
 
         SearchResult result = new SearchResult(InputType.CHRBP, topLevelPathways);
 
@@ -405,7 +406,7 @@ public class Search {
 
         for (int chr : result.getInputChrBp().keySet()) {
             for (Long bp : result.getInputChrBp().get(chr)) {
-                for (String protein : mapping.getChrBpToProteins(chr).get(bp)) {
+                for (String protein : mapping.getChrBpToProteins(chr, mapping_path).get(bp)) {
                     result.getMatchedChrBp().put(chr, bp);
                     result.getInputProteins().add(protein);
                     result.getMatchedProteins().add(protein);

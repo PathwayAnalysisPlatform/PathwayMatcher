@@ -15,6 +15,7 @@ import picocli.CommandLine.Option;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
@@ -80,6 +81,13 @@ public class Main {
             return output_prefix;
         }
 
+        @Option(names = {"--mapping"}, description = "Path to directory with the static mapping files. By default uses the mapping files integrated in the jar file.")
+        String mapping_path = "";
+
+        public String getMapping_path() {
+            return mapping_path;
+        }
+
         @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
         boolean showTopLevelPathways = false;
 
@@ -126,6 +134,11 @@ public class Main {
         List<String> input;
         final String separator = "\t";    // Column separator
         Mapping mapping;
+
+        public Mapping getMapping() {
+            return mapping;
+        }
+
         BufferedWriter output_search;
         BufferedWriter output_analysis;
         SearchResult searchResult;
@@ -146,7 +159,7 @@ public class Main {
                     output_analysis = createFile(output_prefix, "analysis.tsv");
 
                     if (output_search != null && output_analysis != null) {
-                        mapping = new Mapping(inputType, showTopLevelPathways); // Load static structures needed for all the cases
+                        mapping = new Mapping(inputType, showTopLevelPathways, mapping_path); // Load static structures needed for all the cases
 
                         searchResult = search();
                         searchResult.writeToFile(output_search, separator);
@@ -161,13 +174,15 @@ public class Main {
                             setDoCorrespondingGraph();
                         }
                         NetworkGenerator.writeGraphs(doGeneGraph, doUniprotGraph, doProteoformGraph,
-                                inputType, searchResult, mapping, output_prefix);
+                                inputType, searchResult, mapping, output_prefix, mapping_path);
 
                         stopwatch.stop();
                         Duration duration = stopwatch.elapsed();
                         System.out.println("Main finished (" + duration.toMillis() / 1000 + "s)");
                     }
                 }
+            } catch (FileNotFoundException ex) {
+                System.err.println(ex.getMessage());
             } catch (IOException e) {
                 if (e.getMessage().contains("network") || e.getMessage().contains("directory")) {
                     System.out.println(e.getMessage());
@@ -181,7 +196,7 @@ public class Main {
             }
         }
 
-        abstract SearchResult search();
+        abstract SearchResult search() throws FileNotFoundException;
 
         abstract void setPopulationSize();
 
@@ -273,8 +288,8 @@ public class Main {
         }
 
         @Override
-        SearchResult search() {
-            return Search.searchWithChrBp(input, mapping, showTopLevelPathways);
+        SearchResult search() throws FileNotFoundException {
+            return Search.searchWithChrBp(input, mapping, showTopLevelPathways, mapping_path);
         }
 
         @Override
@@ -298,8 +313,8 @@ public class Main {
         }
 
         @Override
-        SearchResult search() {
-            return Search.searchWithChrBp(input, mapping, showTopLevelPathways);
+        SearchResult search() throws FileNotFoundException {
+            return Search.searchWithChrBp(input, mapping, showTopLevelPathways, mapping_path);
         }
 
         @Override
@@ -323,8 +338,8 @@ public class Main {
         }
 
         @Override
-        SearchResult search() {
-            return Search.searchWithRsId(input, mapping, showTopLevelPathways);
+        SearchResult search() throws FileNotFoundException {
+            return Search.searchWithRsId(input, mapping, showTopLevelPathways, mapping_path);
         }
 
         @Override

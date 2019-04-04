@@ -151,10 +151,10 @@ public class PeptideMatcher {
 			System.out.println("Loading protein sequences...");
 			loadFastaFile(new File(fastaFile));
 		} catch (ClassNotFoundException ex) {
-			System.out.println("Fasta file for peptide mapping was not found."); // TODO Send proper error
+			System.out.println("Fasta file for peptide mapping was not found.");
 			System.exit(1);
 		} catch (IOException ex) {
-			System.out.println("Error while reading fasta file for peptide mapping."); // TODO Send proper error
+			System.out.println("Error while reading fasta file for peptide mapping.");
 			System.out.println(ex.getMessage());
 			System.exit(1);
 		}
