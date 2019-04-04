@@ -131,7 +131,7 @@ class MatchUniprotCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchUniprotCommand MatchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchUniprotCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchUniprotCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -140,7 +140,7 @@ class MatchUniprotCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchUniprotCommand MatchUniprotCommand = Main.commandLine.getSubcommands().get("match-uniprot").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchUniprotCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchUniprotCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

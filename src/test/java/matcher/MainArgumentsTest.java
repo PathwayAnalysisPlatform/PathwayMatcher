@@ -148,4 +148,43 @@ public class MainArgumentsTest {
         Main.main(args);
         assertTrue(errContent.toString().startsWith("Unknown options: -o, /???"), "Help message was not shown.");
     }
+
+    @Test
+    void MatcherHelp_showsReactomeVersion_Test(){
+        String args[] = {};
+        Main.main(args);
+        assertTrue(outContent.toString().contains("Includes mapping from Reactome v68"));
+    }
+
+    static final String fileGenes = "src/test/resources/Genes/Diabetes.txt";
+
+    // The next two tests apply for any Command descendant of the class MatchSubcommand
+    @Test
+    void withOutputPrefixOnlyFile_createsFiles_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        String[] args = {"match-genes", "-i", fileGenes, "-o", testName + "_"};
+        Main.main(args);
+        File fileSearch = new File(testName + "_search.tsv");
+        File fileAnalysis= new File(testName + "_analysis.tsv");
+        assertTrue(fileSearch.exists(), "Did not create the search file.");
+        assertTrue(fileAnalysis.exists(), "Did not create the analysis file.");
+        fileSearch.delete();
+        fileAnalysis.delete();
+    }
+
+    @Test
+    void withOutputPrefixFileAndPath_createsFiles_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        String[] args = {"match-genes", "-i", fileGenes, "-o", testName + "/" + testName + "_"};
+        Main.main(args);
+        assertTrue(new File(testName + "/" + testName + "_" + "search.tsv").exists(), "Did not create the search file.");
+    }
+
+    @Test
+    void withOutputPrefixOnlyPath_createsFiles_Test(TestInfo testInfo){
+        String testName = testInfo.getTestMethod().get().getName();
+        String [] args = {"match-genes", "-i", fileGenes, "-o", testName + "/"};
+        Main.main(args);
+        assertTrue(new File(testName + "/search.tsv").exists(), "Did not create the search file.");
+    }
 }

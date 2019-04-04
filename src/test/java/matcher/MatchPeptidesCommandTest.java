@@ -2,7 +2,6 @@ package matcher;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import model.InputType;
-import model.MatchType;
 import model.Proteoform;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -152,7 +151,7 @@ class MatchPeptidesCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchPeptidesCommand matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchPeptidesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchPeptidesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -161,7 +160,7 @@ class MatchPeptidesCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchPeptidesCommand matchPeptidesCommand = Main.commandLine.getSubcommands().get("match-peptides").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchPeptidesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchPeptidesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

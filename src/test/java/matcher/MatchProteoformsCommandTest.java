@@ -129,7 +129,7 @@ class MatchProteoformsCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchProteoformsCommand matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchProteoformsCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchProteoformsCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -138,7 +138,7 @@ class MatchProteoformsCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchProteoformsCommand matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchProteoformsCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchProteoformsCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

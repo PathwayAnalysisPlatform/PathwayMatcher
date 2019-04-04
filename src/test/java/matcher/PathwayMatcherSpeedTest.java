@@ -152,7 +152,7 @@ public class PathwayMatcherSpeedTest {
     private static void runPathwayMatcher(InputType inputType, List<String> allElements, List<Integer> SIZES) throws IOException {
 
         Stopwatch stopwatch = Stopwatch.createUnstarted();
-        String[] args = {"-t", "uniprotList", "-i", INPUT_PATH + "uniprotList.txt", "-tlp", "-o", "output/"};
+        String[] args = {"match-uniprot", "-i", INPUT_PATH + "uniprotList.txt", "-T", "-o", "output/"};
 
         for (int T = 0; T < SAMPLE_SETS; T++) {
 
@@ -165,7 +165,7 @@ public class PathwayMatcherSpeedTest {
 
                     switch (inputType) {        //Set up arguments to run Main
                         case RSID:
-                            args = new String[]{"-t", inputType.toString(), "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};
+                            args = new String[]{"match-" + inputType, "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};
                             break;
                         case PEPTIDE:
                             args = new String[]{"-t", inputType.toString(), "-i", INPUT_PATH + inputType + "_" + String.format("%08d", size) + ".txt"};

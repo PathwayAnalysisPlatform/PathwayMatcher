@@ -127,7 +127,7 @@ class MatchVCFCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchVCFCommand MatchVCFCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchVCFCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchVCFCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -136,7 +136,7 @@ class MatchVCFCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchVCFCommand MatchVCFCommand = Main.commandLine.getSubcommands().get("match-vcf").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchVCFCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchVCFCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

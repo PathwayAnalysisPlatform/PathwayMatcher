@@ -126,7 +126,7 @@ class NetworkGenerator {
         mapping.loadMapsForGeneNetwork();
 
         // Make sure all results are calculated
-        // Get the list of hit genes for input cases different to -t gene. The list is generated during the search for the gene input type.
+        // Get the list of hit genes for input cases different to input type gene. The list is generated during the search for the gene input type.
         if (!inputType.equals(GENE)) {
             searchResult.calculateMatchedGenes(mapping);
         }

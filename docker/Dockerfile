@@ -22,4 +22,4 @@ ADD PathwayMatcher.jar /home/PathwayMatcher.jar
 ENTRYPOINT ["java","-jar","/home/PathwayMatcher.jar"]
 
 #This are the defailt arguments for the entrypoint command
-CMD ["-t", "uniprot"]
+CMD ["match-uniprot"]

@@ -17,11 +17,11 @@ The matching types defined for PathwayMatcher are:
 The matching type is specified using the command line argument __-m__ or __--matchType__ with the desired
 matching type:
 ~~~~
-java -jar PathwayMatcher.jar -t proteoform -m superset -i myFile.txt
+java -jar PathwayMatcher.jar match-proteoforms -m superset -i myFile.txt
 ~~~~
 
 ~~~~
-java -jar PathwayMatcher.jar -t proteoform -m strict -i myFile.txt
+java -jar PathwayMatcher.jar match-proteoforms -m strict -i myFile.txt
 ~~~~
 
 ### Superset
