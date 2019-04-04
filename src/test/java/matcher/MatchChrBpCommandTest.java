@@ -127,7 +127,7 @@ class MatchChrBpCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchChrBpCommand matchChrBpCommand = Main.commandLine.getSubcommands().get("match-chrbp").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchChrBpCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchChrBpCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -136,7 +136,7 @@ class MatchChrBpCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchChrBpCommand matchChrBpCommand = Main.commandLine.getSubcommands().get("match-chrbp").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchChrBpCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchChrBpCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

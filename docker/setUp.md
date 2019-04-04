@@ -41,8 +41,8 @@ Remove vim, wget
 
 
 ~~~~
-java -jar PathwayMatcher-1.2.jar -t uniprotList -i input/uniprotList.txt
-docker exec C2 java -jar /home/PathwayMatcher-1.0.jar -t uniprotList -i /home/input/uniprotList.txt
+java -jar PathwayMatcher-1.9.0.jar match-uniprot -i input/uniprotList.txt
+docker exec C2 java -jar /home/PathwayMatcher-1.0.jar match-uniprot -i /home/input/uniprotList.txt
 ~~~~
 
 
@@ -60,20 +60,20 @@ lfhs/pathwaymatcher
 
 docker exec pathwaymatcher_container \
      java -jar /var/lib/PathwayMatcher-1.3/PathwayMatcher-1.3.jar \
-     -t uniprotList -i /home/data/input/uniprotList.txt \
+     match-uniprot -i /home/data/input/uniprotList.txt \
      -o /home/data/output/output.csv
 
 docker exec -it cranky_stallman --volume=/var/lib/neo4j/data/
 
 # Running the container
 
-docker run -it -v /c/Users/Francisco/Documents/phd/Projects/PathwayMatcher/shared:/var/lib/neo4j/data/ pathwaymatcher  java -jar PathwayMatcher-1.2.jar
+docker run -it -v /c/Users/Francisco/Documents/phd/Projects/PathwayMatcher/shared:/var/lib/neo4j/data/ pathwaymatcher  java -jar PathwayMatcher-1.9.0.jar
 
 docker run -v /Users/<path>:/<container path> ...
 docker run -v c:\<path>:/<container path> ...
 
 # Extract a column from a file
-docker run -v /c/Users/Francisco/Documents/phd/Projects/PathwayMatcher/shared:/var/lib/neo4j/data/ pathwaymatcher java -cp /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar no.uib.pathwaymatcher.tools.ColumnExtractor -i /var/lib/neo4j/data/zBMIX-autosome-maf-above-0-005.result -c 0 -o /var/lib/neo4j/data/rsidX.csv
+docker run -v /c/Users/Francisco/Documents/phd/Projects/PathwayMatcher/shared:/var/lib/neo4j/data/ pathwaymatcher java -cp /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar no.uib.pathwaymatcher.tools.ColumnExtractor -i /var/lib/neo4j/data/zBMIX-autosome-maf-above-0-005.result -c 0 -o /var/lib/neo4j/data/rsidX.csv
 
 # Map rsids to pathways
 
@@ -81,55 +81,49 @@ docker run -v /c/Users/Francisco/Documents/phd/Projects/PathwayMatcher/shared:/v
 
 ## Execute the pathway matcher in the running container
 docker exec <container name>
-     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
+     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
      -i /home/data/rsidX.csv \
      -o /home/data/tlpX.csv \
-     -t rsidList \
-     -v /home/data/vep/ -tlp
+     match-rsids \
+     -v /home/data/vep/ -T
 
 Example:
 docker exec silly_booth \
-     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar -i /data/rsidX.csv -o /data/tlpX.csv -t rsidList -v /data/vep/ -tlp
+     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar -i /data/rsidX.csv -o /data/tlpX.csv match-rsids -v /data/vep/ -T
 
 docker exec zealous_davinci \
-     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t uniprotList -i data/uniprotList.txt -o data/output.csv \
+     java -d64 -Xmx10g -Xmx10g -jar /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-uniprot -i data/uniprotList.txt -o data/output.csv \
      --reactionsFile data/reactions.csv --pathwaysFile data/pathways.csv
 
-docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.allow_format_migration
-docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.security.auth_enabled
+docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.allow_format_migration
+docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.security.auth_enabled
 
-docker exec blissful_minsky curl --fail --show-error --location --remote-name https://github.com/LuisFranciscoHS/PathwayMatcher/releases/download/v1.2/PathwayMatcher-1.2.tar && \
-    tar --extract --file PathwayMatcher-1.2.tar --directory /var/lib && \
-    rm PathwayMatcher-1.2.tar
+docker exec blissful_minsky curl --fail --show-error --location --remote-name https://github.com/LuisFranciscoHS/PathwayMatcher/releases/download/v1.9.0/PathwayMatcher-1.9.0.tar && \
+    tar --extract --file PathwayMatcher-1.9.0.tar --directory /var/lib && \
+    rm PathwayMatcher-1.9.0.tar
 
     # Save the docker image to docker cloud
     docker login
-    docker tag image username/repository:tag ==> docker tag pathwaymatcher lfhs/pathwaymatcher:v1.2
-    docker push username/repository:tag ==> docker push lfhs/pathwaymatcher:v1.2
+    docker tag image username/repository:tag ==> docker tag pathwaymatcher lfhs/pathwaymatcher:v1.9.0
+    docker push username/repository:tag ==> docker push lfhs/pathwaymatcher:v1.9.0
 
 # Run PathwayMatcher in Netbeats
 
-### Uniprot list
--t uniprotList -i resources/input/uniprotList.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
+### Uniprot
+match-uniprot -i resources/input/uniprotList.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
 
-### Uniprot list with sites
--t uniprotListAndSites -i resources/input/uniprotListAndSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
-
-### Uniprot list with PTM sites and types
--t uniprotListAndModSites -i resources/input/uniprotListAndModSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
+### Proteoforms
+match-proteoforms -i resources/input/uniprotListAndModSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
 
 ### Peptide list
--t peptideList -i resources/input/peptideList.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
+match-peptides -i resources/input/peptideList.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
 
-### Peptide list and sites
--t peptideListAndSites -i resources/input/peptideListAndSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
-
-### Peptide list with types and sites
--t peptideListAndSites -i resources/input/peptideListAndSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
+### Modified peptides
+match-modified-peptides -i resources/input/peptideListAndSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
 
 # Run PathwayMatcher in Docker
--t peptideListAndModSites -i resources/input/peptideListAndModSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
+match-modified-peptides -i resources/input/peptideListAndModSites.txt -o resources/output/output.csv -u neo4j -p neo4j2 --reactionsFile resources/output/reactions.csv --pathwaysFile resources/output/pathways.csv
 
 Located in the PathwayMatcher directory
 
@@ -144,35 +138,22 @@ Then run the desired type of matching:
 ### Uniprot list
 docker exec pathwaymatcher_container \
      java -d64 -Xmx10g -Xmx10g \
-     -jar /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t uniprotList -i data/input/uniprotList.txt \
-     -o data/output.csv \
-     --reactionsFile data/reactions.csv \
-     --pathwaysFile data/pathways.csv
+     -jar /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-uniprot -i data/input/uniprotList.txt \
+     -o data/output.csv
 
-### Uniprot list with sites
+### Proteoforms
 docker exec pathwaymatcher_container \
      java -d64 -Xmx10g -Xmx10g \
-     -jar /var/lib/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t uniprotListAndSites -i data/input/uniprotListAndSites.txt \
-     -o data/output.csv \
-     --reactionsFile data/reactions.csv \
-     --pathwaysFile data/pathways.csv
-
-### Uniprot list with PTM sites and types
-docker exec pathwaymatcher_container \
-     java -d64 -Xmx10g -Xmx10g \
-     -jar data/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t uniprotListAndModSites -i data/input/uniprotListAndModSites.txt \
-     -o data/output.csv \
-     --reactionsFile data/reactions.csv \
-     --pathwaysFile data/pathways.csv
+     -jar data/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-proteoforms -i data/input/uniprotListAndModSites.txt \
+     -o data/output.csv 
 
 ### Peptide list
 docker exec pathwaymatcher_container \
      java -d64 -Xmx10g -Xmx10g \
-     -jar data/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t peptideList -i resources/input/peptideList.txt \
+     -jar data/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-peptides -i resources/input/peptideList.txt \
      -o data/output.csv \
      --reactionsFile data/reactions.csv \
      --pathwaysFile data/pathways.csv
@@ -180,8 +161,8 @@ docker exec pathwaymatcher_container \
 ### Peptide list and sites
 docker exec pathwaymatcher_container \
      java -d64 -Xmx10g -Xmx10g \
-     -jar data/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t peptideListAndSites -i resources/input/peptideListAndSites.txt \
+     -jar data/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-peptidesAndSites -i resources/input/peptideListAndSites.txt \
      -o data/output.csv \
      --reactionsFile data/reactions.csv \
      --pathwaysFile data/pathways.csv
@@ -190,8 +171,8 @@ docker exec pathwaymatcher_container \
 ### Peptide list with types and sites
 docker exec pathwaymatcher_container \
      java -d64 -Xmx10g -Xmx10g \
-     -jar data/PathwayMatcher-1.2/PathwayMatcher-1.2.jar \
-     -t peptideListAndModSites -i resources/input/peptideListAndModSites.txt \
+     -jar data/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar \
+     match-peptidesAndModSites -i resources/input/peptideListAndModSites.txt \
      -o data/output.csv \
      --reactionsFile data/reactions.csv \
      --pathwaysFile data/pathways.csv

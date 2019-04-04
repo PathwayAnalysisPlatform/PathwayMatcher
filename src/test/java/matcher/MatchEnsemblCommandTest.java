@@ -131,7 +131,7 @@ class MatchEnsemblCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchEnsemblCommand MatchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchEnsemblCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchEnsemblCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -140,7 +140,7 @@ class MatchEnsemblCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchEnsemblCommand MatchEnsemblCommand = Main.commandLine.getSubcommands().get("match-ensembl").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchEnsemblCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchEnsemblCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

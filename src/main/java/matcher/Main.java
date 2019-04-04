@@ -34,7 +34,9 @@ public class Main {
     @Command(name = "java -jar PathwayMatcher.jar",
             header = "@|green %n PathwayMatcher 1.9.0 %n |@",
             description = "Matches the input to reactions and pathways. Creates search.csv with the reactions and pathways relevant to the matched entities, and analysis.csv with the over representation analysis.",
-            footer = {"@|cyan %n If you like the project, star it on github. |@", ""},
+            footer = {"@|cyan %n If you like the project, star it on github. |@",
+                    "@|cyan %n Includes mapping from Reactome v68. |@",
+                    ""},
             version = "PathwayMatcher 1.9.0",
             subcommands = {
                     MatchProteoformsCommand.class,
@@ -71,11 +73,11 @@ public class Main {
             return input_path;
         }
 
-        @Option(names = {"-o", "--output"}, description = "Path to directory for the output files: search.tsv (list of reactions and pathways containing the input), analysis.tsv (over-representation analysis) and networks files.")
-        String output_path = "";
+        @Option(names = {"-o", "--output"}, description = "Path and prefix for the output files: search.tsv (list of reactions and pathways containing the input), analysis.tsv (over-representation analysis) and networks files.")
+        String output_prefix = "";
 
-        String getOutput_path() {
-            return output_path;
+        String getOutput_prefix() {
+            return output_prefix;
         }
 
         @Option(names = {"-T", "--topLevelPathways"}, description = "Show Top Level Pathways in the search result.")
@@ -140,8 +142,8 @@ public class Main {
                 input = readFile(input_path);
 
                 if (input != null) {
-                    output_search = createFile(output_path, "search.tsv");
-                    output_analysis = createFile(output_path, "analysis.tsv");
+                    output_search = createFile(output_prefix, "search.tsv");
+                    output_analysis = createFile(output_prefix, "analysis.tsv");
 
                     if (output_search != null && output_analysis != null) {
                         mapping = new Mapping(inputType, showTopLevelPathways); // Load static structures needed for all the cases
@@ -159,7 +161,7 @@ public class Main {
                             setDoCorrespondingGraph();
                         }
                         NetworkGenerator.writeGraphs(doGeneGraph, doUniprotGraph, doProteoformGraph,
-                                inputType, searchResult, mapping, output_path);
+                                inputType, searchResult, mapping, output_prefix);
 
                         stopwatch.stop();
                         Duration duration = stopwatch.elapsed();
@@ -171,9 +173,9 @@ public class Main {
                     System.out.println(e.getMessage());
                 } else {
                     System.out.println(Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getMessage() + ": " +
-                            output_path + "search.txt  " +
+                            output_prefix + "search.txt  " +
                             System.lineSeparator() +
-                            output_path + "analysis.txt");
+                            output_prefix + "analysis.txt");
                 }
                 System.exit(Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getCode());
             }

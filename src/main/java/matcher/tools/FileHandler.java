@@ -42,25 +42,25 @@ public class FileHandler {
         return br;
     }
 
-    public static BufferedWriter createFile(String path, String file) {
+    public static BufferedWriter createFile(String prefix, String file) {
 
         BufferedWriter br = null;
 
         try {
-            if (path.length() == 0 && file.length() == 0) {
+            if (prefix.length() == 0 && file.length() == 0) {
                 throw new IOException("Cannot create a file with no name and path.");
             }
-            File outputDir = new File(path);
-            if (path.length() == 0) {
-                path = "./";
-            } else {
+            int indexOfSlash = prefix.lastIndexOf("/");
+            if (indexOfSlash > 0) {   // Its a file name only prefix
+                String path = prefix.substring(0, indexOfSlash + 1);
+                File outputDir = new File(path);
                 if (!outputDir.exists()) {
                     if (!outputDir.mkdirs()) {
                         throw new IOException();
                     }
                 }
             }
-            br = new BufferedWriter(new FileWriter(path + file));
+            br = new BufferedWriter(new FileWriter(prefix + file));
         } catch (IOException e) {
             System.err.println(model.Error.COULD_NOT_WRITE_TO_OUTPUT_FILES.getMessage());
             return null;

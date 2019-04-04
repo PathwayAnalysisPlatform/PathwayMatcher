@@ -122,12 +122,20 @@ class MatchGenesCommandTest {
     }
 
     @Test
+    void whenHelp_showOutputPrefixUsage_Test() {
+        String[] args = {"help", "match-genes"};
+        Main.main(args);
+        assertTrue(outContent.toString().contains("--output=<output_prefix>"));
+        assertTrue(outContent.toString().contains("Path and prefix for the output files"));
+    }
+
+    @Test
     void ShortOutputArgument_setsOutputPath_Test(TestInfo testInfo) {
         String[] args = {"match-genes", "-i", fileGenes, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchGenesCommand MatchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchGenesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchGenesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -136,7 +144,7 @@ class MatchGenesCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchGenesCommand MatchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchGenesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", MatchGenesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -146,10 +154,10 @@ class MatchGenesCommandTest {
                 "--output"
         };
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        try{
+        try {
             Main.commandLine.parse(args);
             fail("Should throw an exception");
-        } catch(Exception ex){
+        } catch (Exception ex) {
             assertTrue(ex.getMessage().startsWith("Missing required parameter for option '--output'"));
         }
     }

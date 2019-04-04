@@ -11,16 +11,28 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.List;
 
+import static matcher.tools.FileHandler.createFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileHandlerTest {
+
+    @AfterEach
+    void deleteOutputFiles(TestInfo testInfo) {
+        try {
+            File directory = new File(testInfo.getTestMethod().get().getName() + "/");
+            FileUtils.deleteDirectory(directory);
+            assertFalse(directory.exists());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     void createFileNoPath_fileDoesNotExist_Test(TestInfo testInfo) {
         String fileName = testInfo.getTestMethod().get().getName() + ".txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(fileName);
+            BufferedWriter bw = createFile(fileName);
             bw.write(testInfo.getTestMethod().get().getName());
             bw.close();
 
@@ -47,7 +59,7 @@ class FileHandlerTest {
             fw.close();
             assertTrue(preFile.exists(), "The precondition file was not created.");
 
-            BufferedWriter bw = FileHandler.createFile(fileName);
+            BufferedWriter bw = createFile(fileName);
             bw.write(testInfo.getTestMethod().get().getName() + " with the function under test");
             bw.close();
 
@@ -68,7 +80,7 @@ class FileHandlerTest {
         String fileName = "./" + testInfo.getTestMethod().get().getName() + ".txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(fileName);
+            BufferedWriter bw = createFile(fileName);
             bw.write("createFile_pathSameDirectory_Test with the function under test");
             bw.close();
 
@@ -89,7 +101,7 @@ class FileHandlerTest {
         String fileName = "this/path/does/not/exist/" + testInfo.getTestMethod().get().getName() + ".txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(fileName);
+            BufferedWriter bw = createFile(fileName);
             bw.write("createFile_nonExistentPath_Test with the function under test");
             bw.close();
 
@@ -115,7 +127,7 @@ class FileHandlerTest {
 
         try {
             // Create file
-            BufferedWriter bw = FileHandler.createFile(fileName);
+            BufferedWriter bw = createFile(fileName);
             // Write something to the file using the BufferedWriter
             bw.write("createFile_nonExistentPath_Test with the function under test");
             bw.close();
@@ -135,12 +147,101 @@ class FileHandlerTest {
     }
 
     @Test
-    void createFile_pathEmptyAndFileDoesNotExist_Test() {
+    void createFile_prefixHasOnlyDirectory_createsDirectory_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile(testName + "/", testName + ".tsv");
+            assertTrue(new File(testName + "/").exists(), "Did not create directory from prefix.");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasOnlyDirectory_createsFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile(testName + "/", testName + ".tsv");
+            assertTrue(new File(testName + "/" + testName + ".tsv").exists(), "Did not create file with prefix.");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasPathAndFileName_createsDirectory_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile(testName + "/" + "prefix", testName + ".tsv");
+            assertTrue(new File(testName + "/").exists(), "Did not create directory from prefix.");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasPathAndFileName_createsFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile(testName + "/" + "prefix", testName + ".tsv");
+            assertTrue(new File(testName + "/" + "prefix" + testName + ".tsv").exists(), "Did not create file from prefix.");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasPathAndFileName_doesNotCreateFileNamePrefixDirectory_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile(testName + "/" + "prefix", testName + ".tsv");
+            bw.close();
+            assertFalse(new File(testName + "/" + "prefix").exists(), "Should not create directory including the file name from prefix.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasOnlyFileName_createsFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile("prefix_", testName + ".tsv");
+            bw.close();
+            File file = new File("prefix_" + testName + ".tsv");
+            assertTrue(file.exists(), "Did not create the file with the prefix.");
+            file.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixHasOnlyFileName_noDirectoryCreated_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+        try {
+            BufferedWriter bw = createFile("prefix_", testName + ".tsv");
+            bw.close();
+            File directory = new File("prefix_");
+            assertFalse(directory.exists(), "Should not create a directory with the prefix.");
+            File file = new File("prefix_" + testName + ".tsv");
+            file.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void createFile_prefixEmptyAndFileDoesNotExist_Test() {
         String path = "";
         String fileName = "createFile_pathEmptyAndFileDoesNotExist_Test.txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(path, fileName);
+            BufferedWriter bw = createFile(path, fileName);
             bw.write("createFile_pathEmptyAndFileDoesNotExist_Test");
             bw.close();
 
@@ -157,7 +258,7 @@ class FileHandlerTest {
     }
 
     @Test
-    void createFile_pathEmtptyAndFileExists_Test() {
+    void createFile_prefixEmtptyAndFileExists_Test() {
         String path = "";
         String fileName = "createFile_pathEmtptyAndFileExists_Test.txt";
 
@@ -168,7 +269,7 @@ class FileHandlerTest {
             fw.close();
             assertTrue(preFile.exists(), "The precondition file was not created.");
 
-            BufferedWriter bw = FileHandler.createFile(path, fileName);
+            BufferedWriter bw = createFile(path, fileName);
             bw.write("createFile_pathEmtptyAndFileExists_Test with the function under test");
             bw.close();
 
@@ -185,12 +286,12 @@ class FileHandlerTest {
     }
 
     @Test
-    void createFile_pathSameDirectory_Test() {
+    void createFile_prefixSameDirectory_Test() {
         String path = "./";
         String fileName = "createFile_pathSameDirectory_Test.txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(path, fileName);
+            BufferedWriter bw = createFile(path, fileName);
             bw.write("createFile_pathSameDirectory_Test with the function under test");
             bw.close();
 
@@ -212,7 +313,7 @@ class FileHandlerTest {
         String fileName = "createFile_nonExistentPath_Test.txt";
 
         try {
-            BufferedWriter bw = FileHandler.createFile(path, fileName);
+            BufferedWriter bw = createFile(path, fileName);
             bw.write("createFile_nonExistentPath_Test with the function under test");
             bw.close();
 
@@ -239,7 +340,7 @@ class FileHandlerTest {
 
         try {
             // Create file
-            BufferedWriter bw = FileHandler.createFile(path, fileName);
+            BufferedWriter bw = createFile(path, fileName);
             // Write something to the file using the BufferedWriter
             bw.write("createFile_nonExistentPath_Test with the function under test");
             bw.close();

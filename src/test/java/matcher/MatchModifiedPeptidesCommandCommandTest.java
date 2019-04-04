@@ -131,7 +131,7 @@ class MatchModifiedPeptidesCommandCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchModifiedPeptidesCommand matchModifiedPeptidesCommand = Main.commandLine.getSubcommands().get("match-modified-peptides").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchModifiedPeptidesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchModifiedPeptidesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -140,7 +140,7 @@ class MatchModifiedPeptidesCommandCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchModifiedPeptidesCommand matchModifiedPeptidesCommand = Main.commandLine.getSubcommands().get("match-modified-peptides").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchModifiedPeptidesCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchModifiedPeptidesCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test

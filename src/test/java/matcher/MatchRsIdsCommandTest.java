@@ -127,7 +127,7 @@ class MatchRsIdsCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchRsIdsCommand matchRsIdsCommand = Main.commandLine.getSubcommands().get("match-rsids").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchRsIdsCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchRsIdsCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
@@ -136,7 +136,7 @@ class MatchRsIdsCommandTest {
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
         Main.commandLine.parse(args);
         Main.MatchRsIdsCommand matchRsIdsCommand = Main.commandLine.getSubcommands().get("match-rsids").getCommand();
-        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchRsIdsCommand.getOutput_path(), "Did not set the output path correctly.");
+        assertEquals(testInfo.getTestMethod().get().getName() + "/", matchRsIdsCommand.getOutput_prefix(), "Did not set the output path correctly.");
     }
 
     @Test
