@@ -1,11 +1,3 @@
-CFTR
-TGFB1
-FCGR2A
-DCTN4
-SCNN1B
-SCNN1G
-SCNN1A
-TNFRSF1A
-CLCA4
-STX1A
-CXCL8
+version https://git-lfs.github.com/spec/v1
+oid sha256:12a538b6616adef3247004875f53aa419bbcc18a0b076c82ec288aa8b1a09cf8
+size 81
