@@ -4,3 +4,6 @@
 *.vcf filter=lfs diff=lfs merge=lfs -text
 *.txt filter=lfs diff=lfs merge=lfs -text
 *.list filter=lfs diff=lfs merge=lfs -text
+LICENSE.txt filter=lfs diff=lfs merge=lfs -text
+src/test/resources/Genes/ filter=lfs diff=lfs merge=lfs -text
+src/test/resources/ filter=lfs diff=lfs merge=lfs -text
