@@ -11,15 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import picocli.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 import static model.Mapping.getSerializedObject;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MatchModifiedPeptidesCommandCommandTest {
+class MatchModifiedPeptidesCommandTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
@@ -289,9 +286,14 @@ class MatchModifiedPeptidesCommandCommandTest {
         Main.main(args);
         Main.MatchModifiedPeptidesCommand matchModifiedPeptidesCommand = Main.commandLine.getSubcommands().get("match-modified-peptides").getCommand();
 
-        assertEquals(((ImmutableSetMultimap<Proteoform, String>) getSerializedObject("proteoformsToReactions.gz")).keySet().size(),
-                matchModifiedPeptidesCommand.getPopulationSize(),
-                "Default population size for analysis should be total number of proteoforms.");
+        try {
+            assertEquals(((ImmutableSetMultimap<Proteoform, String>) getSerializedObject("","proteoformsToReactions.gz")).keySet().size(),
+                    matchModifiedPeptidesCommand.getPopulationSize(),
+                    "Default population size for analysis should be total number of proteoforms.");
+        } catch (FileNotFoundException e) {
+            fail("Should find the requested serialized file.");
+            e.printStackTrace();
+        }
     }
 
     @Test

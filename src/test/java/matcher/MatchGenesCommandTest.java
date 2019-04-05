@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import picocli.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 import static model.Mapping.getSerializedObject;
 import static org.junit.jupiter.api.Assertions.*;
@@ -292,8 +289,53 @@ class MatchGenesCommandTest {
         Main.main(args);
         Main.MatchGenesCommand MatchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
 
-        assertEquals(((ImmutableSetMultimap<String, String>) getSerializedObject("proteinsToReactions.gz")).keySet().size(),
-                MatchGenesCommand.getPopulationSize(),
-                "Default population size for analysis should be total number of proteins.");
+        try {
+            assertEquals(((ImmutableSetMultimap<String, String>) getSerializedObject("","proteinsToReactions.gz")).keySet().size(),
+                    MatchGenesCommand.getPopulationSize(),
+                    "Default population size for analysis should be total number of proteins.");
+        } catch (FileNotFoundException e) {
+            fail("Should find the serialized file.");
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void whenHelpRequested_showMappingPathArgument_Test(){
+        String[] args = {"help", "match-genes"};
+        Main.main(args);
+        assertTrue(outContent.toString().contains("--mapping=<mapping_path>"));
+    }
+
+    @Test
+    void givenMappingArgument_setsMappingPathValue_Test(){
+        String [] args = {"match-genes", "-i", fileGenes, "--mapping", "custom_path"};
+        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
+        Main.commandLine.parse(args);
+        Main.MatchGenesCommand matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
+        assertEquals(matchGenesCommand.getMapping_path(), "custom_path");
+    }
+
+    @Test
+    void missingMappingArgument_keepsMappingValueEmty_Test(){
+        String [] args = {"match-genes", "-i", fileGenes};
+        Main.commandLine = new CommandLine(new Main.PathwayMatcher());
+        Main.commandLine.parse(args);
+        Main.MatchGenesCommand matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
+        assertEquals(matchGenesCommand.getMapping_path(), "");
+    }
+
+
+    @Test
+    void withValidMappingDirectory_loadsTheFilesAndWorks_Test(TestInfo testInfo){
+        String testName = testInfo.getTestMethod().get().getName();
+        String[] args = {"match-genes", "-i", fileGenes, "-o", testName + "/"};
+        Main.main(args);
+        Main.MatchGenesCommand matchGenesCommand = Main.commandLine.getSubcommands().get("match-genes").getCommand();
+        assertNotEquals(0, matchGenesCommand.getMapping().getGenesToProteins().size(), "Did not load the genes to proteins map.");
+        assertNotEquals(0, matchGenesCommand.getMapping().getReactions().size(),  "Did not load the reactions list.");
+        assertNotEquals(0, matchGenesCommand.getMapping().getPathways().size(), "Did not load the pathway list.");
+        assertNotEquals(0, matchGenesCommand.getMapping().getReactionsToPathways().size(), "Did not load the reactions to pathways mapping.");
+        assertNotEquals(0, matchGenesCommand.getMapping().getProteinsToNames().size(), "Did not load the mapping from proteins to names.");
+        assertNotEquals(0, matchGenesCommand.getMapping().getProteinsToReactions().size(),  "Did not load the mapping from proteins to reactions.");
     }
 }

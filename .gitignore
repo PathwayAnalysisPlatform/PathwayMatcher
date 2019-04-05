@@ -32,3 +32,6 @@ target/
 output/
 *.cui
 *.jar
+*.gz
+*.fasta
+*.tsv
