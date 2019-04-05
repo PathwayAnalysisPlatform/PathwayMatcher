@@ -1,6 +1,8 @@
 package matcher.tools;
 
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.io.Files;
+import model.Proteoform;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.TestInfo;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 
 import static matcher.tools.FileHandler.createFile;
@@ -381,5 +384,50 @@ class FileHandlerTest {
         assertEquals(11, lines.size(), "The number of lines read is not correct.");
         assertEquals("CFTR", lines.get(0), "Line 1 is not correct.");
         assertEquals("CXCL8", lines.get(10), "Last line of the file is not correct.");
+    }
+
+    @Test
+    void storeSerialized_whenPathEmpty_storesTheFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+
+        List<Integer> list = new ArrayList<>(3);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        FileHandler.storeSerialized(list, "", testName + ".gz");
+        File file = new File(testName + ".gz");
+        assertTrue(file.exists(), "The serialized file was not stored.");
+        file.delete();
+    }
+
+    @Test
+    void storeSerialized_whenPathWithoutFinalSlash_storesTheFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+
+        List<Integer> list = new ArrayList<>(3);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        FileHandler.storeSerialized(list, testName, testName + ".gz");
+        File file = new File(testName + "/" + testName + ".gz");
+        assertTrue(file.exists(), "The serialized file was not stored.");
+        file.delete();
+    }
+
+    @Test
+    void storeSerialized_whenCorrectPath_storesTheFile_Test(TestInfo testInfo) {
+        String testName = testInfo.getTestMethod().get().getName();
+
+        List<Integer> list = new ArrayList<>(3);
+        list.add(1);
+        list.add(2);
+        list.add(3);
+
+        FileHandler.storeSerialized(list, testName + "/", testName + ".gz");
+        File file = new File(testName + "/" + testName + ".gz");
+        assertTrue(file.exists(), "The serialized file was not stored.");
+        file.delete();
     }
 }

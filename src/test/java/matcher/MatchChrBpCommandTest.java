@@ -9,10 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import picocli.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 import static model.Mapping.getSerializedObject;
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,10 +143,10 @@ class MatchChrBpCommandTest {
                 "--output"
         };
         Main.commandLine = new CommandLine(new Main.PathwayMatcher());
-        try{
+        try {
             Main.commandLine.parse(args);
             fail("Should throw an exception");
-        } catch(Exception ex){
+        } catch (Exception ex) {
             assertTrue(ex.getMessage().startsWith("Missing required parameter for option '--output'"));
         }
     }
@@ -279,12 +276,12 @@ class MatchChrBpCommandTest {
     }
 
     @Test
-    void SetDefaultPopulationSizeToProteoformSize_Test(TestInfo testInfo) {
+    void SetDefaultPopulationSizeToProteoformSize_Test(TestInfo testInfo) throws FileNotFoundException {
         String[] args = {"match-chrbp", "-i", fileChrBp, "-o", testInfo.getTestMethod().get().getName() + "/"};
         Main.main(args);
         Main.MatchChrBpCommand matchChrBpCommand = Main.commandLine.getSubcommands().get("match-chrbp").getCommand();
 
-        assertEquals(((ImmutableSetMultimap<String, String>) getSerializedObject("proteinsToReactions.gz")).keySet().size(),
+        assertEquals(((ImmutableSetMultimap<String, String>) getSerializedObject("", "proteinsToReactions.gz")).keySet().size(),
                 matchChrBpCommand.getPopulationSize(),
                 "Default population size for analysis should be total number of proteins.");
     }

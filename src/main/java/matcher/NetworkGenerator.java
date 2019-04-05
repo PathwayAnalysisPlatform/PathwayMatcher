@@ -82,31 +82,32 @@ class NetworkGenerator {
                             InputType inputType,
                             SearchResult searchResult,
                             Mapping mapping,
-                            String outputPath) throws IOException {
+                            String outputPath,
+                            String mapping_path) throws IOException {
         if (doGeneGraph) {
             try {
-                writeGeneGraph(searchResult, mapping, outputPath, inputType);
+                writeGeneGraph(searchResult, mapping, outputPath, inputType, mapping_path);
             } catch (IOException e) {
                 throw new IOException("Can't create gene network file.");
             }
         }
         if (doProteinGraph) {
             try {
-                writeProteinGraph(searchResult, mapping, outputPath);
+                writeProteinGraph(searchResult, mapping, outputPath, mapping_path);
             } catch (IOException e) {
                 throw new IOException("Can't create protein network file.");
             }
         }
         if (doProteoformGraph) {
             try {
-                writeProteoformGraph(searchResult, mapping, outputPath, inputType);
+                writeProteoformGraph(searchResult, mapping, outputPath, inputType, mapping_path);
             } catch (IOException e) {
                 throw new IOException("Can't create proteoform network file.");
             }
         }
     }
 
-    private static void writeGeneGraph(SearchResult searchResult, Mapping mapping, String outputPath, InputType inputType) throws IOException {
+    private static void writeGeneGraph(SearchResult searchResult, Mapping mapping, String outputPath, InputType inputType, String mapping_path) throws IOException {
         System.out.println("Creating gene connection graph...");
 
         TreeMultimap<String, String> addedEdges = TreeMultimap.create();
@@ -123,7 +124,7 @@ class NetworkGenerator {
 
         // Make sure all static maps are loaded
         // Load static mapping
-        mapping.loadMapsForGeneNetwork();
+        mapping.loadMapsForGeneNetwork(mapping_path);
 
         // Make sure all results are calculated
         // Get the list of hit genes for input cases different to input type gene. The list is generated during the search for the gene input type.
@@ -224,7 +225,7 @@ class NetworkGenerator {
         System.out.println("Finished writing edges files: \n" + outputPath + "geneInternalEdges.tsv\n" + outputPath + "geneExternalEdges.tsv");
     }
 
-    private static void writeProteinGraph(SearchResult searchResult, Mapping mapping, String outputPath) throws IOException {
+    private static void writeProteinGraph(SearchResult searchResult, Mapping mapping, String outputPath, String mapping_path) throws IOException {
 
         System.out.println("Creating protein connection graph...");
 
@@ -241,7 +242,7 @@ class NetworkGenerator {
         outputExternalEdges.write("id1" + "\t" + "id2" + "\t" + "type" + "\t" + "container_id" + "\t" + "role1" + "\t" + "role2" + System.lineSeparator());
 
         // Load static mapping
-        mapping.loadMapsForProteinNetwork();
+        mapping.loadMapsForProteinNetwork(mapping_path);
 
         // Write the vertices file
         for (String protein : searchResult.getMatchedProteins()) {
@@ -324,7 +325,7 @@ class NetworkGenerator {
         System.out.println("Finished writing edges files: \n" + outputPath + "proteinInternalEdges.tsv\n" + outputPath + "proteinExternalEdges.tsv");
     }
 
-    private static void writeProteoformGraph(SearchResult searchResult, Mapping mapping, String outputPath, InputType inputType) throws IOException {
+    private static void writeProteoformGraph(SearchResult searchResult, Mapping mapping, String outputPath, InputType inputType, String mapping_path) throws IOException {
 
         System.out.println("Creating proteoform connection graph...");
 
@@ -338,7 +339,7 @@ class NetworkGenerator {
         outputInternalEdges.write("id1" + "\t" + "id2" + "\t" + "type" + "\t" + "container_id" + "\t" + "role1" + "\t" + "role2" + System.lineSeparator());
         outputExternalEdges.write("id1" + "\t" + "id2" + "\t" + "type" + "\t" + "container_id" + "\t" + "role1" + "\t" + "role2" + System.lineSeparator());
 
-        mapping.loadMapsForProteoformNetwork();
+        mapping.loadMapsForProteoformNetwork(mapping_path);
 
         // Make sure all results are calculated: Set as matched all the proteoforms that correspond to the matched proteins
         // It uses matched proteins (the ones found in the database) rather than the hit proteins (the matched proteins

@@ -3,14 +3,13 @@ package matcher.tools;
 import com.google.common.io.Files;
 import model.Error;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class FileHandler {
 
@@ -76,5 +75,54 @@ public class FileHandler {
             System.err.println("The input file: " + path + " was not found.");
         }
         return null;
+    }
+
+    public static BufferedReader getBufferedReaderForGzipFile(String path, String fileName) throws FileNotFoundException, IOException {
+        if (!path.endsWith("/")) {
+            path += "/";
+        }
+        File file = new File(path + fileName);
+        InputStream fileStream = new FileInputStream(file);
+        InputStream gzipStream = new GZIPInputStream(fileStream);
+        Reader decoder = new InputStreamReader(gzipStream, Charset.defaultCharset());
+        return new BufferedReader(decoder);
+    }
+
+    static BufferedReader getBufferedReaderFromResource(String fileName) throws FileNotFoundException, IOException {
+
+        BufferedReader br = null;
+        InputStream fileStream = ClassLoader.getSystemResourceAsStream(fileName);
+        Reader decoder = null;
+        if (fileName.endsWith(".gz")) {
+            InputStream gzipStream = new GZIPInputStream(fileStream);
+            decoder = new InputStreamReader(gzipStream);
+        } else {
+            decoder = new InputStreamReader(fileStream);
+        }
+        br = new BufferedReader(decoder);
+
+        return br;
+    }
+
+    public static void storeSerialized(Object obj, String path, String fileName) {
+        if(path.length() > 0){
+            if (!path.endsWith("/")) {
+                path += "/";
+            }
+            File directory = new File(path);
+            directory.mkdirs();
+        }
+        FileOutputStream fos = null;
+        GZIPOutputStream gz;
+        ObjectOutputStream oos;
+        try {
+            fos = new FileOutputStream(path + fileName);
+            gz = new GZIPOutputStream(fos);
+            oos = new ObjectOutputStream(gz);
+            oos.writeObject(obj);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import picocli.CommandLine;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 import static model.Mapping.getSerializedObject;
 import static org.junit.jupiter.api.Assertions.*;
@@ -286,9 +283,14 @@ class MatchProteoformsCommandTest {
         Main.main(args);
         Main.MatchProteoformsCommand matchProteoformsCommand = Main.commandLine.getSubcommands().get("match-proteoforms").getCommand();
 
-        assertEquals(((ImmutableSetMultimap<Proteoform, String>) getSerializedObject("proteoformsToReactions.gz")).keySet().size(),
-                matchProteoformsCommand.getPopulationSize(),
-                "Default population size for analysis should be total number of proteoforms.");
+        try {
+            assertEquals(((ImmutableSetMultimap<Proteoform, String>) getSerializedObject("","proteoformsToReactions.gz")).keySet().size(),
+                    matchProteoformsCommand.getPopulationSize(),
+                    "Default population size for analysis should be total number of proteoforms.");
+        } catch (FileNotFoundException e) {
+            fail("Should find the serialized file.");
+            e.printStackTrace();
+        }
     }
 
     @Test

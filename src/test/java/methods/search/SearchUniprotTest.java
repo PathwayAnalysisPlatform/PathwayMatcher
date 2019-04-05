@@ -6,6 +6,7 @@ import model.ProteoformFormat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +19,8 @@ class SearchUniprotTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
-        mapping = new Mapping(InputType.UNIPROT, true);
+    static void loadStaticMapping() throws FileNotFoundException {
+        mapping = new Mapping(InputType.UNIPROT, true, "");
     }
 
     @Test
@@ -29,7 +30,7 @@ class SearchUniprotTest {
         input.add("P01308");
         input.add("P0130898989");
 
-        SearchResult result = Search.search(input, InputType.UNIPROT, true, mapping);
+        SearchResult result = Search.searchWithUniProt(input, mapping, true);
 
         assertEquals(1, result.getHitProteins().size());
         assertTrue(result.getHitProteins().contains("P01308"));
@@ -46,9 +47,9 @@ class SearchUniprotTest {
         input.add("Q5S007 ");
         input.add("P10636");
 
-        SearchResult result = Search.search(input, InputType.UNIPROT, true, mapping);
+        SearchResult result = Search.searchWithUniProt(input, mapping, true);
 
-        assertEquals(3, result.getHitProteins().size());
+        assertEquals(2, result.getHitProteins().size());
         assertTrue(result.getHitProteins().contains("P10636"));
         assertEquals(92, result.getHitPathways().size());
         assertTrue(result.containsPathwayByStid("R-HSA-8857538"));
@@ -61,7 +62,7 @@ class SearchUniprotTest {
         List<String> input = new ArrayList<>();
         input.add("P01308");
 
-        SearchResult result = Search.search(input, InputType.UNIPROT, true, mapping);
+        SearchResult result = Search.searchWithUniProt(input, mapping, true);
 
         assertEquals(1, result.getHitPathwayByStid("R-HSA-74749").getEntitiesFound().size());
         assertEquals(1, result.getHitPathwayByStid("R-HSA-74749").getReactionsFound().size());

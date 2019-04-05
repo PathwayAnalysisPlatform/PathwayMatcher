@@ -7,6 +7,7 @@ import model.ProteoformFormat;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +21,8 @@ class SearchPeptideTest {
     private static Mapping mapping;
 
     @BeforeAll
-    static void loadStaticMapping() {
-        mapping = new Mapping(InputType.PEPTIDE, true);
+    static void loadStaticMapping() throws FileNotFoundException {
+        mapping = new Mapping(InputType.PEPTIDE, true, "");
     }
 
     @Test
@@ -56,9 +57,9 @@ class SearchPeptideTest {
         input.add("MTSKLAVALLAAFLISAALCEGAVLPRSAKELRCQCIKTYSKPFHPKFIKELRVIESGPH"); //P10145
         input.add("blabla");
 
-        SearchResult result = Search.search(input, InputType.PEPTIDE,  true, mapping, MatchType.STRICT, 0L, fastaFile);
+        SearchResult result = Search.searchWithPeptide(input, mapping, true,fastaFile);
 
-        assertEquals(11, result.getHitProteins().size());
+        assertEquals(9, result.getHitProteins().size());
         assertTrue(result.getHitProteins().contains("P37088"));
         assertTrue(result.getHitProteins().contains("P01137"));
         assertEquals(104, result.getHitPathways().size());
