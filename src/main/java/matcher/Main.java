@@ -33,12 +33,12 @@ public class Main {
 
     // Parent command for matching
     @Command(name = "java -jar PathwayMatcher.jar",
-            header = "@|green %n PathwayMatcher 1.9.0 %n |@",
+            header = "@|green %n PathwayMatcher 1.9.1 %n |@",
             description = "Matches the input to reactions and pathways. Creates search.csv with the reactions and pathways relevant to the matched entities, and analysis.csv with the over representation analysis.",
             footer = {"@|cyan %n If you like the project, star it on github. |@",
                     "@|cyan %n Includes mapping from Reactome v68. |@",
                     ""},
-            version = "PathwayMatcher 1.9.0",
+            version = "PathwayMatcher 1.9.1",
             subcommands = {
                     MatchProteoformsCommand.class,
                     MatchGenesCommand.class,

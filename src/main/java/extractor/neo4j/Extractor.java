@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import static matcher.tools.FileHandler.getBufferedReaderForGzipFile;
+import static matcher.tools.FileHandler.storeSerialized;
 import static model.Error.ERROR_READING_VEP_TABLES;
 import static model.Error.sendError;
 import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
@@ -27,7 +29,7 @@ import static org.apache.commons.io.FilenameUtils.separatorsToSystem;
  * This module gathers reference biological data necessary to perform pathway search and analysis,
  * and creates static mapping files that are loaded during execution of PathwayMatcher.
  */
-@Command(version = "PathwayMatcher 1.9.0")
+@Command(version = "PathwayMatcher 1.9.1")
 public class Extractor implements Runnable {
 
     @Option(names = {"-u", "--user", "--username"}, description = "Username to log in to Neo4j")
@@ -40,7 +42,7 @@ public class Extractor implements Runnable {
     private static String vepFilesPath = "../MappingFiles/Extractor/";
 
     @Option(names = {"-o", "--output"}, description = "Path to directory for the output files(static maps).")
-    private static String outputPath = "";
+    private static String outputPath = "../MappingFiles/PathwayMatcher/";
 
     @Option(names = {"-v", "--version"}, versionHelp = true, description = "Show version information and exit")
     boolean versionInfoRequested;
@@ -98,65 +100,65 @@ public class Extractor implements Runnable {
             directory.mkdirs();
         }
 
-        proteinsToReactions = getProteinsToReactions();
+        proteinsToReactions = getProteinsToReactions(outputPath);
         System.out.println("Finished map proteins to reactions.");
 
         for (int chr = 1; chr <= 22; chr++) {
-            rsIdsToProteins = getRsIdsToProteins(chr);
+            rsIdsToProteins = getRsIdsToProteins(chr, outputPath);
             System.out.println("Finished map rsids to proteins, chromosome " + chr);
         }
 
         for (int chr = 1; chr <= 22; chr++) {
-            chrBpToProteins = getChrBpToProteins(chr);
+            chrBpToProteins = getChrBpToProteins(chr, outputPath);
             System.out.println("Finished map chrBp to proteins, chromosome " + chr);
         }
 
-        genesToProteins = getGenesToProteinsReactome();
+        genesToProteins = getGenesToProteinsReactome(outputPath);
         System.out.println("Finished map genes to proteins.");
 
-        ensemblToProteins = getEnsemblToProteins();
+        ensemblToProteins = getEnsemblToProteins(outputPath);
         System.out.println("Finished map ensembl to proteins.");
 
-        proteoformsToReactions = getProteoformsToReactions();
+        proteoformsToReactions = getProteoformsToReactions(outputPath);
         System.out.println("Finished map proteoforms to reactions.");
 
-        reactionsToPathways = getReactonsToPathways();
+        reactionsToPathways = getReactonsToPathways(outputPath);
         System.out.println("Finished map reactions to pathways.");
 
-        pathwaysToTopLevelPathways = getPathwaysToTopLevelPathways();
+        pathwaysToTopLevelPathways = getPathwaysToTopLevelPathways(outputPath);
         System.out.println("Finished map pathways to top level pathways.");
 
-        proteinsToNames = getProteinNames();
+        proteinsToNames = getProteinNames(outputPath);
         System.out.println("Finished getting the protein names.");
 
-        proteinsToComplexes = getProteinsToComplexes();
+        proteinsToComplexes = getProteinsToComplexes(outputPath);
         System.out.println("Finished map proteins to complexes.");
 
-        complexesToProteins = getComplexesToProteins();
+        complexesToProteins = getComplexesToProteins(outputPath);
         System.out.println("Finished map of complexes to proteins.");
 
-        proteoformsToComplexes = getProteoformsToComplexes();
+        proteoformsToComplexes = getProteoformsToComplexes(outputPath);
         System.out.println("Finished map of proteoforms to complexes");
 
-        complexesToProteoforms = getComplexesToProteoforms();
+        complexesToProteoforms = getComplexesToProteoforms(outputPath);
         System.out.println("Finished map of complexes to proteoforms");
 
-        setsToProteins = getSetsToProteins();
+        setsToProteins = getSetsToProteins(outputPath);
         System.out.println("Finished map of sets to proteins.");
 
-        proteinsToSets = getProteinsToSets();
+        proteinsToSets = getProteinsToSets(outputPath);
         System.out.println("Finished map proteins to sets");
 
-        setsToProteoforms = getSetsToProteoforms();
+        setsToProteoforms = getSetsToProteoforms(outputPath);
         System.out.println("Finished map sets to proteoforms");
 
-        proteinsToProteoforms = getProteinsToProteoforms();
+        proteinsToProteoforms = getProteinsToProteoforms(outputPath);
         System.out.println("Finished map proteins to proteoforms.");
 
         System.exit(0);
     }
 
-    private static void getComplexComponents() {
+    private static void getComplexComponents(String mapping_path) {
 
         if (physicalEntitiesToProteoforms == null) {
             getPhysicalEntitiesToProteoforms();
@@ -184,44 +186,44 @@ public class Extractor implements Runnable {
         complexesToProteoforms = builderComplexesToProteoforms.build();
         proteoformsToComplexes = builderProteoformsToComplexes.build();
 
-        storeSerialized(complexesToProteins, outputPath + "complexesToProteins.gz");
-        storeSerialized(proteinsToComplexes, outputPath + "proteinsToComplexes.gz");
-        storeSerialized(complexesToProteoforms, outputPath + "complexesToProteoforms.gz");
-        storeSerialized(proteoformsToComplexes, outputPath + "proteoformsToComplexes.gz");
+        storeSerialized(complexesToProteins, mapping_path, "complexesToProteins.gz");
+        storeSerialized(proteinsToComplexes, mapping_path, "proteinsToComplexes.gz");
+        storeSerialized(complexesToProteoforms, mapping_path, "complexesToProteoforms.gz");
+        storeSerialized(proteoformsToComplexes, mapping_path, "proteoformsToComplexes.gz");
     }
 
-    public static ImmutableSetMultimap<String, String> getComplexesToProteins() {
+    public static ImmutableSetMultimap<String, String> getComplexesToProteins(String mapping_path) {
         if (complexesToProteins == null) {
-            getComplexComponents();
+            getComplexComponents(mapping_path);
         }
 
         return complexesToProteins;
     }
 
 
-    public static ImmutableSetMultimap<String, String> getProteinsToComplexes() {
+    public static ImmutableSetMultimap<String, String> getProteinsToComplexes(String mapping_path) {
         if (proteinsToComplexes == null) {
-            getComplexComponents();
+            getComplexComponents(mapping_path);
         }
         return proteinsToComplexes;
     }
 
-    public static ImmutableSetMultimap<String, Proteoform> getComplexesToProteoforms() {
+    public static ImmutableSetMultimap<String, Proteoform> getComplexesToProteoforms(String mapping_path) {
         if (complexesToProteoforms == null) {
-            getComplexComponents();
+            getComplexComponents(mapping_path);
         }
 
         return complexesToProteoforms;
     }
 
-    public static ImmutableSetMultimap<Proteoform, String> getProteoformsToComplexes() {
+    public static ImmutableSetMultimap<Proteoform, String> getProteoformsToComplexes(String mapping_path) {
         if (proteoformsToComplexes == null) {
-            getComplexComponents();
+            getComplexComponents(mapping_path);
         }
         return proteoformsToComplexes;
     }
 
-    public static ImmutableSetMultimap<String, String> getSetMembersAndCandidates() {
+    public static ImmutableSetMultimap<String, String> getSetMembersAndCandidates(String mapping_path) {
         if (physicalEntitiesToProteoforms == null) {
             getPhysicalEntitiesToProteoforms();
         }
@@ -247,50 +249,50 @@ public class Extractor implements Runnable {
         setsToProteoforms = builderSetsToProteoforms.build();
         proteoformsToSets = builderProteoformsToSets.build();
 
-        storeSerialized(setsToProteins, outputPath + "setsToProteins.gz");
-        storeSerialized(proteinsToSets, outputPath + "proteinsToSets.gz");
-        storeSerialized(setsToProteoforms, outputPath + "setsToProteoforms.gz");
-        storeSerialized(proteoformsToSets, outputPath + "proteoformsToSets.gz");
+        storeSerialized(setsToProteins, mapping_path, "setsToProteins.gz");
+        storeSerialized(proteinsToSets, mapping_path, "proteinsToSets.gz");
+        storeSerialized(setsToProteoforms, mapping_path, "setsToProteoforms.gz");
+        storeSerialized(proteoformsToSets, mapping_path, "proteoformsToSets.gz");
 
         return setsToProteins;
     }
 
-    public static ImmutableSetMultimap<String, String> getSetsToProteins() {
+    public static ImmutableSetMultimap<String, String> getSetsToProteins(String mapping_path) {
         if (setsToProteins == null) {
-            getSetMembersAndCandidates();
+            getSetMembersAndCandidates(mapping_path);
         }
 
         return setsToProteins;
     }
 
 
-    public static ImmutableSetMultimap<String, String> getProteinsToSets() {
+    public static ImmutableSetMultimap<String, String> getProteinsToSets(String mapping_path) {
         if (proteinsToSets == null) {
-            getSetMembersAndCandidates();
+            getSetMembersAndCandidates(mapping_path);
         }
         return proteinsToSets;
     }
 
-    public static ImmutableSetMultimap<String, Proteoform> getSetsToProteoforms() {
+    public static ImmutableSetMultimap<String, Proteoform> getSetsToProteoforms(String mapping_path) {
         if (setsToProteoforms == null) {
-            getSetMembersAndCandidates();
+            getSetMembersAndCandidates(mapping_path);
         }
 
         return setsToProteoforms;
     }
 
-    public static ImmutableSetMultimap<Proteoform, String> getProteoformsToSets() {
+    public static ImmutableSetMultimap<Proteoform, String> getProteoformsToSets(String mapping_path) {
         if (proteoformsToSets == null) {
-            getSetMembersAndCandidates();
+            getSetMembersAndCandidates(mapping_path);
         }
         return proteoformsToSets;
     }
 
 
-    public static ImmutableSetMultimap<String, String> getRsIdsToProteins(int chr) {
+    public static ImmutableSetMultimap<String, String> getRsIdsToProteins(int chr, String mapping_path) {
 
         if (proteinsToReactions == null) {
-            getProteinsToReactions();
+            getProteinsToReactions(mapping_path);
         }
 
         ImmutableSetMultimap.Builder<String, String> builderRsIdsToProteins = ImmutableSetMultimap.builder();
@@ -332,15 +334,15 @@ public class Extractor implements Runnable {
 
         rsIdsToProteins = builderRsIdsToProteins.build();
 
-        storeSerialized(rsIdsToProteins, outputPath + "rsIdsToProteins" + chr + ".gz");
+        storeSerialized(rsIdsToProteins, mapping_path, "rsIdsToProteins" + chr + ".gz");
 
         return rsIdsToProteins;
     }
 
-    public static ImmutableSetMultimap<Long, String> getChrBpToProteins(int chr) {
+    public static ImmutableSetMultimap<Long, String> getChrBpToProteins(int chr, String mapping_path) {
 
         if (proteinsToReactions == null) {
-            getProteinsToReactions();
+            getProteinsToReactions(mapping_path);
         }
 
         ImmutableSetMultimap.Builder<Long, String> builderChrBpToProteins = ImmutableSetMultimap.builder();
@@ -373,11 +375,11 @@ public class Extractor implements Runnable {
 
         chrBpToProteins = builderChrBpToProteins.build();
 
-        storeSerialized(chrBpToProteins, outputPath + "chrBpToProteins" + chr + ".gz");
+        storeSerialized(chrBpToProteins, mapping_path, "chrBpToProteins" + chr + ".gz");
         return chrBpToProteins;
     }
 
-    public static ImmutableSetMultimap<String, Proteoform> getProteinsToProteoforms() {
+    public static ImmutableSetMultimap<String, Proteoform> getProteinsToProteoforms(String mapping_path) {
 
         // Make sure the full list of proteoforms is loaded
         if (proteoformsToPhysicalEntities == null) {
@@ -392,7 +394,7 @@ public class Extractor implements Runnable {
         }
 
         proteinsToProteoforms = builderProteinsToProteoforms.build();
-        storeSerialized(proteinsToProteoforms, outputPath + "proteinsToProteoforms.gz");
+        storeSerialized(proteinsToProteoforms, mapping_path, "proteinsToProteoforms.gz");
 
         return proteinsToProteoforms;
     }
@@ -440,7 +442,7 @@ public class Extractor implements Runnable {
     /**
      * Get list of reactions
      */
-    public static ImmutableMap<String, Reaction> getReactions() {
+    public static ImmutableMap<String, Reaction> getReactions(String mapping_path) {
 
         if (physicalEntitiesToProteoforms == null) {
             getPhysicalEntitiesToProteoforms();
@@ -471,14 +473,14 @@ public class Extractor implements Runnable {
         }
 
         // Serialize list of reactions
-        storeSerialized(reactions, outputPath + "reactions.gz");
+        storeSerialized(reactions, mapping_path, "reactions.gz");
         return reactions;
     }
 
     /**
      * Get list of pathways
      */
-    public static ImmutableMap<String, Pathway> getPathways() {
+    public static ImmutableMap<String, Pathway> getPathways(String mapping_path) {
 
         ImmutableMap.Builder<String, Pathway> builderPathways = ImmutableMap.builder();
 
@@ -497,11 +499,11 @@ public class Extractor implements Runnable {
         pathways = builderPathways.build();
 
         // Serialize pathways
-        storeSerialized(pathways, outputPath + "pathways.gz");
+        storeSerialized(pathways, mapping_path, "pathways.gz");
         return pathways;
     }
 
-    public static ImmutableSetMultimap<String, String> getGenesToProteinsReactome() {
+    public static ImmutableSetMultimap<String, String> getGenesToProteinsReactome(String mapping_path) {
 
         // Query the database and fill the data structure
         ImmutableSetMultimap.Builder<String, String> builderGenesToProteins = ImmutableSetMultimap.builder();
@@ -511,11 +513,11 @@ public class Extractor implements Runnable {
         }
         genesToProteins = builderGenesToProteins.build();
 
-        storeSerialized(genesToProteins, outputPath + "genesToProteins.gz");
+        storeSerialized(genesToProteins, mapping_path, "genesToProteins.gz");
         return genesToProteins;
     }
 
-    public static ImmutableSetMultimap<String, String> getEnsemblToProteins() {
+    public static ImmutableSetMultimap<String, String> getEnsemblToProteins(String mapping_path) {
 
         // Query the database and fill the data structure
         ImmutableSetMultimap.Builder<String, String> builderEnsemblToProteins = ImmutableSetMultimap
@@ -526,7 +528,7 @@ public class Extractor implements Runnable {
         }
         ensemblToProteins = builderEnsemblToProteins.build();
 
-        storeSerialized(ensemblToProteins, outputPath + "ensemblToProteins.gz");
+        storeSerialized(ensemblToProteins, mapping_path, "ensemblToProteins.gz");
         return ensemblToProteins;
     }
 
@@ -557,7 +559,7 @@ public class Extractor implements Runnable {
      *
      * @return
      */
-    static ImmutableSetMultimap<Proteoform, String> getProteoformsToReactions() {
+    static ImmutableSetMultimap<Proteoform, String> getProteoformsToReactions(String mapping_path) {
         if (physicalEntitiesToReactions == null) {
             getPhysicalEntitiesToReactions();
         }
@@ -577,7 +579,7 @@ public class Extractor implements Runnable {
 
         proteoformsToReactions = builderProteoformsToReactions.build();
 
-        storeSerialized(proteoformsToReactions, outputPath + "proteoformsToReactions.gz");
+        storeSerialized(proteoformsToReactions, mapping_path, "proteoformsToReactions.gz");
 
         return proteoformsToReactions;
     }
@@ -585,10 +587,10 @@ public class Extractor implements Runnable {
     /**
      * Get mapping from proteins to reactions
      */
-    static ImmutableSetMultimap<String, String> getProteinsToReactions() {
+    static ImmutableSetMultimap<String, String> getProteinsToReactions(String mapping_path) {
 
         if (reactions == null) {
-            getReactions();
+            getReactions(mapping_path);
         }
 
         // Query the database and fill the data structure
@@ -605,11 +607,11 @@ public class Extractor implements Runnable {
         }
 
         proteinsToReactions = builderProteinsToReactions.build();
-        storeSerialized(proteinsToReactions, outputPath + "proteinsToReactions.gz");
+        storeSerialized(proteinsToReactions, mapping_path, "proteinsToReactions.gz");
         return proteinsToReactions;
     }
 
-    public static ImmutableMap<String, String> getProteinNames() {
+    public static ImmutableMap<String, String> getProteinNames(String mapping_path) {
         ImmutableMap.Builder<String, String> proteinsBuilder = ImmutableMap.<String, String>builder();
 
         String name = "";
@@ -633,20 +635,20 @@ public class Extractor implements Runnable {
         }
 
         proteinsToNames = proteinsBuilder.build();
-        storeSerialized(proteinsToNames, outputPath + "proteinsToNames.gz");
+        storeSerialized(proteinsToNames, mapping_path, "proteinsToNames.gz");
         return proteinsToNames;
     }
 
     /**
      * Get mapping from reactions to pathways
      */
-    private static ImmutableSetMultimap<String, String> getReactonsToPathways() {
+    private static ImmutableSetMultimap<String, String> getReactonsToPathways(String mapping_path) {
 
         if (reactions == null) {
-            getReactions();
+            getReactions(mapping_path);
         }
         if (pathways == null) {
-            getPathways();
+            getPathways(mapping_path);
         }
 
         // Query the database and fill the data structure
@@ -659,17 +661,17 @@ public class Extractor implements Runnable {
 
         reactionsToPathways = builderReactionsToPathways.build();
 
-        storeSerialized(reactionsToPathways, outputPath + "reactionsToPathways.gz");
+        storeSerialized(reactionsToPathways, mapping_path, "reactionsToPathways.gz");
         return reactionsToPathways;
     }
 
     /**
      * Get mapping from pathways to top level pathways
      */
-    static ImmutableSetMultimap<String, String> getPathwaysToTopLevelPathways() {
+    static ImmutableSetMultimap<String, String> getPathwaysToTopLevelPathways(String mapping_path) {
 
         if (pathways.size() == 0) {
-            getPathways();
+            getPathways(mapping_path);
         }
 
         // Query the database and fill the data structure
@@ -683,7 +685,7 @@ public class Extractor implements Runnable {
 
         pathwaysToTopLevelPathways = builderPathwaysToTopLevelPathways.build();
 
-        storeSerialized(pathwaysToTopLevelPathways, outputPath + "pathwaysToTopLevelPathways.gz");
+        storeSerialized(pathwaysToTopLevelPathways, mapping_path, "pathwaysToTopLevelPathways.gz");
         return pathwaysToTopLevelPathways;
     }
 
@@ -703,48 +705,5 @@ public class Extractor implements Runnable {
             }
         }
         return builder.build();
-    }
-
-    static BufferedReader getBufferedReaderForGzipFile(String path, String fileName) throws FileNotFoundException, IOException {
-        if(!path.endsWith("/")){
-            path += "/";
-        }
-        File file = new File(path + fileName);
-        InputStream fileStream = new FileInputStream(file);
-        InputStream gzipStream = new GZIPInputStream(fileStream);
-        Reader decoder = new InputStreamReader(gzipStream, Charset.defaultCharset());
-        return new BufferedReader(decoder);
-    }
-
-    static BufferedReader getBufferedReaderFromResource(String fileName) throws FileNotFoundException, IOException {
-
-        BufferedReader br = null;
-        InputStream fileStream = ClassLoader.getSystemResourceAsStream(fileName);
-        Reader decoder = null;
-        if (fileName.endsWith(".gz")) {
-            InputStream gzipStream = new GZIPInputStream(fileStream);
-            decoder = new InputStreamReader(gzipStream);
-        } else {
-            decoder = new InputStreamReader(fileStream);
-        }
-        br = new BufferedReader(decoder);
-
-        return br;
-    }
-
-    private static void storeSerialized(Object obj, String fileName) {
-        FileOutputStream fos = null;
-        GZIPOutputStream gz;
-        ObjectOutputStream oos;
-        try {
-            fos = new FileOutputStream(fileName);
-            gz = new GZIPOutputStream(fos);
-            oos = new ObjectOutputStream(gz);
-            oos.writeObject(obj);
-            oos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 }

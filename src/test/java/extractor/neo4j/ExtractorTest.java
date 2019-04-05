@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;
 import model.*;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,39 +16,42 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
 
-import static extractor.neo4j.Extractor.getBufferedReaderForGzipFile;
 import static extractor.neo4j.Extractor.getSNPAndSwissProtFromVep;
+import static matcher.tools.FileHandler.getBufferedReaderForGzipFile;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ExtractorTest {
 
     static final String mapping_path = "../MappingFiles/Extractor/";
 
-    @org.junit.jupiter.api.BeforeEach
-    void setUp() {
-
+    @AfterEach
+    void deleteOutput(TestInfo testInfo) {
+        try {
+            File directory = new File(testInfo.getTestMethod().get().getName() + "/");
+            FileUtils.deleteDirectory(directory);
+            assertFalse(directory.exists());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
-    void getEnsembleToProteinsTest() {
+    void getEnsembleToProteinsTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, String> imapEnsembleToProteins = Extractor.getEnsemblToProteins();
+        ImmutableSetMultimap<String, String> imapEnsembleToProteins = Extractor.getEnsemblToProteins(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(1, imapEnsembleToProteins.get("ENSP00000380389").size());
         assertTrue(imapEnsembleToProteins.get("ENSP00000380389").contains("P19438"));
 
         assertEquals(1, imapEnsembleToProteins.get("ENSG00000143226").size());
         assertTrue(imapEnsembleToProteins.get("ENSG00000143226").contains("P12318"));
-
-        File fileEnsembleToProteins = new File("ensemblToProteins.gz");
-        fileEnsembleToProteins.delete();
     }
 
     @Test
-    void getProteinNamesTest() {
+    void getProteinNamesTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableMap<String, String> proteinsToNames = Extractor.getProteinNames();
+        ImmutableMap<String, String> proteinsToNames = Extractor.getProteinNames(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals("Hemoglobin subunit beta", proteinsToNames.get("P68871"), "Protein P68871 missing in the mapping");
         assertEquals("Hemoglobin subunit alpha", proteinsToNames.get("P69905"), "Protein P69905 missing in the mapping");
@@ -54,9 +60,9 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionsNeighboursTest1() {
+    void getReactionsNeighboursTest1(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(76, iReactions.get("R-HSA-1112666").getProteinParticipantsWithRole().keySet().size());
         assertTrue(iReactions.get("R-HSA-1112666").getProteinParticipantsWithRole().containsKey("A0A075B6P5"));
@@ -66,9 +72,9 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionNeightboursTest2() {
+    void getReactionNeightboursTest2(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(2, iReactions.get("R-HSA-74716").getProteinParticipantsWithRole().keySet().size());
         assertTrue(iReactions.get("R-HSA-74716").getProteinParticipantsWithRole().containsKey("P06213"));
@@ -89,9 +95,9 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionParticipantsPhenylalaningHydroxylaseTest() throws ParseException {
+    void getReactionParticipantsPhenylalaningHydroxylaseTest(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(1, iReactions.get("R-HSA-71118").getProteinParticipantsWithRole().size());
         assertTrue(iReactions.get("R-HSA-71118").getProteinParticipantsWithRole().containsEntry("P00439", Role.CATALYSTACTIVITY));
@@ -102,9 +108,9 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionParticipantsProteinPhosphataseRegulatorySubunitTest() throws ParseException {
+    void getReactionParticipantsProteinPhosphataseRegulatorySubunitTest(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(8, iReactions.get("R-HSA-419083").getProteinParticipantsWithRole().keySet().size());
         assertTrue(iReactions.get("R-HSA-419083").getProteinParticipantsWithRole().containsEntry("O14974", Role.INPUT));
@@ -121,9 +127,9 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionParticipantsTest3() throws ParseException {
+    void getReactionParticipantsTest3(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         String reaction = "R-HSA-6802927";
         assertEquals(35, iReactions.get(reaction).getProteinParticipantsWithRole().keySet().size());
@@ -144,10 +150,10 @@ class ExtractorTest {
     }
 
     @Test
-    void getReactionParticipantRolesTest() {
+    void getReactionParticipantRolesTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions();
+        ImmutableMap<String, Reaction> iReactions = Extractor.getReactions(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(14, iReactions.get("R-HSA-8863895").getProteinParticipantsWithRole().keySet().size());
         assertTrue(iReactions.get("R-HSA-8863895").getProteinParticipantsWithRole().get("O14920").contains(Role.CATALYSTACTIVITY));
@@ -158,10 +164,10 @@ class ExtractorTest {
     }
 
     @Test
-    void imapProteinsToComplexesTest() {
+    void imapProteinsToComplexesTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapProteinsToComplexes = Extractor.getProteinsToComplexes();
+        ImmutableSetMultimap<String, String> imapProteinsToComplexes = Extractor.getProteinsToComplexes(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(32, imapProteinsToComplexes.get("Q9Y297").size());
         assertTrue(imapProteinsToComplexes.get("Q9Y297").contains("R-HSA-174138"));
@@ -172,9 +178,9 @@ class ExtractorTest {
     }
 
     @Test
-    void imapComplexToProteoformsTest1() throws ParseException {
+    void imapComplexToProteoformsTest1(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, Proteoform> imapComplexesToProteoforms = Extractor.getComplexesToProteoforms();
+        ImmutableSetMultimap<String, Proteoform> imapComplexesToProteoforms = Extractor.getComplexesToProteoforms(testInfo.getTestMethod().get().getName() + "/");
 
         String complex = "R-HSA-174138";
 
@@ -185,9 +191,9 @@ class ExtractorTest {
     }
 
     @Test
-    void imapComplexToProteoformsTest2() throws ParseException {
+    void imapComplexToProteoformsTest2(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, Proteoform> imapComplexesToProteoforms = Extractor.getComplexesToProteoforms();
+        ImmutableSetMultimap<String, Proteoform> imapComplexesToProteoforms = Extractor.getComplexesToProteoforms(testInfo.getTestMethod().get().getName() + "/");
 
         String complex = "R-HSA-8952593";
 
@@ -198,9 +204,9 @@ class ExtractorTest {
     }
 
     @Test
-    void imapProteoformsToComplexesTest1() throws ParseException {
+    void imapProteoformsToComplexesTest1(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<Proteoform, String> imapProteoformsToComplexes = Extractor.getProteoformsToComplexes();
+        ImmutableSetMultimap<Proteoform, String> imapProteoformsToComplexes = Extractor.getProteoformsToComplexes(testInfo.getTestMethod().get().getName() + "/");
 
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("Q9UKT4;00046:182");
 
@@ -218,9 +224,9 @@ class ExtractorTest {
     }
 
     @Test
-    void imapProteoformsToComplexesTest2() throws ParseException {
+    void imapProteoformsToComplexesTest2(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<Proteoform, String> imapProteoformsToComplexes = Extractor.getProteoformsToComplexes();
+        ImmutableSetMultimap<Proteoform, String> imapProteoformsToComplexes = Extractor.getProteoformsToComplexes(testInfo.getTestMethod().get().getName() + "/");
 
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("Q01362;00048:219,00048:225,00048:229");
 
@@ -235,10 +241,10 @@ class ExtractorTest {
     }
 
     @Test
-    void imapComplexesToProteinsTest() {
+    void imapComplexesToProteinsTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapComplexesToParticipants = Extractor.getComplexesToProteins();
+        ImmutableSetMultimap<String, String> imapComplexesToParticipants = Extractor.getComplexesToProteins(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(1, imapComplexesToParticipants.get("R-HSA-70484").size());
         assertTrue(imapComplexesToParticipants.get("R-HSA-70484").contains("P00558"));
@@ -250,10 +256,10 @@ class ExtractorTest {
     }
 
     @Test
-    void imapSetsToMembersAndCandidatesTest() {
+    void imapSetsToMembersAndCandidatesTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapSetsToMembersAndCandidates = Extractor.getSetMembersAndCandidates();
+        ImmutableSetMultimap<String, String> imapSetsToMembersAndCandidates = Extractor.getSetMembersAndCandidates(testInfo.getTestMethod().get().getName() + "/");
 
         assertEquals(3, imapSetsToMembersAndCandidates.get("R-HSA-1008234").size());
         assertTrue(imapSetsToMembersAndCandidates.get("R-HSA-1008234").contains("Q9ULX9"));
@@ -265,9 +271,9 @@ class ExtractorTest {
     }
 
     @Test
-    void setsToProteinsTest1() {
+    void setsToProteinsTest1(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, String> imapSetsToProteins = Extractor.getSetsToProteins();
+        ImmutableSetMultimap<String, String> imapSetsToProteins = Extractor.getSetsToProteins(testInfo.getTestMethod().get().getName() + "/");
 
         String set = "R-HSA-8935716";
 
@@ -278,9 +284,9 @@ class ExtractorTest {
     }
 
     @Test
-    void setsToProteinsTest2() {
+    void setsToProteinsTest2(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, String> imapSetsToProteins = Extractor.getSetsToProteins();
+        ImmutableSetMultimap<String, String> imapSetsToProteins = Extractor.getSetsToProteins(testInfo.getTestMethod().get().getName() + "/");
 
         String set = "R-HSA-8854239";
 
@@ -291,9 +297,9 @@ class ExtractorTest {
     }
 
     @Test
-    void proteinsToSetsTest1() {
+    void proteinsToSetsTest1(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, String> imapProteinsToSets = Extractor.getProteinsToSets();
+        ImmutableSetMultimap<String, String> imapProteinsToSets = Extractor.getProteinsToSets(testInfo.getTestMethod().get().getName() + "/");
 
         String protein = "Q01196";
 
@@ -306,9 +312,9 @@ class ExtractorTest {
     }
 
     @Test
-    void proteinsToSetsTest2() {
+    void proteinsToSetsTest2(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, String> imapProteinsToSets = Extractor.getProteinsToSets();
+        ImmutableSetMultimap<String, String> imapProteinsToSets = Extractor.getProteinsToSets(testInfo.getTestMethod().get().getName() + "/");
 
         String protein = "Q8WXH6";
 
@@ -318,9 +324,9 @@ class ExtractorTest {
     }
 
     @Test
-    void setsToProtoformsTest1() throws ParseException {
+    void setsToProtoformsTest1(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, Proteoform> imapSetsToProteoform = Extractor.getSetsToProteoforms();
+        ImmutableSetMultimap<String, Proteoform> imapSetsToProteoform = Extractor.getSetsToProteoforms(testInfo.getTestMethod().get().getName() + "/");
 
         String set = "R-HSA-8935716";
 
@@ -332,9 +338,9 @@ class ExtractorTest {
     }
 
     @Test
-    void setsToProteoformsTest2() throws ParseException {
+    void setsToProteoformsTest2(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<String, Proteoform> imapSetsToProteoform = Extractor.getSetsToProteoforms();
+        ImmutableSetMultimap<String, Proteoform> imapSetsToProteoform = Extractor.getSetsToProteoforms(testInfo.getTestMethod().get().getName() + "/");
 
         String set = "R-HSA-8870439";
 
@@ -346,9 +352,9 @@ class ExtractorTest {
     }
 
     @Test
-    void proteoformsToSetsTest1() throws ParseException {
+    void proteoformsToSetsTest1(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<Proteoform, String> imapProteoformsToSets = Extractor.getProteoformsToSets();
+        ImmutableSetMultimap<Proteoform, String> imapProteoformsToSets = Extractor.getProteoformsToSets(testInfo.getTestMethod().get().getName() + "/");
 
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("Q01196;00078:206,00078:210");
 
@@ -357,9 +363,9 @@ class ExtractorTest {
     }
 
     @Test
-    void proteoformsToSetsTest2() throws ParseException {
+    void proteoformsToSetsTest2(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
-        ImmutableSetMultimap<Proteoform, String> imapProteoformsToSets = Extractor.getProteoformsToSets();
+        ImmutableSetMultimap<Proteoform, String> imapProteoformsToSets = Extractor.getProteoformsToSets(testInfo.getTestMethod().get().getName() + "/");
 
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("Q8WXH6;00113:274");
 
@@ -368,10 +374,10 @@ class ExtractorTest {
     }
 
     @Test
-    void imapRsidsToProteinsTest() {
+    void imapRsidsToProteinsTest(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(11);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(11, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapRsidsToProteins.containsKey("rs10840447"));
         assertTrue(imapRsidsToProteins.containsKey("rs7110099"));
@@ -382,10 +388,10 @@ class ExtractorTest {
     }
 
     @Test
-    void imapChrBpToProteinsTest() {
+    void imapChrBpToProteinsTest(TestInfo testInfo ) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(11);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(11, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapChrBpToProteins.containsKey(2176042L));
         assertTrue(imapChrBpToProteins.containsKey(2176105L));
@@ -396,15 +402,15 @@ class ExtractorTest {
     }
 
     @Test
-    void imapGeneticVariantsToProteinsTest5() {
+    void imapGeneticVariantsToProteinsTest5(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(5);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(5, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapRsidsToProteins.containsKey("rs17238540"));
         assertTrue(imapRsidsToProteins.get("rs17238540").contains("P04035"));
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(5);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(5, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapChrBpToProteins.containsKey(74655498L));
         assertTrue(imapChrBpToProteins.get(74655498L).contains("P04035"));
@@ -420,45 +426,47 @@ class ExtractorTest {
     }
 
     @Test
-    void imapGeneticVariantsToProteinsTest19() {
+    void imapGeneticVariantsToProteinsTest19(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(19);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(19, testInfo.getTestMethod().get().getName() + "/");
 //        for (Map.Entry<String, String> entry : imapRsidsToProteins.entries()) {
 //            System.out.println(entry.getKey());
 //            if (entry.getKey().equals("rs12979860"))
 //                break;
 //        }
-//        assertTrue(imapRsidsToProteins.containsKey("rs12979860"));
-//        assertTrue(imapRsidsToProteins.containsKey("rs12980275"));
-//        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
-//        assertTrue(imapRsidsToProteins.get("rs12979860").contains("Q8IZI9"));
+        assertTrue(imapRsidsToProteins.containsKey("rs375192398"));
+        assertTrue(imapRsidsToProteins.containsKey("rs150383577"));
+        assertTrue(imapRsidsToProteins.containsKey("rs149672762"));
+        assertTrue(imapRsidsToProteins.get("rs375192398").contains("Q8NGA8"));
+        assertTrue(imapRsidsToProteins.get("rs150383577").contains("Q6NT55"));
+        assertTrue(imapRsidsToProteins.get("rs149672762").contains("O75023"));
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(19);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(19, testInfo.getTestMethod().get().getName() + "/");
 
-        assertTrue(imapChrBpToProteins.containsKey(39729266L));
-        assertTrue(imapChrBpToProteins.containsKey(39729326L));
-        assertTrue(imapChrBpToProteins.get(39729266L).contains("Q8IZI9"));
-        assertTrue(imapChrBpToProteins.get(39729326L).contains("Q8IZI9"));
+        assertTrue(imapChrBpToProteins.containsKey(287906L));
+        assertTrue(imapChrBpToProteins.containsKey(416757L));
+        assertTrue(imapChrBpToProteins.get(287906L).contains("O43688"));
+        assertTrue(imapChrBpToProteins.get(416757L).contains("P98077"));
     }
 
     @Test
-    void imapGeneticVariantsToProteinsTest1() {
+    void imapGeneticVariantsToProteinsTest1(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(1);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(1, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapRsidsToProteins.containsKey("rs2816958"));
         assertTrue(imapRsidsToProteins.get("rs2816958").contains("O00482"));
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(1);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(1, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapChrBpToProteins.containsKey(200101920L));
         assertTrue(imapChrBpToProteins.get(200101920L).contains("O00482"));
     }
 
     @Test
-    void getBufferedReaderForGzipFile_withPathToExistentFile_ReadsFirstLine_Test() {
+    void getBufferedReaderForGzipFile_withPathToExistentFile_ReadsFirstLine_Test(TestInfo testInfo) {
         try{
             File file = new File(mapping_path + "1.gz");
             if(!file.exists()){
@@ -504,10 +512,10 @@ class ExtractorTest {
 
 
     @Test
-    void imapGeneticVariantsToProteinsTest22() {
+    void imapGeneticVariantsToProteinsTest22(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(22);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(22, testInfo.getTestMethod().get().getName() + "/");
 
         System.out.println(imapRsidsToProteins.size());
 
@@ -517,7 +525,7 @@ class ExtractorTest {
         assertTrue(imapRsidsToProteins.containsKey("rs9628391"));
         assertTrue(imapRsidsToProteins.get("rs9628391").contains("Q8NG94"));
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(22);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(22, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapChrBpToProteins.containsKey(16444392L));
         assertTrue(imapChrBpToProteins.get(16444392L).contains("Q8NG94"));
@@ -527,25 +535,25 @@ class ExtractorTest {
     }
 
     @Test
-    void imapGeneticVariantsToProteinsTest20() {
+    void imapGeneticVariantsToProteinsTest20(TestInfo testInfo) {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(20);
+        ImmutableSetMultimap<String, String> imapRsidsToProteins = Extractor.getRsIdsToProteins(20, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapRsidsToProteins.containsKey("rs1883832"));
         assertTrue(imapRsidsToProteins.get("rs1883832").contains("P25942"));
 
-        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(20);
+        ImmutableSetMultimap<Long, String> imapChrBpToProteins = Extractor.getChrBpToProteins(20, testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapChrBpToProteins.containsKey(44746982L));
         assertTrue(imapChrBpToProteins.get(44746982L).contains("P25942"));
     }
 
     @Test
-    void imapProteinsToProteoformsTest() throws ParseException {
+    void imapProteinsToProteoformsTest(TestInfo testInfo) throws ParseException {
         ConnectionNeo4j.initializeNeo4j("bolt://127.0.0.1:7687", "", "");
 
-        ImmutableSetMultimap<String, Proteoform> imapProteinsToProteoforms = Extractor.getProteinsToProteoforms();
+        ImmutableSetMultimap<String, Proteoform> imapProteinsToProteoforms = Extractor.getProteinsToProteoforms(testInfo.getTestMethod().get().getName() + "/");
 
         assertTrue(imapProteinsToProteoforms.containsKey("O43561"));
         assertFalse(imapProteinsToProteoforms.get("O43561").contains(ProteoformFormat.SIMPLE.getProteoform("O43561-2;00048:127")));
