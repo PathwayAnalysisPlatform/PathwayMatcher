@@ -22,7 +22,7 @@ public class MainArgumentsTest {
 
     private static String searchFile = "search.tsv";
 
-    private final String HEADER = "\r\n PathwayMatcher 1.9.0\r\n";
+    private final String HEADER = "\r\n PathwayMatcher 1.9.1\r\n";
     private final String EXPECTED_HELP_MESSAGE_START = HEADER + "\r\nUsage: java -jar PathwayMatcher.jar [-hv] [COMMAND]";
 
     @Rule
@@ -58,14 +58,14 @@ public class MainArgumentsTest {
     void Matcher_givenShortVersionArgument_printsVersion_Test() {
         String[] args = {"-v"};
         Main.main(args);
-        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.1"), "Wrong output to the console for version command.");
     }
 
     @Test
     void Matcher_givenLongVersionArgument_printsVersion_Test() {
         String[] args = {"--version"};
         Main.main(args);
-        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.0"), "Wrong output to the console for version command.");
+        assertTrue(outContent.toString().startsWith("PathwayMatcher 1.9.1"), "Wrong output to the console for version command.");
     }
 
     @Test
