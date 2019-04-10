@@ -99,7 +99,7 @@ docker exec zealous_davinci \
 docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.allow_format_migration
 docker exec blissful_minsky java -cp /var/lib/PathwayMatcher-1.9.0/PathwayMatcher-1.9.0.jar no.uib.pathwaymatcher.db.Neo4jConfigurationSetter conf/neo4j.conf dbms.security.auth_enabled
 
-docker exec blissful_minsky curl --fail --show-error --location --remote-name https://github.com/LuisFranciscoHS/PathwayMatcher/releases/download/v1.9.0/PathwayMatcher-1.9.0.tar && \
+docker exec blissful_minsky curl --fail --show-error --location --remote-name https://github.com/PathwayAnalysisPlatform/PathwayMatcher/releases/download/v1.9.0/PathwayMatcher-1.9.0.tar && \
     tar --extract --file PathwayMatcher-1.9.0.tar --directory /var/lib && \
     rm PathwayMatcher-1.9.0.tar
 
