@@ -79,7 +79,7 @@ Networks files constructed using all the entities in PathwayMatcher are availabl
 
 ## Publication and Citation
 
-PathwayMatcher is described in [Hernández Sánchez _et al._, doi:10.1101/375097](https://doi.org/10.1101/375097), please use this reference to cite the tool. 
+PathwayMatcher is described in [Hernández Sánchez _et al._, doi:10.1101/375097](https://doi.org/10.1101/375097), please use this reference to cite the tool and associated network. 
 
 The scripts used to generate the figures of the manuscript are available [here](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/tree/master/docs/r/paper_figures/). We welcome comments and questions on our manuscript, please do not hesitate to contact us _via_ the [issue tracker](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/issues).
 
