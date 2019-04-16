@@ -3,25 +3,25 @@
 This is a command line program in Java, which is a module of [PathwayMatcher](https://github.com/PathwayAnalysisPlatform/PathwayMatcher).
 
 This module gathers reference biological data necessary to perform pathway search and analysis, 
-and creates static mapping files that are loaded during execution of PathwayMatcher.
+and creates static mapping files that are used during the execution of PathwayMatcher.
 
-The extractor has two main components, one for the mapping of genetic variants and the other 
+The extractor has two main components, one for the mapping of genetic variants, and the other 
 to map proteins and proteoforms to pathways.
 
 ![Image of reference data extraction process](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/extraction.png)
 
-The necessary mappings for the pathway search:
+The mappings needed for the pathway search are:
 
 ![Image of static mappings for pathway search](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_pathway_search.png)
 * SNP --> Gene name
-* SNP --> Protein (UniProt accession)
+* SNP --> Protein
 * Protein --> Proteoforms
 * Protein --> Reactions
 * Proteoform --> Reactions
 * Reactions --> Pathways
 * Pathways --> Top Level Pathways
 
-The necessary mappings for the interaction networks are:
+The mappings needed for the interaction networks are:
 ![Image of static mappings for protein interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_protein_interaction_networks.png)
 
 ![Image of static mappings for proteoform interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_proteoform_interaction_networks.png)
@@ -54,17 +54,17 @@ Serialized files ready to be used by [PathwayMatcher](https://github.com/Pathway
   
 * Static mappings for pathway search:  
   * Pairs of chromosome and base pair to protein UniProt accessions: _chrBpToProteins1.gz,...,chrBpToProteins22.gz_
-  * SNP rsIds to protein UniProt accessions: _rsIdsToProteins1.gz,..., rsIdsToProteins22.gz_
-  * Gene names to protein UniProt accessions: _genesToProteins.gz_
-  * Ensembl protein identifiers to UniProt accessions: _ensemblToProteins.gz_  
-  * Protein UniProt accessions to proteoforms: _proteinsToProteoforms.gz_
-  * Protein UniProt accessions to reactions: _proteinsToReactions.gz_   
+  * SNP rsIds to UniProt protein accessions: _rsIdsToProteins1.gz,..., rsIdsToProteins22.gz_
+  * Gene names to UniProt protein accessions: _genesToProteins.gz_
+  * Ensembl protein identifiers to UniProt protein accessions: _ensemblToProteins.gz_  
+  * UniProt protein accessions to proteoforms: _proteinsToProteoforms.gz_
+  * UniProt protein accessions to reactions: _proteinsToReactions.gz_   
   * Proteoforms to reactions: _proteoformsToReactions.gz_   
   * Pathways to [top level pathways](https://reactome.org/content/schema/TopLevelPathway): _pathwaysToTopLevelPathways.gz_
   
 * Static mappings for interaction networks:
-  * Protein UniProt accessions to the [complexes](https://reactome.org/content/schema/Complex) they can form: _proteinsToComplexes.gz_
-  * Protein UniProt accessions to [entity sets](https://reactome.org/content/schema/EntitySet): _proteinsToSets.gz_
+  * UniProt protein accessions to [complexes](https://reactome.org/content/schema/Complex) they can form: _proteinsToComplexes.gz_
+  * UniProt protein accessions to [entity sets](https://reactome.org/content/schema/EntitySet): _proteinsToSets.gz_
   * Proteoforms to [complexes](https://reactome.org/content/schema/Complex): _proteoformsToComplexes.gz_
   * Proteoforms to [entity sets](https://reactome.org/content/schema/EntitySet): _proteoformsToSets.gz_
 
@@ -78,7 +78,7 @@ process of PathwayMatcher. It is not needed for the main functionality.
 ## Protein modifications 
  
 * [ExtractorPsiMod](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/src/main/java/extractor/psimod/ExtractorPsiMod.java): Http client application to gather the available modifications
-from the PSI-MOD<sup>[\[5\]](#references)</sup> community standard for representation of protein modification data. 
+from the PSI-MOD<sup>[\[5\]](#references)</sup> community standard for representation of protein modifications. 
 
     This is also an extra command line application not needed for the main functionality, but useful 
 in case a user wants to get the list of available modifications programmatically.
