@@ -77,9 +77,11 @@ The output of PathwayMatcher is composed of three files, the [Reaction and Pathw
 
 Networks files constructed using all the entities in PathwayMatcher are available [here](https://github.com/PathwayAnalysisPlatform/Networks). `protein*` and `proteoform*` files correspond to the networks obtained using protein and proteoform matching, respectively.
 
-## Publication
+## Publication and Citation
 
-PathwayMatcher is described [here](https://doi.org/10.1101/375097), please use this reference to refer to the tool. The scripts used to generate the figures of the manuscript are available [here](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/tree/master/docs/r/paper_figures/). We welcome comments and questions on our manuscript, please do not hesitate to contact us via the [issue tracker](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/issues).
+PathwayMatcher is described in [Hernández Sánchez _et al._, doi:10.1101/375097](https://doi.org/10.1101/375097), please use this reference to cite the tool and associated network. 
+
+The scripts used to generate the figures of the manuscript are available [here](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/tree/master/docs/r/paper_figures/). We welcome comments and questions on our manuscript, please do not hesitate to contact us _via_ the [issue tracker](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/issues).
 
 ## Licence
 [![GitHub license](http://dmlc.github.io/img/apache2.svg)](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/LICENSE.txt)
