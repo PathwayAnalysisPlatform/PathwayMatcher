@@ -178,7 +178,7 @@ public class Main {
 
                         stopwatch.stop();
                         Duration duration = stopwatch.elapsed();
-                        System.out.println("Main finished (" + duration.toMillis() / 1000 + "s)");
+                        System.out.println("PathwayMatcher finished (" + duration.toMillis() / 1000 + "s)");
                     }
                 }
             } catch (FileNotFoundException ex) {

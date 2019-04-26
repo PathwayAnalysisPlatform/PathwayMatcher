@@ -22,9 +22,9 @@ public class ProteoformFormatConverter {
      */
     public static void main(String args[]) throws IOException {
         // Read a file
-        String filesPath = "extra/input/";
-        String sourceFile = "all_proteoforms_v64_neo4j.csv";
-        String resultFile = "all_proteoforms_v64.csv";
+        String filesPath = "C:/git/PathwayAnalysisPlatform/Networks/";
+        String sourceFile = "all_proteoforms_v68_neo4j.csv";
+        String resultFile = "all_proteoforms_v68_simple.csv";
 
         if(args.length > 0) {
             filesPath = args[0];

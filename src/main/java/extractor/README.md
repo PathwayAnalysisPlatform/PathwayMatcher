@@ -8,11 +8,11 @@ and creates static mapping files that are loaded during execution of PathwayMatc
 The extractor has two main components, one for the mapping of genetic variants and the other 
 to map proteins and proteoforms to pathways.
 
-![Image of reference data extraction process](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/extraction.png)
+![Image of reference data extraction process](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/wiki/figures/wiki/extraction.png)
 
 The necessary mappings for the pathway search:
 
-![Image of static mappings for pathway search](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_pathway_search.png)
+![Image of static mappings for pathway search](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/wiki/figures/wiki/static_mappings_pathway_search.png)
 * SNP --> Gene name
 * SNP --> Protein (UniProt accession)
 * Protein --> Proteoforms
@@ -22,9 +22,9 @@ The necessary mappings for the pathway search:
 * Pathways --> Top Level Pathways
 
 The necessary mappings for the interaction networks are:
-![Image of static mappings for protein interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_protein_interaction_networks.png)
+![Image of static mappings for protein interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/wiki/figures/wiki/static_mappings_protein_interaction_networks.png)
 
-![Image of static mappings for proteoform interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/blob/master/figures/wiki/static_mappings_proteoform_interaction_networks.png)
+![Image of static mappings for proteoform interaction networks](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/wiki/figures/wiki/static_mappings_proteoform_interaction_networks.png)
 
 ## Genetic variants
 
