@@ -40,7 +40,24 @@ public interface ReactomeQueries {
 
     static final String GET_MAPPING_BY_PROTEOFORMS_BY_PROTEIN = "MATCH (p:Pathway{speciesName:\"Homo sapiens\"})-[:hasEvent*]->(r:Reaction{speciesName: \"Homo sapiens\"})-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate*]->(pe:PhysicalEntity{speciesName:'Homo sapiens'})-[:referenceEntity]->(re:ReferenceEntity{databaseName:'UniProt'})\nWITH DISTINCT p, r, pe, re\nWHERE re.identifier = \"O00186\"\nOPTIONAL MATCH (pe)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\nWITH DISTINCT p, r, pe.stId AS physicalEntity,\n                re.identifier AS protein,\n                re.variantIdentifier AS isoform,\n                tm.coordinate as coordinate, \n                mod.identifier as type ORDER BY type, coordinate\nWITH DISTINCT p, r, physicalEntity,\n\t\t\t\tprotein,\n                CASE WHEN isoform IS NOT NULL THEN isoform ELSE protein END as isoform,\n                COLLECT(type + \":\" + CASE WHEN coordinate IS NOT NULL THEN coordinate ELSE \"null\" END) AS ptms\nRETURN DISTINCT p.stId as pathway, p.displayName, r.stId as reaction, r.displayName, (CASE WHEN isoform IS NOT NULL THEN isoform ELSE protein END + ptms) as proteoform       \n                ORDER BY proteoform";
 
-    static final String GET_NUMBER_PROTEOFORMS_BY_ACCESSION = "MATCH (pe:PhysicalEntity{speciesName:'Homo sapiens'})-[:referenceEntity]->(re:ReferenceEntity{databaseName:'UniProt'})\nWITH DISTINCT pe, re\nOPTIONAL MATCH (pe)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\nWITH DISTINCT pe, re, tm.coordinate as coordinate, mod.identifier as type \nORDER BY type, coordinate\nWITH DISTINCT pe, re, COLLECT(CASE WHEN coordinate IS NOT NULL THEN coordinate ELSE \"null\" END + \":\" + type) AS ptms\nRETURN DISTINCT re.identifier as accession, CASE WHEN re.variantIdentifier IS NOT NULL THEN re.variantIdentifier ELSE re.identifier END as isoform, collect(DISTINCT pe.stId) as equivalentPe, ptms";
+    static final String GET_PROTEOFORMS_BY_ACCESSION = "MATCH (pe:PhysicalEntity{speciesName:'Homo sapiens'})-[:referenceEntity]->(re:ReferenceEntity{databaseName:'UniProt'})\n" +
+            "WHERE re.identifier = \"P08123\"\n" +
+            "WITH DISTINCT pe, re\n" +
+            "OPTIONAL MATCH (pe)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\n" +
+            "WITH DISTINCT pe, re, tm.coordinate as coordinate, mod.identifier as type \n" +
+            "ORDER BY type, coordinate\n" +
+            "WITH DISTINCT pe, re, COLLECT(type + \":\" + CASE WHEN coordinate IS NOT NULL THEN coordinate ELSE \"null\" END) AS ptms\n" +
+            "RETURN DISTINCT re.identifier as accession, CASE WHEN re.variantIdentifier IS NOT NULL THEN re.variantIdentifier ELSE re.identifier END as isoform, collect(DISTINCT pe.stId) as equivalentPe, ptms";
+
+    static final String GET_NUMBER_PROTEOFORMS_BY_ACCESSION = "MATCH (pe:PhysicalEntity{speciesName:'Homo sapiens'})-[:referenceEntity]->(re:ReferenceEntity{databaseName:'UniProt'})\n" +
+            "WITH DISTINCT pe, re\n" +
+            "OPTIONAL MATCH (pe)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\n" +
+            "WITH DISTINCT pe, re, tm.coordinate as coordinate, mod.identifier as type \n" +
+            "ORDER BY type, coordinate\n" +
+            "WITH DISTINCT pe, re, COLLECT(CASE WHEN coordinate IS NOT NULL THEN coordinate ELSE \"null\" END + \":\" + type) AS ptms\n" +
+            "WITH DISTINCT re.identifier as accession, CASE WHEN re.variantIdentifier IS NOT NULL THEN re.variantIdentifier ELSE re.identifier END as isoform, collect(DISTINCT pe.stId) as equivalentPe, ptms\n" +
+            "WITH DISTINCT accession, {isoform: isoform, ptms: ptms} as proteoform\n" +
+            "RETURN accession, count(proteoform) as num_proteoforms";
 
     static final String GET_TLPMAPPING_BY_PROTEOFORMS_BY_PROTEIN = "MATCH (p:Pathway{speciesName:\"Homo sapiens\"})-[:hasEvent*]->(rle:Reaction{speciesName: \"Homo sapiens\"})-[:input|output|catalystActivity|physicalEntity|regulatedBy|regulator|hasComponent|hasMember|hasCandidate*]->(pe:PhysicalEntity{speciesName:'Homo sapiens'})-[:referenceEntity]->(re:ReferenceEntity{databaseName:'UniProt'})\nWHERE re.identifier = \"P01308\"\nWITH DISTINCT p, rle, pe, re\nOPTIONAL MATCH (tlp:TopLevelPathway{speciesName:\"Homo sapiens\"})-[:hasEvent*]->(p:Pathway{speciesName:\"Homo sapiens\"})\nWITH DISTINCT CASE WHEN tlp IS NOT NULL THEN tlp ELSE p END as tlp, p, rle, pe, re\nOPTIONAL MATCH (pe)-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\nWITH DISTINCT tlp, p, rle, pe.stId AS physicalEntity,\n                re.identifier AS protein,\n                re.variantIdentifier AS isoform,\n                tm.coordinate as coordinate, \n                mod.identifier as type ORDER BY type, coordinate\nWITH DISTINCT tlp, p, rle, physicalEntity,\n\t\t\t\tprotein,\n                CASE WHEN isoform IS NOT NULL THEN isoform ELSE protein END as isoform,\n                COLLECT(type + \":\" + CASE WHEN coordinate IS NOT NULL THEN coordinate ELSE \"null\" END) AS ptms\nRETURN DISTINCT tlp.stId as tlp, p.stId as pathway, rle.stId as reaction, (CASE WHEN isoform IS NOT NULL THEN isoform ELSE protein END + ptms) as proteoform       \n                ORDER BY proteoform";
 
@@ -111,5 +128,18 @@ public interface ReactomeQueries {
             "WITH DISTINCT protein, {isoform: isoform, ptms: ptms} as proteoform\n" +
             "RETURN protein, count(proteoform) as num_proteoforms\n" +
             "ORDER BY num_proteoforms DESC";
+
+    static final String GET_ALL_PHOSPHOSITES_STY = "MATCH (re:ReferenceEntity{databaseName:'UniProt'})<-[:referenceEntity]-(pe:PhysicalEntity{speciesName:\"Homo sapiens\"})-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\n" +
+            "WHERE mod.identifier in [\"00046\", \"00047\", \"00048\"]\n" +
+            "RETURN DISTINCT re.identifier as UNIPROT_ACCESSION, tm.coordinate as site,\n" +
+            "CASE \n" +
+            "WHEN mod.identifier = \"00046\"\n" +
+            "THEN \"S\"\n" +
+            "WHEN mod.identifier = \"00047\"\n" +
+            "THEN \"T\"\n" +
+            "ELSE \"Y\"\n" +
+            "END\n" +
+            "as PSI_MOD_ID\n" +
+            "ORDER BY UNIPROT_ACCESSION";
 }
 
