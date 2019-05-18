@@ -134,7 +134,7 @@ public class Sensitivy implements Runnable {
     static void writeEvaluation(List<Pair<MatchType, Double>> percentages, String path, String fileName) {
         try {
             BufferedWriter bufferedWriterOutput = createFile(path, fileName);
-            bufferedWriterOutput.write("MatchType,Value,Category\n");
+            bufferedWriterOutput.write("MatchType,Percentage\n");
             for (Pair<MatchType, Double> matchTypeEntry : percentages) {
                 bufferedWriterOutput.write(matchTypeEntry.getKey().toString() + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
             }
@@ -149,7 +149,7 @@ public class Sensitivy implements Runnable {
                                          String path, String fileName) {
         try {
             BufferedWriter bufferedWriterOutput = createFile(path, fileName);
-            bufferedWriterOutput.write("MatchType,Value,Category\n");
+            bufferedWriterOutput.write("MatchType,Percentage,Category\n");
             for (Pair<MatchType, Double> matchTypeEntry : percentagesOriginal) {
                 bufferedWriterOutput.write(
                         matchTypeEntry.getKey().toString()

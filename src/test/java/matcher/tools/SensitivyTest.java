@@ -476,6 +476,16 @@ class SensitivyTest {
     }
 
     @Test
+    void writeEvaluationSeparated_givenEmptyList_printsHeaders(TestInfo testInfo) throws IOException {
+        String testName = testInfo.getTestMethod().get().getName();
+        String outputFile = testName + ".csv";
+
+        Sensitivy.writeEvaluationSeparated(new ArrayList<>(), new ArrayList<>(), testName + "/", outputFile);
+        List<String> lines = Files.readLines(new File(testName + "/" + outputFile), Charset.defaultCharset());
+        assertEquals("MatchType,Percentage,Category", lines.get(0));
+    }
+
+    @Test
     void writeEvaluationSeparated_given_percentagesOriginal_writesProperFormat(TestInfo testInfo) throws IOException {
         List<Pair<MatchType, Double>> percentagesOriginal = new ArrayList<>();
         String testName = testInfo.getTestMethod().get().getName();
@@ -502,5 +512,27 @@ class SensitivyTest {
     // TODO: test getPotentialProteoforms
 
     // TODO: test header for each file
-    
+    @Test
+    void writeEvaluation_givenAnyList_WritesHeaders(TestInfo testInfo) throws IOException{
+        String testName = testInfo.getTestMethod().get().getName();
+        String outputFile = testName + ".csv";
+        Sensitivy.writeEvaluation(new ArrayList<>(), testName + "/", outputFile);
+        List<String> lines = Files.readLines(new File(testName + "/" + outputFile), Charset.defaultCharset());
+        assertEquals("MatchType,Percentage", lines.get(0));
+    }
+
+    @Test
+    void writeEvaluation_givenSomePercentages_WritesPercentagesInCorrectFormat(TestInfo testInfo) throws IOException{
+        List<Pair<MatchType, Double>> percentages = new ArrayList<>(2);
+        String testName = testInfo.getTestMethod().get().getName();
+        String outputFile = testName + ".csv";
+
+        percentages.add(new MutablePair<>(MatchType.ONE_NO_TYPES, 11.12));
+        percentages.add(new MutablePair<>(MatchType.SUPERSET_NO_TYPES, 24.45));
+
+        Sensitivy.writeEvaluation(percentages, testName + "/", outputFile);
+        List<String> lines = Files.readLines(new File(testName + "/" + outputFile), Charset.defaultCharset());
+        assertEquals("ONE_NO_TYPES,11.12", lines.get(1));
+        assertEquals("SUPERSET_NO_TYPES,24.45", lines.get(2));
+    }
 }
