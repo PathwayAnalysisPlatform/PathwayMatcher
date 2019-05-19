@@ -432,7 +432,7 @@ public class Sensitivy implements Runnable {
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 10.0,
                     mapping, PotentialProteoformsType.ORIGINAL, true, 5L, true, 10);
             List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 10.0,
-                    mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 10);
+                    mapping, PotentialProteoformsType.OTHERS, true, 5L, true, 10);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, percentagesFileMultiproteoforms);
             Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotPercentagesSeparated + " " + (resourcesPath + "\\" + percentagesFileMultiproteoforms) + " " + (plotsPath + "\\" + plotMultiproteoform));
         } catch (IOException e) {
