@@ -9,8 +9,6 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class ProteoformMatchingSuperset extends ProteoformMatching {
 
-    private static Boolean useTypes;
-
     public ProteoformMatchingSuperset(Boolean useTypes) {
         this.useTypes = useTypes;
     }

@@ -25,12 +25,16 @@ class SensitivyTest {
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalErr = System.err;
     static Mapping mapping;
+    static Proteoform proteoform2;
 
     @BeforeAll
     static void setUpAll() {
         try {
             mapping = new Mapping(InputType.PROTEOFORM, false, "");
+            proteoform2 = ProteoformFormat.SIMPLE.getProteoform("P01308;00798:31,00798:43");
         } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
@@ -252,7 +256,7 @@ class SensitivyTest {
         HashSet<Proteoform> proteoforms = new HashSet<>();
         proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("A2RUS2;00046:472,00046:490"));
         proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696"));
-        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoform(proteoform)).collect(Collectors.toSet());
+        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoformSimple(proteoform)).collect(Collectors.toSet());
         assertFalse(proteoforms.contains(ProteoformFormat.SIMPLE.getProteoform("A2RUS2;00046:472,00046:490")));
         assertFalse(proteoforms.contains(ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696")));
     }
@@ -261,7 +265,7 @@ class SensitivyTest {
     void alterProteoforms_getsUnmodifiedProteoform_doesNotGetAltered() throws ParseException {
         HashSet<Proteoform> proteoforms = new HashSet<>();
         proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O14974;"));
-        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoform(proteoform)).collect(Collectors.toSet());
+        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoformSimple(proteoform)).collect(Collectors.toSet());
         assertTrue(proteoforms.contains(ProteoformFormat.SIMPLE.getProteoform("O14974")));
     }
 
@@ -269,7 +273,7 @@ class SensitivyTest {
     void alterProteoforms_getsProteoformWithOneModification_altersType() throws ParseException {
         HashSet<Proteoform> proteoforms = new HashSet<>(1);
         proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696"));
-        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoform(proteoform)).collect(Collectors.toSet());
+        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoformSimple(proteoform)).collect(Collectors.toSet());
         assertFalse(proteoforms.contains("O14974;00047:696"));
         for (Proteoform proteoform : proteoforms) {
             assertEquals("00000", proteoform.getPtms().get(0).getKey());
@@ -280,7 +284,7 @@ class SensitivyTest {
     void alterProteoforms_getsProteoformWithOneModification_altersCoordinate() throws ParseException {
         HashSet<Proteoform> proteoforms = new HashSet<>(1);
         proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696"));
-        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoform(proteoform)).collect(Collectors.toSet());
+        proteoforms = (HashSet<Proteoform>) proteoforms.stream().map(proteoform -> Sensitivy.alterProteoformSimple(proteoform)).collect(Collectors.toSet());
         assertFalse(proteoforms.contains("O14974;00047:696"));
         for (Proteoform proteoform : proteoforms) {
             assertEquals(701L, proteoform.getPtms().get(0).getValue());
@@ -316,40 +320,40 @@ class SensitivyTest {
     }
 
     @Test
-    void alterProteoform_givenProteoform_originalStaysIntact() throws ParseException {
+    void alterProteoformSimple_givenProteoform_originalStaysIntact() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("O14966;00113:202,00113:203");
-        Proteoform alteredProteoform = Sensitivy.alterProteoform(proteoform);
+        Proteoform alteredProteoform = Sensitivy.alterProteoformSimple(proteoform);
         Proteoform proteoform2 = ProteoformFormat.SIMPLE.getProteoform("O14966;00113:202,00113:203");
         assertEquals(proteoform, proteoform2);
     }
 
     @Test
-    void alterProteoform_getsProteoformWithOneModification_altersType() throws ParseException {
+    void alterProteoformSimple_getsProteoformWithOneModification_altersType() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696");
-        Proteoform alteredProteoform = Sensitivy.alterProteoform(proteoform);
+        Proteoform alteredProteoform = Sensitivy.alterProteoformSimple(proteoform);
         assertNotEquals(proteoform, alteredProteoform);
         assertEquals("00000", alteredProteoform.getPtms().get(0).getKey());
     }
 
     @Test
-    void alterProteoform_getsProteoformWithOneModification_altersCoordinate() throws ParseException {
+    void alterProteoformSimple_getsProteoformWithOneModification_altersCoordinate() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("O14974;00047:696");
-        Proteoform alteredProteoform = Sensitivy.alterProteoform(proteoform);
+        Proteoform alteredProteoform = Sensitivy.alterProteoformSimple(proteoform);
         assertNotEquals(proteoform, alteredProteoform);
         assertEquals(701L, alteredProteoform.getPtms().get(0).getValue());
     }
 
     @Test
-    void alterProteoform_getsUnmodifiedProteoform_doesNotGetAltered() throws ParseException {
+    void alterProteoformSimple_getsUnmodifiedProteoform_doesNotGetAltered() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("O14974;");
-        Proteoform alteredProteoform = Sensitivy.alterProteoform(proteoform);
+        Proteoform alteredProteoform = Sensitivy.alterProteoformSimple(proteoform);
         assertEquals(proteoform, alteredProteoform);
     }
 
     @Test
-    void alterProteoform_getsProteoformWithMultiplePTMs_onePTMBecomes00000() throws ParseException {
+    void alterProteoformSimple_getsProteoformWithMultiplePTMs_onePTMBecomes00000() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("O15151;00046:342,00046:367,00046:403,01148:null");
-        Proteoform alteredProteoform = Sensitivy.alterProteoform(proteoform);
+        Proteoform alteredProteoform = Sensitivy.alterProteoformSimple(proteoform);
         boolean appeared = false;
         for (Pair<String, Long> ptm : alteredProteoform.getPtms()) {
             if (ptm.getKey().equals("00000")) {
@@ -417,28 +421,6 @@ class SensitivyTest {
                 Sensitivy.PotentialProteoformsType.OTHERS,
                 true);
         assertEquals(0, result.size());
-    }
-
-    @Test
-    void calculateOneRunPercentages_givenProteinWithMultipleProteoforms_StrictMatchesCero() throws FileNotFoundException, ParseException {
-        Mapping mapping = new Mapping(InputType.PROTEOFORM, false, "");
-        HashSet<Proteoform> proteoforms = new HashSet<>();
-        proteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O14974;00046:473"));
-        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(
-                proteoforms,
-                100.0,
-                mapping,
-                Sensitivy.PotentialProteoformsType.ALL,
-                true,
-                5L,
-                true);
-        assertEquals(0.0, percentages.get(MatchType.STRICT));
-        assertEquals(33.333333333333336, percentages.get(MatchType.ONE));
-        assertEquals(33.333333333333336, percentages.get(MatchType.ONE_NO_TYPES));
-        assertEquals(33.333333333333336, percentages.get(MatchType.SUPERSET));
-        assertEquals(33.333333333333336, percentages.get(MatchType.SUPERSET_NO_TYPES));
-        assertEquals(33.333333333333336, percentages.get(MatchType.SUBSET));
-        assertEquals(33.333333333333336, percentages.get(MatchType.SUBSET_NO_TYPES));
     }
 
     @Test
@@ -513,7 +495,7 @@ class SensitivyTest {
 
     // TODO: test header for each file
     @Test
-    void writeEvaluation_givenAnyList_WritesHeaders(TestInfo testInfo) throws IOException{
+    void writeEvaluation_givenAnyList_WritesHeaders(TestInfo testInfo) throws IOException {
         String testName = testInfo.getTestMethod().get().getName();
         String outputFile = testName + ".csv";
         Sensitivy.writeEvaluation(new ArrayList<>(), testName + "/", outputFile);
@@ -522,7 +504,7 @@ class SensitivyTest {
     }
 
     @Test
-    void writeEvaluation_givenSomePercentages_WritesPercentagesInCorrectFormat(TestInfo testInfo) throws IOException{
+    void writeEvaluation_givenSomePercentages_WritesPercentagesInCorrectFormat(TestInfo testInfo) throws IOException {
         List<Pair<MatchType, Double>> percentages = new ArrayList<>(2);
         String testName = testInfo.getTestMethod().get().getName();
         String outputFile = testName + ".csv";
@@ -534,5 +516,175 @@ class SensitivyTest {
         List<String> lines = Files.readLines(new File(testName + "/" + outputFile), Charset.defaultCharset());
         assertEquals("ONE_NO_TYPES,11.12", lines.get(1));
         assertEquals("SUPERSET_NO_TYPES,24.45", lines.get(2));
+    }
+
+    @Test
+    void alterProteoform_givenUnmodifiedProteoform_staysTheSame() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;");
+        proteoform = Sensitivy.alterProteoform(proteoform);
+        assertEquals("P01308", proteoform.getUniProtAcc());
+    }
+
+    @Test
+    void alterProteoform_givenProteoformWithOneModification_altersTypeAndCoordinateofFirstModification() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01275;00091:127");
+        proteoform = Sensitivy.alterProteoform(proteoform);
+        assertNotEquals("00091", proteoform.getPtms().get(0).getValue());
+        assertNotEquals("127", proteoform.getPtms().get(0).getValue());
+    }
+
+    @Test
+    void alterProteoform_givenProteoformWithMoreThanOneModification_altersFirstAndSecondModification() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        proteoform = Sensitivy.alterProteoform(proteoform);
+
+        assertNotEquals("00091", proteoform.getPtms().get(0).getKey());
+        assertNotEquals(127L, proteoform.getPtms().get(0).getValue());
+
+        assertEquals("00798", proteoform.getPtms().get(1).getKey());
+        assertNotEquals(95L, proteoform.getPtms().get(1).getValue());
+    }
+
+    @Test
+    void alterProteoform_givenProteoformWithModificationAtNullCoordinate_setsCoordinateToNumber() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01275;00091:127");
+        proteoform = Sensitivy.alterProteoform(proteoform);
+        assertNotEquals("00091", proteoform.getPtms().get(0).getValue());
+        assertNotEquals(null, proteoform.getPtms().get(0).getValue());
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsSTRICTPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.STRICT));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsONEPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(50.0, percentages.get(MatchType.ONE));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsONE_NO_TYPESPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(75.0, percentages.get(MatchType.ONE_NO_TYPES));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsSUBSETSPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUBSET));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsSUBSETS_NO_TYPESPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUBSET_NO_TYPES));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsSUPERSETPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUPERSET));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenMixedProteoform_getsSUPERSET_NO_TYPESPercentagesRight() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:95");
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUPERSET_NO_TYPES));
+    }
+
+
+    // Proteoform2: P01308;00798:31,00798:43
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsSTRICTPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.STRICT));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsONEPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(75.0, percentages.get(MatchType.ONE));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsONE_NO_TYPESPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(75.0, percentages.get(MatchType.ONE_NO_TYPES));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsSUBSETSPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUBSET));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsSUBSETS_NO_TYPESPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(75.0, percentages.get(MatchType.SUBSET_NO_TYPES));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsSUPERSETPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(0.0, percentages.get(MatchType.SUPERSET));
+    }
+
+    @Test
+    void calculateOneRunPercentages_givenProteoform2_getsSUPERSET_NO_TYPESPercentagesRight() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(proteoform2);
+        HashMap<MatchType, Double> percentages = Sensitivy.calculateOneRunPercentages(inputProteoforms, 100.0, mapping,
+                Sensitivy.PotentialProteoformsType.ALL, true, 5L, true);
+        assertEquals(50.0, percentages.get(MatchType.SUPERSET_NO_TYPES));
     }
 }

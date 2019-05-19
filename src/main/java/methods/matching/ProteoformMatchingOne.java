@@ -6,8 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class ProteoformMatchingOne extends ProteoformMatching {
 
-    private static Boolean useTypes;
-
     public ProteoformMatchingOne(Boolean useTypes) {
         this.useTypes = useTypes;
     }

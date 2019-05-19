@@ -5,6 +5,7 @@ import model.Proteoform;
 
 public abstract class ProteoformMatching {
 
+	Boolean useTypes;
 	public abstract Boolean matches(Proteoform iP, Proteoform rP, Long margin);
 
 	public boolean matches(Long iC, Long rC, Long margin) {

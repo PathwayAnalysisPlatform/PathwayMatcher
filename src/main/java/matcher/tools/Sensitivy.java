@@ -211,7 +211,35 @@ public class Sensitivy implements Runnable {
         return potentialProteoforms;
     }
 
+    /**
+     * For proteoforms with
+     *
+     * @param proteoform
+     * @return
+     */
     public static Proteoform alterProteoform(Proteoform proteoform) {
+
+        Proteoform newProteoform = new Proteoform(proteoform.getUniProtAcc());
+        int numPTMs = proteoform.getPtms().size();
+
+        if (numPTMs > 0) {
+            int cont = 0;
+            for (Pair<String, Long> ptm : proteoform.getPtms()) {
+                if (cont == 0) {
+                    newProteoform.addPtm("00000", (ptm.getValue() == null ? 5 : ptm.getValue() + 5));
+                } else if (cont == 1) {
+                    newProteoform.addPtm(ptm.getKey(), (ptm.getValue() == null? 5 : ptm.getValue() + 5));
+                } else {
+                    newProteoform.addPtm(ptm.getKey(), ptm.getValue());
+                }
+                cont++;
+            }
+        }
+
+        return newProteoform;
+    }
+
+    public static Proteoform alterProteoformSimple(Proteoform proteoform) {
 
         Proteoform newProteoform = new Proteoform(proteoform.getUniProtAcc());
         Random rand = new Random();
