@@ -228,7 +228,7 @@ public class Sensitivy implements Runnable {
                 if (cont == 0) {
                     newProteoform.addPtm("00000", (ptm.getValue() == null ? 5 : ptm.getValue() + 5));
                 } else if (cont == 1) {
-                    newProteoform.addPtm(ptm.getKey(), (ptm.getValue() == null? 5 : ptm.getValue() + 5));
+                    newProteoform.addPtm(ptm.getKey(), (ptm.getValue() == null ? 5 : ptm.getValue() + 5));
                 } else {
                     newProteoform.addPtm(ptm.getKey(), ptm.getValue());
                 }
@@ -284,7 +284,7 @@ public class Sensitivy implements Runnable {
             boolean onlyModified,
             Long range,
             boolean alterProteoforms) {
-        HashMap<MatchType, Double> totalPercentages = new HashMap<>(7);
+        HashMap<MatchType, Double> totalPercentages = new HashMap<>(8);
         HashMap<MatchType, ProteoformMatching> matchers = new HashMap();
         int t = 1;
 
@@ -303,11 +303,10 @@ public class Sensitivy implements Runnable {
             HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping,
                     potentialProteoformsType, onlyModified);
             if (potentialProteoforms.size() > 0) {
-                Proteoform alteredProteoform = alterProteoform(proteoform);
                 for (MatchType matchType : MatchType.values()) {
                     int matched = 0;
                     for (Proteoform potentialProteoform : potentialProteoforms) {
-                        if (matchers.get(matchType).matches(alteredProteoform, potentialProteoform, range)) {
+                        if (matchers.get(matchType).matches((alterProteoforms) ? alterProteoform(proteoform) : proteoform, potentialProteoform, range)) {
                             matched++;
                         }
                     }
@@ -332,8 +331,8 @@ public class Sensitivy implements Runnable {
                                                                       Long range,
                                                                       boolean alterProteoforms,
                                                                       int runs) {
-        HashMap<MatchType, Double> oneRunPercentages = new HashMap<>(7);
-        List<Pair<MatchType, Double>> allRunsPercentages = new ArrayList<>(runs * 7);
+        HashMap<MatchType, Double> oneRunPercentages = new HashMap<>(8);
+        List<Pair<MatchType, Double>> allRunsPercentages = new ArrayList<>(runs * 8);
 
         for (int I = 0; I < runs; I++) {
             oneRunPercentages = calculateOneRunPercentages(inputProteoforms, sampleSize,
@@ -398,7 +397,7 @@ public class Sensitivy implements Runnable {
             HashSet<Proteoform> inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform1));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, true, 1);
+                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
             List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile1);
@@ -414,7 +413,7 @@ public class Sensitivy implements Runnable {
             HashSet<Proteoform> inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform2));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, true, 1);
+                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
             List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile2);

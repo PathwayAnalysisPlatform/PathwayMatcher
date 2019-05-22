@@ -51,6 +51,9 @@ public abstract class ProteoformMatching {
 			case STRICT:
 				matcher = new ProteoformMatchingStrict();
 				break;
+			case ACCESSION:
+				matcher = new ProteoformMatchingAccession();
+				break;
 		}
 		return matcher;
 	}
