@@ -129,17 +129,24 @@ public interface ReactomeQueries {
             "RETURN protein, count(proteoform) as num_proteoforms\n" +
             "ORDER BY num_proteoforms DESC";
 
-    static final String GET_ALL_PHOSPHOSITES_STY = "MATCH (re:ReferenceEntity{databaseName:'UniProt'})<-[:referenceEntity]-(pe:PhysicalEntity{speciesName:\"Homo sapiens\"})-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\n" +
-            "WHERE mod.identifier in [\"00046\", \"00047\", \"00048\"]\n" +
-            "RETURN DISTINCT re.identifier as UNIPROT_ACCESSION, tm.coordinate as site,\n" +
+    static final String GET_ALL_PHOSPHORYLATIONS = "MATCH (re:ReferenceEntity{databaseName:'UniProt'})<-[:referenceEntity]-(pe:PhysicalEntity{speciesName:\"Homo sapiens\"})-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\n" +
+            "WHERE mod.displayName CONTAINS \"phospho\" OR mod.definition CONTAINS \"phospho\"\n" +
+            "RETURN DISTINCT re.identifier as UNIPROT_ACCESSION, mod.displayName as modText, tm.coordinate as site,\n" +
             "CASE \n" +
-            "WHEN mod.identifier = \"00046\"\n" +
+            "WHEN mod.displayName CONTAINS \"serine\"\n" +
             "THEN \"S\"\n" +
-            "WHEN mod.identifier = \"00047\"\n" +
+            "WHEN mod.displayName CONTAINS \"threonine\"\n" +
             "THEN \"T\"\n" +
-            "ELSE \"Y\"\n" +
+            "WHEN mod.displayName CONTAINS \"tyrosine\"\n" +
+            "THEN \"Y\"\n" +
+            "ELSE \"X\"\n" +
             "END\n" +
             "as PSI_MOD_ID\n" +
             "ORDER BY UNIPROT_ACCESSION";
+
+    static final String GET_ALL_PHOSPHORYLATIONS_ANYTYPE_STY = "MATCH (re:ReferenceEntity{databaseName:'UniProt'})<-[:referenceEntity]-(pe:PhysicalEntity{speciesName:\"Homo sapiens\"})-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\nWHERE mod.displayName CONTAINS \"phospho\" AND (mod.definition CONTAINS \"serine\" OR mod.definition CONTAINS \"threonine\" OR mod.definition CONTAINS \"tyrosine\")\nRETURN DISTINCT re.identifier as UNIPROT_ACCESSION, mod.displayName as modText, tm.coordinate as site,\nCASE \nWHEN mod.displayName CONTAINS \"serine\"\nTHEN \"S\"\nWHEN mod.displayName CONTAINS \"threonine\"\nTHEN \"T\"\nWHEN mod.displayName CONTAINS \"tyrosine\"\nTHEN \"Y\"\nEND\nas PSI_MOD_ID\nORDER BY UNIPROT_ACCESSION";
+    // 00046, 00047, 00048
+    static final String GET_ALL_PHOSPHORYLATIONS_MAINTYPES_STY = "MATCH (re:ReferenceEntity{databaseName:'UniProt'})<-[:referenceEntity]-(pe:PhysicalEntity{speciesName:\"Homo sapiens\"})-[:hasModifiedResidue]->(tm:TranslationalModification)-[:psiMod]->(mod:PsiMod)\nWHERE mod.identifier in [\"00046\", \"00047\", \"00048\"]\nRETURN DISTINCT re.identifier as UNIPROT_ACCESSION, tm.coordinate as site,\nCASE \nWHEN mod.identifier = \"00046\"\nTHEN \"S\"\nWHEN mod.identifier = \"00047\"\nTHEN \"T\"\nELSE \"Y\"\nEND\nas PSI_MOD_ID\nORDER BY UNIPROT_ACCESSION";
+
 }
 
