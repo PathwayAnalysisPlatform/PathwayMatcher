@@ -439,6 +439,13 @@ public class Sensitivity implements Runnable {
             // Phosphorylation dataset: percentage experimental phosphosites that, when made into a proteoform, matched
             // to a proteoform in the database for each matching type
             HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
+            inputProteoforms = (HashSet<Proteoform>) inputProteoforms.stream()
+                    .filter(proteoform -> matchesAtLeastOne(
+                            proteoform,
+                            getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false),
+                            ProteoformMatching.getInstance(MatchType.ACCESSION),
+                            5L))
+                    .collect(Collectors.toSet());
             HashMap<MatchType, Double> percentages = calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
             writeEvaluation(percentages, resourcesPath, percentagesPhosphoproteoformsMatchAtLeastOne);
 
