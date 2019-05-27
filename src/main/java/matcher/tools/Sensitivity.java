@@ -1,11 +1,10 @@
 package matcher.tools;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.TreeMultimap;
 import methods.matching.ProteoformMatching;
 import model.*;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.xerces.impl.xpath.regex.Match;
 import picocli.CommandLine;
 
 import java.io.*;
@@ -16,7 +15,38 @@ import java.util.stream.Collectors;
 import static matcher.tools.FileHandler.createFile;
 
 @CommandLine.Command(version = "PathwayMatcher 1.9.1")
-public class Sensitivy implements Runnable {
+public class Sensitivity implements Runnable {
+
+    public static boolean matchesAtLeastOne(Proteoform proteoform, HashSet<Proteoform> potentialProteoforms, ProteoformMatching matcher, Long range) {
+        for (Proteoform potentialProteoform : potentialProteoforms) {
+            if (matcher.matches(proteoform, potentialProteoform, range)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static HashMap<MatchType, Double> calculatePercentagesMatchesAtLeastOne(HashSet<Proteoform> inputProteoforms, Mapping mapping, Long range) {
+        HashMap<MatchType, Double> percentages = new HashMap<>(MatchType.values().length);
+
+        for (MatchType matchType : MatchType.values()) {
+            ProteoformMatching proteoformMatching = ProteoformMatching.getInstance(matchType);
+            int cont = 0;
+            double percentage = 0.0;
+
+            // Count number of input proteoforms that matches at least one proteoform in the database
+            for (Proteoform proteoform : inputProteoforms) {
+                HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false);
+                if (matchesAtLeastOne(proteoform, potentialProteoforms, proteoformMatching, 5L)) {
+                    cont++;
+                }
+            }
+
+            percentage = (double) cont * 100.0 / inputProteoforms.size();
+            percentages.put(matchType, percentage);
+        }
+        return percentages;
+    }
 
     enum PotentialProteoformsType {
         ALL, ORIGINAL, OTHERS;
@@ -131,6 +161,19 @@ public class Sensitivy implements Runnable {
         return result;
     }
 
+    static void writeEvaluation(Map<MatchType, Double> percentages, String path, String fileName) {
+        try {
+            BufferedWriter bufferedWriterOutput = createFile(path, fileName);
+            bufferedWriterOutput.write("MatchType,Percentage\n");
+            for (Map.Entry<MatchType, Double> matchTypeEntry : percentages.entrySet()) {
+                bufferedWriterOutput.write(matchTypeEntry.getKey().toString() + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
+            }
+            bufferedWriterOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     static void writeEvaluation(List<Pair<MatchType, Double>> percentages, String path, String fileName) {
         try {
             BufferedWriter bufferedWriterOutput = createFile(path, fileName);
@@ -184,25 +227,23 @@ public class Sensitivy implements Runnable {
                                                        Mapping mapping,
                                                        PotentialProteoformsType potentialProteoformsType,
                                                        boolean onlyModified) {
-
-        // TODO: Implement onlyModified
         HashSet<Proteoform> potentialProteoforms = new HashSet<>();
         switch (potentialProteoformsType) {
             case ORIGINAL:
-                if (inputProteoform.getPtms().size() > 0) {
+                if (!onlyModified || inputProteoform.getPtms().size() > 0) {
                     potentialProteoforms.add(inputProteoform);
                 }
                 break;
             case OTHERS:
                 for (Proteoform potentialProteoform : mapping.getProteinsToProteoforms().get(inputProteoform.getUniProtAcc())) {
-                    if (!potentialProteoform.equals(inputProteoform) && potentialProteoform.getPtms().size() > 0) {
+                    if (!potentialProteoform.equals(inputProteoform) && (!onlyModified || potentialProteoform.getPtms().size() > 0)) {
                         potentialProteoforms.add(potentialProteoform);
                     }
                 }
                 break;
             case ALL:
                 for (Proteoform potentialProteoform : mapping.getProteinsToProteoforms().get(inputProteoform.getUniProtAcc())) {
-                    if (potentialProteoform.getPtms().size() > 0) {
+                    if (!onlyModified || potentialProteoform.getPtms().size() > 0) {
                         potentialProteoforms.add(potentialProteoform);
                     }
                 }
@@ -348,7 +389,7 @@ public class Sensitivy implements Runnable {
      * The sensitivity class calculates the matching proteoforms for sets of proteoforms.
      */
     public static void main(String args[]) {
-        CommandLine.run(new Sensitivy(), System.err, args);
+        CommandLine.run(new Sensitivity(), System.err, args);
     }
 
     Mapping mapping = null;
@@ -365,6 +406,7 @@ public class Sensitivy implements Runnable {
     String phosphositesFile = "phosphosites.csv";
     String percentagesFilePhosphoproteoforms = "percentagesFilePhosphoproteoforms.csv";
     String plotPhosphoproteoforms = "plotPhosphoproteoforms.csv";
+    String percentagesPhosphoproteoformsMatchAtLeastOne = "percentagesPhosphoproteoformsMatchAtLeastOne.csv";
 
     @CommandLine.Option(names = {"--resourcesPath"}, required = true, description = "Path for the output files with the proteoform matches and percentages")
     private static String resourcesPath = "";
@@ -390,6 +432,24 @@ public class Sensitivy implements Runnable {
 
         if (!resourcesPath.endsWith("/")) {
             resourcesPath += "/";
+        }
+
+        // Phosphorylation dataset
+        try {
+            // Phosphorylation dataset: percentage experimental phosphosites that, when made into a proteoform, matched
+            // to a proteoform in the database for each matching type
+            HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
+            HashMap<MatchType, Double> percentages = calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
+            writeEvaluation(percentages, resourcesPath, percentagesPhosphoproteoformsMatchAtLeastOne);
+
+            // Phosphorylation dataset: calculate the match percentages for the candidate proteoform of the same accession
+            List<Pair<MatchType, Double>> allRunsPercentages = getAllRunsPercentages(inputProteoforms,
+                    100.0, mapping, PotentialProteoformsType.ALL, false, 5L,
+                    false, 1);
+            writeEvaluation(allRunsPercentages, resourcesPath, percentagesFilePhosphoproteoforms);
+            Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotPercentages + " " + (resourcesPath + "\\" + percentagesFilePhosphoproteoforms) + " " + (plotsPath + "\\" + plotPhosphoproteoforms));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         // Plot single proteoform matches
@@ -437,17 +497,6 @@ public class Sensitivy implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Phosphorylation dataset: calculate the match percentages for the candidate proteoform of the same accession
-        try {
-            HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
-            List<Pair<MatchType, Double>> allRunsPercentages = getAllRunsPercentages(inputProteoforms,
-                    100.0, mapping, PotentialProteoformsType.ALL, false, 5L,
-                    false, 1);
-            writeEvaluation(allRunsPercentages, resourcesPath, percentagesFilePhosphoproteoforms);
-            Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotPercentages + " " + (resourcesPath + "\\" + percentagesFilePhosphoproteoforms) + " " + (plotsPath + "\\" + plotPhosphoproteoforms));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+
 };
