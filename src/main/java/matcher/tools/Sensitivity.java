@@ -48,6 +48,36 @@ public class Sensitivity implements Runnable {
         return percentages;
     }
 
+    public static void createTableMatchesAtLeastOne(HashSet<Proteoform> inputProteoforms, Mapping mapping, Long range, String path, String fileName) {
+        if (inputProteoforms.size() == 0) {
+            return;
+        }
+        try {
+            BufferedWriter bufferedWriterOutput = createFile(path, fileName);
+            HashMap<MatchType, ProteoformMatching> matchers = new HashMap<>();
+
+            bufferedWriterOutput.write("PROTEOFORM");
+            for (MatchType matchType : MatchType.values()) {
+                bufferedWriterOutput.write("\t" + matchType.toString());
+                matchers.put(matchType, ProteoformMatching.getInstance(matchType));
+            }
+            bufferedWriterOutput.write("\n");
+
+            for (Proteoform proteoform : inputProteoforms) {
+                bufferedWriterOutput.write(proteoform.toString(ProteoformFormat.SIMPLE));
+                for (MatchType matchType : MatchType.values()) {
+                    HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false);
+                    bufferedWriterOutput.write((matchesAtLeastOne(proteoform, potentialProteoforms, matchers.get(matchType), 5L) ? "\t1" : "\t0"));
+                }
+                bufferedWriterOutput.write("\n");
+            }
+
+            bufferedWriterOutput.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     enum PotentialProteoformsType {
         ALL, ORIGINAL, OTHERS;
     }
@@ -148,12 +178,14 @@ public class Sensitivity implements Runnable {
     }
 
     static HashSet<Proteoform> getModifiedProteoformsOfProteinsWithMultipleProteoforms(Mapping mapping) {
+        HashSet<String> proteinsWithMultipleProteoforms = new HashSet<>();
         HashSet<Proteoform> result = new HashSet<>();
         for (String protein : mapping.getProteinsToProteoforms().keySet()) {
             if (mapping.getProteinsToProteoforms().get(protein).size() > 1) {
                 for (Proteoform proteoform : mapping.getProteinsToProteoforms().get(protein)) {
                     if (proteoform.getPtms().size() > 0) {
                         result.add(proteoform);
+                        proteinsWithMultipleProteoforms.add(protein);
                     }
                 }
             }
@@ -340,7 +372,8 @@ public class Sensitivity implements Runnable {
             totalPercentages.put(matchType, 0.0);
         }
 
-        for (Proteoform proteoform : getProteoformSample(inputProteoforms, sampleSize)) {
+        HashSet<Proteoform> proteoformSample = getProteoformSample(inputProteoforms, sampleSize);
+        for (Proteoform proteoform : proteoformSample) {
             HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping,
                     potentialProteoformsType, onlyModified);
             if (potentialProteoforms.size() > 0) {
@@ -407,6 +440,7 @@ public class Sensitivity implements Runnable {
     String percentagesFilePhosphoproteoforms = "percentagesFilePhosphoproteoforms.csv";
     String plotPhosphoproteoforms = "plotPhosphoproteoforms.csv";
     String percentagesPhosphoproteoformsMatchAtLeastOne = "percentagesPhosphoproteoformsMatchAtLeastOne.csv";
+    String tablePhosphoproteoformsMatchAtLeastOne = "tablePhosphoproteoformsMatchAtLeastOne.tsv";
 
     @CommandLine.Option(names = {"--resourcesPath"}, required = true, description = "Path for the output files with the proteoform matches and percentages")
     private static String resourcesPath = "";
@@ -439,15 +473,17 @@ public class Sensitivity implements Runnable {
             // Phosphorylation dataset: percentage experimental phosphosites that, when made into a proteoform, matched
             // to a proteoform in the database for each matching type
             HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
-            inputProteoforms = (HashSet<Proteoform>) inputProteoforms.stream()
-                    .filter(proteoform -> matchesAtLeastOne(
-                            proteoform,
-                            getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false),
-                            ProteoformMatching.getInstance(MatchType.ACCESSION),
-                            5L))
-                    .collect(Collectors.toSet());
+            // Filter the list of phosphosites to only those in proteins in Reactome
+//            inputProteoforms = (HashSet<Proteoform>) inputProteoforms.stream()
+//                    .filter(proteoform -> matchesAtLeastOne(
+//                            proteoform,
+//                            getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false),
+//                            ProteoformMatching.getInstance(MatchType.ACCESSION),
+//                            5L))
+//                    .collect(Collectors.toSet());
             HashMap<MatchType, Double> percentages = calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
             writeEvaluation(percentages, resourcesPath, percentagesPhosphoproteoformsMatchAtLeastOne);
+            createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, resourcesPath, tablePhosphoproteoformsMatchAtLeastOne);
 
             // Phosphorylation dataset: calculate the match percentages for the candidate proteoform of the same accession
             List<Pair<MatchType, Double>> allRunsPercentages = getAllRunsPercentages(inputProteoforms,

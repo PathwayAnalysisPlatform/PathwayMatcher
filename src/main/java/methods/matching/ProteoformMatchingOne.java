@@ -34,7 +34,7 @@ public class ProteoformMatchingOne extends ProteoformMatching {
             return false;
         }
 
-        if(rP.getPtms().size() == 0){
+        if(iP.getPtms().size() == 0 && rP.getPtms().size() == 0){
             return true;
         }
 

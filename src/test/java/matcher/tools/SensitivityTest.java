@@ -802,7 +802,7 @@ class SensitivityTest {
     }
 
     @Test
-    void getPotentialProteoforms_givenModifiedProteoformAndOnlyModifiedFalseAndCategoryOthers_getsProteoforms() throws ParseException{
+    void getPotentialProteoforms_givenModifiedProteoformAndOnlyModifiedFalseAndCategoryOthers_getsProteoforms() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:31,00798:43");
         HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.OTHERS, false);
         assertEquals(4, potentialProteoforms.size());
@@ -818,7 +818,7 @@ class SensitivityTest {
     }
 
     @Test
-    void getPotentialProteoforms_givenModifiedProteoformAndOnlyModifiedTrueAndCategoryOthers_getsProteoforms() throws ParseException{
+    void getPotentialProteoforms_givenModifiedProteoformAndOnlyModifiedTrueAndCategoryOthers_getsProteoforms() throws ParseException {
         Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:31,00798:43");
         HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.OTHERS, true);
         assertEquals(3, potentialProteoforms.size());
@@ -934,9 +934,30 @@ class SensitivityTest {
 
     @Test
     void matchesAtLeastOne_matchTypeOneNoTypesAndModifiedProteoform_matches() throws ParseException {
-        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00074:10");
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00000:53");
         HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.ALL, false);
         assertTrue(Sensitivity.matchesAtLeastOne(proteoform, potentialProteoforms, ProteoformMatching.getInstance(MatchType.ONE_NO_TYPES), 5L), "Should match a proteoform.");
+    }
+
+    @Test
+    void matchesAtLeastOne_matchTypeOneAndProteoformWithWrongTypes_doesNotMatches() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00000:33,00000:40");
+        HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.ALL, false);
+        assertFalse(Sensitivity.matchesAtLeastOne(proteoform, potentialProteoforms, ProteoformMatching.getInstance(MatchType.ONE), 5L), "Should not match any proteoform.");
+    }
+
+    @Test
+    void matchesAtLeastOne_matchTypeOneAndModifiedProteoform_doesNotMatchUnmodifiedReferenceProteoform() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00000:10");       // A PTM that is not in any modified proteoform
+        HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.ALL, false);
+        assertFalse(Sensitivity.matchesAtLeastOne(proteoform, potentialProteoforms, ProteoformMatching.getInstance(MatchType.ONE), 5L), "Should not match any proteoform.");
+    }
+
+    @Test
+    void matchesAtLeastOne_matchTypeOneNoTypesAndModifiedProteoform_doesNotMatchUnmodifiedReferenceProteoform() throws ParseException {
+        Proteoform proteoform = ProteoformFormat.SIMPLE.getProteoform("P01308;00000:10");       // A PTM that is not in any modified proteoform
+        HashSet<Proteoform> potentialProteoforms = Sensitivity.getPotentialProteoforms(proteoform, mapping, Sensitivity.PotentialProteoformsType.ALL, false);
+        assertFalse(Sensitivity.matchesAtLeastOne(proteoform, potentialProteoforms, ProteoformMatching.getInstance(MatchType.ONE_NO_TYPES), 5L), "Should not match any proteoform.");
     }
 
     // For the case of a protein with only one proteoform, and it is modified. THen the ONE matching type can not match
@@ -984,6 +1005,112 @@ class SensitivityTest {
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("A2RUS4"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O75385;00146:758"));
         HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
-        assertEquals(50.0, percentages.get(MatchType.STRICT), "All input proteoforms should match to at least one proteoform in the database.");
+        assertEquals(0.0, percentages.get(MatchType.STRICT), "All input proteoforms should match to at least one proteoform in the database.");
+    }
+
+    @Test
+    void createTableMatchesAtLeastOne_givenAtLeastOneProteoform_createsTheFile(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P00000;"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        assertTrue(new File(testName + "/" + fileName).exists(), "The table file should exist.");
+    }
+
+    @Test
+    void createTableMatchesAtLeastOne_givenNoProteoforms_doesNotCreateTheFile(TestInfo testInfo) throws ParseException, IOException {
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(new HashSet<>(), mapping, 5L, testName + "/", fileName);
+        assertFalse(new File(testName + "/" + fileName).exists(), "The table file should not exist.");
+    }
+
+    @Test
+    void createTableMatchesAtLeastOne_givenOneProteoform_getsCorrectHeaders(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("PROTEOFORM\tSTRICT\tSUPERSET\tSUPERSET_NO_TYPES\tSUBSET\tSUBSET_NO_TYPES\tONE\tONE_NO_TYPES\tACCESSION", content.get(0));
+    }
+
+    @Test
+    void createTableMatchesAtLeastOne_givenOneUnmodifiedProteoform_getsAllTrue(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P01308;\t1\t1\t1\t1\t1\t1\t1\t1", content.get(1));
+    }
+
+
+    @Test
+    void createTableMatchesAtLeastOne_givenNonExistentProtein_getsAllFalse(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P00000;"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P00000;\t0\t0\t0\t0\t0\t0\t0\t0", content.get(1));
+    }
+
+    @Test
+    void createTableMatchesAtLeastOne_givenProtoeformWithOneExistingModification_getsTrueAllExceptStrict(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00798:31"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P01308;00798:31\t0\t1\t1\t1\t1\t1\t1\t1", content.get(1));
+    }
+
+    // Given a proteoform with no unmodified proteoform, and altering the PTM type, only the NO_TYPE matchings are true
+    @Test
+    void createTableMatchesAtLeastOne_givenProteoformWithIncorrectModificationTypes_getsTrueForNoTypeMatchings(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P07203;00000:49"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P07203;00000:49\t0\t0\t1\t0\t1\t0\t1\t1", content.get(1));
+    }
+
+    // Given a proteoform with non existent unmodified proteoform and an extra PTM. SUBSET is false, but ONE and SUPERSET are true
+    @Test
+    void createTableMatchesAtLeastOne_givenProteoformWithIncorrectModificationTypes_getsTrueOneAndSuperset(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00798:31,00787:4"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P01308;00787:4,00798:31\t0\t1\t1\t0\t0\t1\t1\t1", content.get(1));
+    }
+
+    // Given a proteoform with non existent unmodified proteoform and an extra PTM and altered PTM types. SUBSET is false, but ONE_NO_TYPES and SUPERSET_NO_TYPES are true
+    @Test
+    void createTableMatchesAtLeastOne_givenProteoformWithIncorrectModificationTypes_getsTrueOneNoTypesAndSupersetNoTypes(TestInfo testInfo) throws ParseException, IOException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00700:31,00700:47"));
+        String testName = testInfo.getTestMethod().get().getName();
+        String fileName = testName + ".tsv";
+        Sensitivity.createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, testName + "/", fileName);
+        List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
+        assertEquals(2, content.size(), "There should be a header line and a values line.");
+        assertEquals("P01308;00700:31,00700:47\t0\t1\t1\t0\t1\t0\t1\t1", content.get(1));
     }
 }
