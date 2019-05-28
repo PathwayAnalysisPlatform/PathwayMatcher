@@ -984,7 +984,7 @@ class SensitivityTest {
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O75385;00046:758"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P02545;00046:338,00046:494,00046:621,00047:491,00048:341"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P03372-4;00078:87,00115:274"));
-        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ALL, false, false);
         assertEquals(100.0, percentages.get(MatchType.STRICT), "All input proteoforms should match to at least one proteoform in the database.");
     }
 
@@ -995,7 +995,7 @@ class SensitivityTest {
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O75385;00146:758"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P02545;00046:338,00046:494,00046:621,00047:491,00048:341"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P03372-4;00078:87,00115:274"));
-        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ALL, false, false);
         assertEquals(50.0, percentages.get(MatchType.STRICT), "All input proteoforms should match to at least one proteoform in the database.");
     }
 
@@ -1004,7 +1004,7 @@ class SensitivityTest {
         HashSet<Proteoform> inputProteoforms = new HashSet<>();
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("A2RUS4"));
         inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("O75385;00146:758"));
-        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ALL, false, false);
         assertEquals(0.0, percentages.get(MatchType.STRICT), "All input proteoforms should match to at least one proteoform in the database.");
     }
 
@@ -1112,5 +1112,74 @@ class SensitivityTest {
         List<String> content = Files.readLines(new File(testName + "/" + fileName), Charset.forName("ISO-8859-1"));
         assertEquals(2, content.size(), "There should be a header line and a values line.");
         assertEquals("P01308;00700:31,00700:47\t0\t1\t1\t0\t1\t0\t1\t1", content.get(1));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOriginal_strictGetsFalse() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00000:31,00798:43"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ORIGINAL, false, true);
+        assertEquals(0.0, percentages.get(MatchType.STRICT));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOthers_strictGetsFalse() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00000:31,00798:43"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.OTHERS, false, true);
+        assertEquals(0.0, percentages.get(MatchType.STRICT));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOriginal_OneGetsFalse() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01275;00091:127"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ORIGINAL, false, true);
+        assertEquals(0.0, percentages.get(MatchType.ONE));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOriginal_OneGetsTrue() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00798:31,00798:43"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.ORIGINAL, false, false);
+        assertEquals(100.0, percentages.get(MatchType.ONE));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOthers_OneGetsFalse() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00087:53,00798:32,00798:60"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.OTHERS, false, true);
+        assertEquals(0.0, percentages.get(MatchType.ONE));
+    }
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOne_givenExistentProteoformAndAlterTrueAndOthers_OneNoTypesGetsTrue() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00000:31,00798:43"));
+        HashMap<MatchType, Double> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, Sensitivity.PotentialProteoformsType.OTHERS, false, true);
+        assertEquals(100.0, percentages.get(MatchType.ONE_NO_TYPES));
+    }
+
+
+    @Test
+    void calculatePercentagesMatchesAtLeastOneMultipleTimes_givenExistingProteoformAndAlterTrue_strictOriginalFails() throws ParseException {
+        HashSet<Proteoform> inputProteoforms = new HashSet<>();
+        inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform("P01308;00798:31,00798:43"));
+        List<Pair<MatchType, Double>> percentages = Sensitivity.calculatePercentagesMatchesAtLeastOneMultipleTimes(
+                inputProteoforms,
+                100.0,
+                mapping,
+                Sensitivity.PotentialProteoformsType.ORIGINAL, 5L, false, true, 3);
+        assertEquals(24, percentages.size());
+        assertEquals(0.0, percentages.get(1).getValue());
+        assertEquals(0.0, percentages.get(9).getValue());
     }
 }

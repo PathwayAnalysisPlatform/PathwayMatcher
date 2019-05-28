@@ -26,7 +26,13 @@ public class Sensitivity implements Runnable {
         return false;
     }
 
-    public static HashMap<MatchType, Double> calculatePercentagesMatchesAtLeastOne(HashSet<Proteoform> inputProteoforms, Mapping mapping, Long range) {
+    public static HashMap<MatchType, Double> calculatePercentagesMatchesAtLeastOne(
+            Collection<Proteoform> inputProteoforms,
+            Mapping mapping,
+            Long range,
+            PotentialProteoformsType potentialProteoformsType,
+            Boolean onlyModified,
+            Boolean alterProteoforms) {
         HashMap<MatchType, Double> percentages = new HashMap<>(MatchType.values().length);
 
         for (MatchType matchType : MatchType.values()) {
@@ -36,8 +42,8 @@ public class Sensitivity implements Runnable {
 
             // Count number of input proteoforms that matches at least one proteoform in the database
             for (Proteoform proteoform : inputProteoforms) {
-                HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping, PotentialProteoformsType.ALL, false);
-                if (matchesAtLeastOne(proteoform, potentialProteoforms, proteoformMatching, 5L)) {
+                HashSet<Proteoform> potentialProteoforms = getPotentialProteoforms(proteoform, mapping, potentialProteoformsType, onlyModified);
+                if (matchesAtLeastOne(alterProteoforms ? alterProteoform(proteoform) : proteoform, potentialProteoforms, proteoformMatching, range)) {
                     cont++;
                 }
             }
@@ -397,6 +403,31 @@ public class Sensitivity implements Runnable {
      * Take a sample of proteins from the list and evaluate multiple times the percentage of potential proteoforms
      * matched after altering the proteoforms.
      */
+    public static List<Pair<MatchType, Double>> calculatePercentagesMatchesAtLeastOneMultipleTimes(
+            HashSet<Proteoform> inputProteoforms,
+            double sampleSize,
+            Mapping mapping,
+            PotentialProteoformsType potentialProteoformsType,
+            Long range,
+            boolean onlyModified,
+            boolean alterProteoforms,
+            int runs) {
+        List<Pair<MatchType, Double>> allRunsPercentages = new ArrayList<>(runs * 8);
+
+        for (int I = 0; I < runs; I++) {
+            List<Proteoform> proteoformSample = new ArrayList<>(getProteoformSample(inputProteoforms, sampleSize));
+            HashMap<MatchType, Double> oneSamplePercentages = calculatePercentagesMatchesAtLeastOne(proteoformSample, mapping, range, potentialProteoformsType, onlyModified, alterProteoforms);
+            for (MatchType matchType : MatchType.values()) {
+                allRunsPercentages.add(new MutablePair<>(matchType, oneSamplePercentages.get(matchType)));
+            }
+        }
+        return allRunsPercentages;
+    }
+
+    /**
+     * Take a sample of proteins from the list and evaluate multiple times the percentage of potential proteoforms
+     * matched after altering the proteoforms.
+     */
     public static List<Pair<MatchType, Double>> getAllRunsPercentages(HashSet<Proteoform> inputProteoforms,
                                                                       double sampleSize,
                                                                       Mapping mapping,
@@ -426,19 +457,14 @@ public class Sensitivity implements Runnable {
     }
 
     Mapping mapping = null;
-    String scriptPlotMatches = "src\\main\\r\\plotMatches.R";
-    String scriptPlotPercentages = "src\\main\\r\\plotPercentages.R";
     String scriptPlotPercentagesSeparated = "src\\main\\r\\plotPercentagesSeparated.R";
 
     String matchesFile1 = "matchesFile1.csv";
-    String plotFile1 = "plotMatches1.png";
     String matchesFile2 = "matchesFile2.csv";
-    String plotFile2 = "plotMatches2.png";
     String percentagesFileMultiproteoforms = "percentagesFileMultiproteoforms.csv";
     String plotMultiproteoform = "plotMultiproteoforms.png";
     String phosphositesFile = "phosphosites.csv";
     String percentagesFilePhosphoproteoforms = "percentagesFilePhosphoproteoforms.csv";
-    String plotPhosphoproteoforms = "plotPhosphoproteoforms.csv";
     String percentagesPhosphoproteoformsMatchAtLeastOne = "percentagesPhosphoproteoformsMatchAtLeastOne.csv";
     String tablePhosphoproteoformsMatchAtLeastOne = "tablePhosphoproteoformsMatchAtLeastOne.tsv";
 
@@ -468,12 +494,10 @@ public class Sensitivity implements Runnable {
             resourcesPath += "/";
         }
 
-        // Phosphorylation dataset
-        try {
-            // Phosphorylation dataset: percentage experimental phosphosites that, when made into a proteoform, matched
-            // to a proteoform in the database for each matching type
-            HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
-            // Filter the list of phosphosites to only those in proteins in Reactome
+        // Phosphorylation dataset: percentage experimental phosphosites that, when made into a proteoform, matched
+        // to a proteoform in the database for each matching type
+        HashSet<Proteoform> inputProteoforms = createProteoformList(resourcesPath + "\\" + phosphositesFile);
+        // Filter the list of phosphosites to only those in proteins in Reactome
 //            inputProteoforms = (HashSet<Proteoform>) inputProteoforms.stream()
 //                    .filter(proteoform -> matchesAtLeastOne(
 //                            proteoform,
@@ -481,60 +505,77 @@ public class Sensitivity implements Runnable {
 //                            ProteoformMatching.getInstance(MatchType.ACCESSION),
 //                            5L))
 //                    .collect(Collectors.toSet());
-            HashMap<MatchType, Double> percentages = calculatePercentagesMatchesAtLeastOne(inputProteoforms, mapping, 5L);
-            writeEvaluation(percentages, resourcesPath, percentagesPhosphoproteoformsMatchAtLeastOne);
-            createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, resourcesPath, tablePhosphoproteoformsMatchAtLeastOne);
+        HashMap<MatchType, Double> percentages = calculatePercentagesMatchesAtLeastOne(
+                inputProteoforms, mapping, 5L, PotentialProteoformsType.ALL, false, false);
+        writeEvaluation(percentages, resourcesPath, percentagesPhosphoproteoformsMatchAtLeastOne);
+        createTableMatchesAtLeastOne(inputProteoforms, mapping, 5L, resourcesPath, tablePhosphoproteoformsMatchAtLeastOne);
 
-            // Phosphorylation dataset: calculate the match percentages for the candidate proteoform of the same accession
-            List<Pair<MatchType, Double>> allRunsPercentages = getAllRunsPercentages(inputProteoforms,
-                    100.0, mapping, PotentialProteoformsType.ALL, false, 5L,
-                    false, 1);
-            writeEvaluation(allRunsPercentages, resourcesPath, percentagesFilePhosphoproteoforms);
-            Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotPercentages + " " + (resourcesPath + "\\" + percentagesFilePhosphoproteoforms) + " " + (plotsPath + "\\" + plotPhosphoproteoforms));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // Phosphorylation dataset: calculate the match percentages for the candidate proteoform of the same accession
+        List<Pair<MatchType, Double>> allRunsPercentages = calculatePercentagesMatchesAtLeastOneMultipleTimes(
+                inputProteoforms, 100.0, mapping, PotentialProteoformsType.ALL, 5L, false, false, 1);
+        writeEvaluation(allRunsPercentages, resourcesPath, percentagesFilePhosphoproteoforms);
+
+        // Plot single proteoform matches
+//        try {
+//            inputProteoforms = new HashSet<>();
+//            inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform1));
+//            List<Pair<MatchType, Double>> percentagesOriginal = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 100.0,
+//                    mapping, PotentialProteoformsType.ORIGINAL, 5L, false, false, 1);
+//            List<Pair<MatchType, Double>> percentagesOthers = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 100.0,
+//                    mapping, PotentialProteoformsType.OTHERS, 5L, false, false, 1);
+//            writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile1);
+//        } catch (ParseException e) {
+//            System.out.println("Proteoform 1 is invalid.");
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            inputProteoforms = new HashSet<>();
+//            inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform2));
+//            List<Pair<MatchType, Double>> percentagesOriginal = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 100.0,
+//                    mapping, PotentialProteoformsType.ORIGINAL, 5L, false, false, 1);
+//            List<Pair<MatchType, Double>> percentagesOthers = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 100.0,
+//                    mapping, PotentialProteoformsType.OTHERS, 5L, false, false, 1);
+//            writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile2);
+//        } catch (ParseException e) {
+//            System.out.println("Proteoform 2 is invalid.");
+//            e.printStackTrace();
+//        }
 
         // Plot single proteoform matches
         try {
-            HashSet<Proteoform> inputProteoforms = new HashSet<>();
+            inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform1));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
             List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile1);
-            Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotMatches + " " + (resourcesPath + "\\" + matchesFile1) + " " + (plotsPath + "\\" + plotFile1));
         } catch (ParseException e) {
             System.out.println("Proteoform 1 is invalid.");
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-            HashSet<Proteoform> inputProteoforms = new HashSet<>();
+            inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform2));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
             List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
                     mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile2);
-            Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotMatches + " " + (resourcesPath + "\\" + matchesFile2) + " " + (plotsPath + "\\" + plotFile2));
         } catch (ParseException e) {
             System.out.println("Proteoform 2 is invalid.");
-            e.printStackTrace();
-        } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Reactome proteins with multiple proteoforms: calculate match percentages for original and other proteoforms
         try {
-            HashSet<Proteoform> inputProteoforms = getModifiedProteoformsOfProteinsWithMultipleProteoforms(mapping);
-            List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 10.0,
-                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, true, 10);
-            List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 10.0,
-                    mapping, PotentialProteoformsType.OTHERS, true, 5L, true, 10);
+            inputProteoforms = getModifiedProteoformsOfProteinsWithMultipleProteoforms(mapping);
+            List<Pair<MatchType, Double>> percentagesOriginal = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 10.0,
+                    mapping, PotentialProteoformsType.ORIGINAL, 5L, false, true, 10);
+            List<Pair<MatchType, Double>> percentagesOthers = calculatePercentagesMatchesAtLeastOneMultipleTimes(inputProteoforms, 10.0,
+                    mapping, PotentialProteoformsType.OTHERS, 5L, false, true, 10);
             writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, percentagesFileMultiproteoforms);
             Runtime.getRuntime().exec("Rscript --vanilla " + scriptPlotPercentagesSeparated + " " + (resourcesPath + "\\" + percentagesFileMultiproteoforms) + " " + (plotsPath + "\\" + plotMultiproteoform));
         } catch (IOException e) {
