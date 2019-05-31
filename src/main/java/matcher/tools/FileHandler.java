@@ -67,14 +67,25 @@ public class FileHandler {
         return br;
     }
 
+    public static final String UTF8_BOM = "\uFEFF";
+
+    private static String removeUTF8BOM(String s) {
+        if (s.startsWith(UTF8_BOM)) {
+            s = s.substring(1);
+        }
+        return s;
+    }
+
     public static List<String> readFile(String path) {
         File file = new File(path);
+        List<String> lines = new ArrayList<>();
         try {
-            return Files.readLines(file, Charset.forName("ISO-8859-1"));
+            lines = Files.readLines(file, Charset.forName("ISO-8859-1"));
+            lines.set( 0, removeUTF8BOM(lines.get(0)) );
         } catch (IOException e) {
             System.err.println("The input file: " + path + " was not found.");
         }
-        return null;
+        return lines;
     }
 
     public static BufferedReader getBufferedReaderForGzipFile(String path, String fileName) throws FileNotFoundException, IOException {

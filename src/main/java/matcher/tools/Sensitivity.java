@@ -64,7 +64,7 @@ public class Sensitivity implements Runnable {
 
             bufferedWriterOutput.write("PROTEOFORM");
             for (MatchType matchType : MatchType.values()) {
-                bufferedWriterOutput.write("\t" + matchType.toString());
+                bufferedWriterOutput.write("\t" + getReadableMatchTypeString(matchType));
                 matchers.put(matchType, ProteoformMatching.getInstance(matchType));
             }
             bufferedWriterOutput.write("\n");
@@ -204,7 +204,7 @@ public class Sensitivity implements Runnable {
             BufferedWriter bufferedWriterOutput = createFile(path, fileName);
             bufferedWriterOutput.write("MatchType,Percentage\n");
             for (Map.Entry<MatchType, Double> matchTypeEntry : percentages.entrySet()) {
-                bufferedWriterOutput.write(matchTypeEntry.getKey().toString() + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
+                bufferedWriterOutput.write(getReadableMatchTypeString(matchTypeEntry.getKey()) + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
             }
             bufferedWriterOutput.close();
         } catch (IOException e) {
@@ -217,12 +217,65 @@ public class Sensitivity implements Runnable {
             BufferedWriter bufferedWriterOutput = createFile(path, fileName);
             bufferedWriterOutput.write("MatchType,Percentage\n");
             for (Pair<MatchType, Double> matchTypeEntry : percentages) {
-                bufferedWriterOutput.write(matchTypeEntry.getKey().toString() + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
+                bufferedWriterOutput.write(getReadableMatchTypeString(matchTypeEntry.getKey()) + "," + String.format("%.2f", matchTypeEntry.getValue()) + "\n");
             }
             bufferedWriterOutput.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static String getReadablePotentialProteoformsType(PotentialProteoformsType potentialProteoformsType) {
+        String result = "";
+        switch (potentialProteoformsType) {
+            case ALL:
+                result = "All";
+                break;
+            case ORIGINAL:
+                result = "Original";
+                break;
+            case OTHERS:
+                result = "Others";
+                break;
+            default:
+                result = "";
+                break;
+        }
+        return result;
+    }
+
+    static String getReadableMatchTypeString(MatchType matchType) {
+        String result = "";
+        switch (matchType) {
+            case STRICT:
+                result = "Strict";
+                break;
+            case ONE:
+                result = "One";
+                break;
+            case SUBSET:
+                result = "Subset";
+                break;
+            case SUPERSET:
+                result = "Superset";
+                break;
+            case ONE_NO_TYPES:
+                result = "One without types";
+                break;
+            case SUPERSET_NO_TYPES:
+                result = "Superset without types";
+                break;
+            case SUBSET_NO_TYPES:
+                result = "Subset without types";
+                break;
+            case ACCESSION:
+                result = "Accession";
+                break;
+            default:
+                result = "";
+                break;
+        }
+        return result;
     }
 
     static void writeEvaluationSeparated(List<Pair<MatchType, Double>> percentagesOriginal,
@@ -233,16 +286,16 @@ public class Sensitivity implements Runnable {
             bufferedWriterOutput.write("MatchType,Percentage,Category\n");
             for (Pair<MatchType, Double> matchTypeEntry : percentagesOriginal) {
                 bufferedWriterOutput.write(
-                        matchTypeEntry.getKey().toString()
+                        getReadableMatchTypeString(matchTypeEntry.getKey())
                                 + "," + String.format("%.2f", matchTypeEntry.getValue())
-                                + "," + PotentialProteoformsType.ORIGINAL.toString()
+                                + "," + getReadablePotentialProteoformsType(PotentialProteoformsType.ORIGINAL)
                                 + "\n");
             }
             for (Pair<MatchType, Double> matchTypeEntry : percentagesOthers) {
                 bufferedWriterOutput.write(
-                        matchTypeEntry.getKey().toString()
+                        getReadableMatchTypeString(matchTypeEntry.getKey())
                                 + "," + String.format("%.2f", matchTypeEntry.getValue())
-                                + "," + PotentialProteoformsType.OTHERS.toString()
+                                + "," + getReadablePotentialProteoformsType(PotentialProteoformsType.OTHERS)
                                 + "\n");
             }
             bufferedWriterOutput.close();
@@ -547,10 +600,8 @@ public class Sensitivity implements Runnable {
             inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform1));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
-            List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
-            writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile1);
+                    mapping, PotentialProteoformsType.ALL, true, 5L, false, 1);
+            writeEvaluation(percentagesOriginal, resourcesPath, matchesFile1);
         } catch (ParseException e) {
             System.out.println("Proteoform 1 is invalid.");
             e.printStackTrace();
@@ -560,10 +611,8 @@ public class Sensitivity implements Runnable {
             inputProteoforms = new HashSet<>();
             inputProteoforms.add(ProteoformFormat.SIMPLE.getProteoform(proteoform2));
             List<Pair<MatchType, Double>> percentagesOriginal = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.ORIGINAL, true, 5L, false, 1);
-            List<Pair<MatchType, Double>> percentagesOthers = getAllRunsPercentages(inputProteoforms, 100.0,
-                    mapping, PotentialProteoformsType.OTHERS, true, 5L, false, 1);
-            writeEvaluationSeparated(percentagesOriginal, percentagesOthers, resourcesPath, matchesFile2);
+                    mapping, PotentialProteoformsType.ALL, true, 5L, false, 1);
+            writeEvaluation(percentagesOriginal, resourcesPath, matchesFile2);
         } catch (ParseException e) {
             System.out.println("Proteoform 2 is invalid.");
             e.printStackTrace();
