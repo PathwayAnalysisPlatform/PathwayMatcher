@@ -61,7 +61,7 @@ class PathwayMatcherGraphTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(34, search.size());
+        assertEquals(38, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(10, analysis.size());
@@ -196,7 +196,7 @@ class PathwayMatcherGraphTest {
         Main.main(args);
 
         List<String> proteins = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + proteinVerticesFile), Charset.defaultCharset());
-        assertEquals(10738, proteins.size());
+        assertEquals(10790, proteins.size());
 
         List<String> genes = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + geneVerticesFile), Charset.defaultCharset());
         assertEquals(24622, genes.size());

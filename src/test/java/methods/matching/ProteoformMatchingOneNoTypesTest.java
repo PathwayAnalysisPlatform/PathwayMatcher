@@ -73,11 +73,11 @@ class ProteoformMatchingOneNoTypesTest {
             // These pass because the input contains all the ptms of the reference
             iP = pf.getProteoform("A2RUS2;00046:472");
             rP = pf.getProteoform("A2RUS2;");
-            assertTrue(matcher.matches(iP, rP, margin));
+            assertFalse(matcher.matches(iP, rP, margin));
 
             iP = pf.getProteoform("A2RUS2;00046:472");
             rP = pf.getProteoform("A2RUS2");
-            assertTrue(matcher.matches(iP, rP, margin));
+            assertFalse(matcher.matches(iP, rP, margin));
 
             iP = pf.getProteoform("A2RUS2-2;00046:472,00046:490");
             rP = pf.getProteoform("A2RUS2-2;00046:472");

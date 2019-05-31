@@ -51,7 +51,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         assertTrue(anyMatches("P01308;00798:95,00798:96,00798:100,00798:109\tP01308", search));
         assertTrue(anyMatches("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109\tP01308", search));
 
-        assertEquals(102, search.size());
+        assertEquals(117, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
@@ -69,7 +69,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         //Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
         assertTrue(anyContains("R-HSA-9006934", search));
-        assertEquals(112, search.size());
+        assertEquals(127, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
@@ -87,7 +87,7 @@ public class PathwayMatcherModifiedPeptidesTest {
 
         //Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(118, search.size());
+        assertEquals(148, search.size());
         assertTrue(anyContains("P01308", search));
         assertTrue(anyContains("P01308;00798:95,00798:96,00798:100,00798:109", search));
         assertFalse(anyContains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109", search));
@@ -107,7 +107,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(112, search.size());
+        assertEquals(127, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
@@ -132,7 +132,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         assertTrue(anyMatches("P01308;00798:31,00798:43\tP01308\tR-HSA-74711\t.+\tR-HSA-74751", search));
         assertTrue(anyMatches("P01308;\tP01308\tR-HSA-9023178\t.+\tR-HSA-2980736", search));
         assertTrue(anyMatches("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109\tP01308\tR-HSA-6809003\t.+\tR-HSA-199991", search));
-        assertEquals(177, search.size());
+        assertEquals(207, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(22, analysis.size());
@@ -167,7 +167,7 @@ public class PathwayMatcherModifiedPeptidesTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(66, search.size());
+        assertEquals(81, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(15, analysis.size());

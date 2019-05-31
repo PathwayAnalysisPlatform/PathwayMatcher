@@ -44,7 +44,7 @@ public class PathwayMatcherProteoformsTest {
 
         //Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(102, search.size());
+        assertEquals(117, search.size());
         assertTrue(anyContains("P01308", search));
         assertTrue(anyContains("P01308;00798:95,00798:96,00798:100,00798:109", search));
         assertTrue(anyContains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109", search));
@@ -63,7 +63,7 @@ public class PathwayMatcherProteoformsTest {
 
         //Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(112, search.size());
+        assertEquals(127, search.size());
         assertTrue(anyContains("P01308", search));
         assertTrue(anyContains("P01308;00798:95,00798:96,00798:100,00798:109", search));
         assertTrue(anyContains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109", search));
@@ -83,7 +83,7 @@ public class PathwayMatcherProteoformsTest {
 
         //Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(118, search.size());
+        assertEquals(148, search.size());
         assertTrue(anyContains("P01308", search));
         assertTrue(anyContains("P01308;00798:95,00798:96,00798:100,00798:109", search));
         assertFalse(anyContains("P01308;00798:31,00798:43,00798:95,00798:96,00798:100,00798:109", search));
@@ -101,7 +101,7 @@ public class PathwayMatcherProteoformsTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(112, search.size());
+        assertEquals(127, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(21, analysis.size());
@@ -116,7 +116,7 @@ public class PathwayMatcherProteoformsTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(378799, search.size());
+        assertEquals(386005, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(1905, analysis.size());
@@ -131,7 +131,7 @@ public class PathwayMatcherProteoformsTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(177, search.size());
+        assertEquals(207, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(22, analysis.size());
@@ -162,7 +162,7 @@ public class PathwayMatcherProteoformsTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(66, search.size());
+        assertEquals(81, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(15, analysis.size());
@@ -177,7 +177,7 @@ public class PathwayMatcherProteoformsTest {
         Main.main(args);
 
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(732, search.size());
+        assertEquals(743, search.size());
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(131, analysis.size());
@@ -238,7 +238,7 @@ public class PathwayMatcherProteoformsTest {
 
         // Check the search file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + searchFile), Charset.defaultCharset());
-        assertEquals(553, search.size()); // Its 98 records + header
+        assertEquals(521, search.size()); // Its 98 records + header
 
         List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/" + analysisFile), Charset.defaultCharset());
         assertEquals(105, analysis.size()); // Its 98 records + header

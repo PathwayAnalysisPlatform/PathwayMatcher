@@ -59,7 +59,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(5240, search.size());
+        assertEquals(5204, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(179, statistics.size());
@@ -74,7 +74,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(5240, search.size());
+        assertEquals(5204, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(179, statistics.size());
@@ -89,7 +89,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(5240, search.size());
+        assertEquals(5204, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(179, statistics.size());
@@ -104,7 +104,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(10072, search.size());
+        assertEquals(10324, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(676, statistics.size());
@@ -119,7 +119,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(9873, search.size());
+        assertEquals(10125, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(675, statistics.size());
@@ -168,7 +168,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(491, search.size());
+        assertEquals(598, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(131, statistics.size());
@@ -183,7 +183,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(386, search.size());
+        assertEquals(493, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(120, statistics.size());
@@ -199,7 +199,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(458, search.size());
+        assertEquals(506, search.size());
         assertTrue(anyContains("P07550", search));
         assertTrue(anyContains("P23786", search));
 
@@ -216,7 +216,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(458, search.size());
+        assertEquals(506, search.size());
         assertTrue(anyContains("P07550", search));
         assertTrue(anyContains("P23786", search));
 
@@ -233,7 +233,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(11586, search.size());
+        assertEquals(11858, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(602, statistics.size());
@@ -248,7 +248,7 @@ class PathwayMatcherGeneticVariantsTest {
 
         // Check the output file
         List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-        assertEquals(11548, search.size());
+        assertEquals(11748, search.size());
 
         List<String> statistics = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
         assertEquals(601, statistics.size());

@@ -37,7 +37,7 @@ class PathwayMatcherGenesTest {
 		Main.main(args);
 
 		List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-		assertEquals(34, search.size());
+		assertEquals(38, search.size());
 
 		List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
 		assertEquals(10, analysis.size());
@@ -52,7 +52,7 @@ class PathwayMatcherGenesTest {
 
 		// Check the search file
 		List<String> search = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/search.tsv"), Charset.defaultCharset());
-		assertEquals(539, search.size()); // Its 98 records + header
+		assertEquals(507, search.size()); // Its 98 records + header
 
 		List<String> analysis = Files.readLines(new File(testInfo.getTestMethod().get().getName() + "/analysis.tsv"), Charset.defaultCharset());
 		assertEquals(105, analysis.size()); // Its 98 records + header
