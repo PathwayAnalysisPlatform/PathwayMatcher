@@ -88,7 +88,7 @@ in case a user wants to get the list of available modifications programmatically
 
 Extractor is part of the [PathwayMatcher.jar](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/releases) file. It can be executed with this command:
 ~~~~
-java -cp PathwayMatcher.jar extractor.neo4j.Extractor
+java -cp PathwayMatcher.jar extractor.neo4j.Extractor -d path_to_vep_files/ -o vNN/
 ~~~~
 
 It has the following command line arguments: 
@@ -104,6 +104,8 @@ It has the following command line arguments:
 
 Note: The paths must end with the separator '/' (linux) or '\' (windows).
 By default the input and output files are in the same location as the _PathwayMatcher.jar_ file. 
+
+The VEP mapping files can be downloaded from the [MappingFiles](https://github.com/PathwayAnalysisPlatform/MappingFiles) repository in [this](https://github.com/PathwayAnalysisPlatform/MappingFiles/tree/master/Extractor) folder.
 
 It is required to have Neo4j installed and running with the Reactome Graph database loaded. 
 
