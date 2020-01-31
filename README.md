@@ -9,7 +9,13 @@ PathwayMatcher is a standalone command line tool to match human biomedical data 
 
 ## Feedback, contribution and bug reports
 
-We welcome feedback, suggestions of improvement, pull requests, and bug reports. Please contact us through the [issue tracker](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/issues).
+### Code of Conduct
+
+As part of our efforts toward delivering open and inclusive science, we follow the [Contributor Convenant](https://www.contributor-covenant.org/) [Code of Conduct for Open Source Projects](docs/CODE_OF_CONDUCT.md).
+
+### Issue Tracker
+
+Despite our efforts at enforcing good practices in our work, like every software, PathwayMatcher might crash, fail to cover specific use cases, not perform as well as expected. We apologize for any inconvenience and will try to fix things to the best of our capabilities. We welcome bug reports, suggestions of improvements, and contributions _via_ our [issue tracker](https://github.com/PathwayAnalysisPlatform/PathwayMatcher/issues). 
 
 ## Bioconda
 
